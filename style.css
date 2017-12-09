@@ -1,0 +1,76 @@
+
+.dataTable{
+   font-size:2vmin; 
+}
+
+.list-group{
+  font-weight:600;
+}
+
+table {
+   font-size:2vmin; 
+}
+
+.nav-pills{
+ font-size: 2vmin;
+  font-weight: 500;
+}
+
+.jumbotron h1{
+  color:#E5790D;
+}
+
+.jumbotron p{
+  font-weight:500;
+}
+
+.thead{
+  font-family: Avenir Next;
+  font-size: 3vmin;
+  line-height: 1.5;
+}
+
+body{
+  font-family: Avenir Next;
+  font-size: 2vmin;
+  line-height: 1.5;
+  font-weight: 400;
+ 
+}
+/* Headers */
+h1{
+  font-size: 2vw;
+  text-align: center;
+  font-weight: 600;
+  color:#E5790D;
+}
+
+h2{
+  font-size: 2vw;
+	text-align: center;
+	font-weight: 600;
+	color:#E5790D;
+	text-transform:uppercase;
+}
+
+/* Sticky footer styles
+-------------------------------------------------- */
+html {
+  position: relative;
+  min-height: 100%;
+}
+body {
+  margin-bottom: 60px; /* Margin bottom by footer height */
+}
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 80%;
+  height: 60px; /* Set the fixed height of the footer here */
+  line-height: 60px; /* Vertically center the text there */
+  
+}
+
+
+
+
