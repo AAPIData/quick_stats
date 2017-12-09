@@ -28,11 +28,14 @@ national_cvap<- readxl::read_xlsx("raw_data/national/national_dta.xlsx", sheet =
 national_edu<- readxl::read_xlsx("raw_data/national/national_dta.xlsx", sheet = "edu")
 national_lep<- readxl::read_xlsx("raw_data/national/national_dta.xlsx", sheet = "lep")
 national_nativity<- readxl::read_xlsx("raw_data/national/national_dta.xlsx", sheet = "nativity")
+national_pop<- readxl::read_xlsx("raw_data/national/national_dta.xlsx", sheet = "pop")
+  
 
 ## Using the lookup table to merge in Group Names and the proper population ID names
 national_edu<-national_edu %>% left_join(pop_id_lookup) %>% select(-geoid, - geodisplaylabel)
 national_lep<-national_lep %>% left_join(pop_id_lookup) %>% select(-geoid, - geodisplaylabel)
 national_nativity<-national_nativity %>% left_join(pop_id_lookup) %>% select(-geoid, - geodisplaylabel)
+national_pop<-national_pop %>% left_join(pop_id_lookup) %>% select(-geoid, - geodisplaylabel)
 
 
 ## Specifying Column Group names, to be used later
@@ -40,6 +43,7 @@ nativity_columns <- c("Group", "Total Pop", "Foreign Born","Total Foreign Born")
 cvap_columns <- c("Group", "CVAP", "Total")
 education_columns <- c("Group", "Total","Less than HS", "HS or GED", "Some College or AA", "BA or higher")
 lep_columns <- c("Group", "Total Pop", "Speak Other Language","LEP", "Total LEP")
+pop_columns <- c("Group", "Population", "Percent Total Pop")
 
 ## Renaming CVAP
 national_cvap <-national_cvap %>% rename(Total = total_pop)
@@ -63,6 +67,28 @@ national_tbl_display <- function(data,group,column_names,orderby){
 
 
 ```
+
+
+```{r setup-1-lep, include=FALSE}
+## this is for national estimate by detailed pop
+### Getting Rid of Estimates where the "CHECK" variable is flagging uncertainty
+
+national_pop <- national_pop %>% 
+  mutate(pct_pop = 
+            case_when( checking_tot_pop == 1 ~  NA_real_ ,TRUE ~ pct_pop),
+         est_tot_pop = 
+            case_when( checking_tot_pop == 1 ~  NA_real_ ,TRUE ~ est_tot_pop))
+
+national_pop <- national_pop %>% 
+  mutate(pct_pop = est_tot_pop / est_national_pop)  
+
+national_pop<- national_pop %>% rename(Group = group_name,
+                                       `LEP` = pct_lep,
+                                       `Population` = est_tot_pop,
+                                       `Percent Total Pop` = pct_pop)
+
+```
+
 
 ```{r setup-1-education, include=FALSE}
 
@@ -464,7 +490,7 @@ national_tbl_display(national_nativity,"NHPI Detail Combo",nativity_columns,"Tot
 
 # Population {.tabset .tabset-fade .tabset-pills}
 
-> Population data is complied using Table [?????](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/??????) from the 2015 ACS 5-Year estimates.
+> Population data is complied using Table [B01003](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B01003) from the 2015 ACS 5-Year estimates.
 
 
 ```{r population graph, echo=FALSE, message=FALSE, warning=FALSE}
@@ -478,8 +504,62 @@ national_tbl_display(national_nativity,"NHPI Detail Combo",nativity_columns,"Tot
 
 ```{r population major groups,echo=FALSE, message=FALSE, warning=FALSE}
 
-### Hey Sunny! put the code for the table here, take a look at lines 175-179 to see how the code works
+national_pop %>%
+  filter(group_id ==  "Major racial groups") %>%
+  select(pop_columns) %>% 
+  mutate(pct_pop = round(`Percent Total Pop`*100,2)) %>%
+  arrange(desc(pct_pop)) %>% hchart( "bar", hcaes(x = Group , y = pct_pop)) %>%
+  hc_add_theme(hc_theme_tufte2()) %>%  hc_colors(colors = c("#008fd5")) %>%
+  hc_yAxis(title = list(text = ""),
+         labels= list(style =list(color ="black", fontSize='15px'),
+                      format= "{value}%"), max = 100, opposite=TRUE) %>%
+  hc_xAxis(title = list(text = ""),
+           labels= list(style =list(color ="#E5790D", fontSize='15px')),
+            minorTickLength= 0,tickLength=0) %>%
+  hc_tooltip(useHTML=T,pointFormat = "About <span style = 'color:#E26069'>{point.y:.0f}%</span> are foreign born.") %>%
+   hc_title(text = "Percent Total Pop",
+           margin = 20, align = "left",
+           style = list(color = "#E5790D"))%>%
+  hc_subtitle(text = "(2011-2015 ACS)",
+            margin = 20, align = "left",
+           style = list(color = "#E5790D"))
 
 ```
 
 ## Asian Detail...
+```{r population asian detail,echo=FALSE, message=FALSE, warning=FALSE}
+
+national_tbl_display(national_pop,"Asian Detail",pop_columns,"Population")%>% 
+  formatPercentage(columns = c("Percent Total Pop"), digits = 2) %>% 
+  formatCurrency(columns = c("Population", "Percent Total Pop"),currency = "", interval = 3, mark = ",", digits=0)
+
+```
+
+## Asian Detailed Origin Combo
+```{r population asn combo,echo=FALSE, message=FALSE, warning=FALSE}
+
+national_tbl_display(national_pop,"Asian Detail Combo",pop_columns,"Population")%>% 
+  formatPercentage(columns = c("Percent Total Pop"), digits = 2) %>% 
+  formatCurrency(columns = c("Population", "Percent Total Pop"),currency = "", interval = 3, mark = ",", digits=0)
+
+
+```
+
+## NHPI Detailed Origin
+```{r population nhpi detail,echo=FALSE, message=FALSE, warning=FALSE}
+
+national_tbl_display(national_pop,"NHPI Detail",pop_columns,"Population")%>% 
+  formatPercentage(columns = c("Percent Total Pop"), digits = 2) %>% 
+  formatCurrency(columns = c("Population", "Percent Total Pop"),currency = "", interval = 3, mark = ",", digits=0)
+
+```
+
+
+## NHPI Detailed Origin Combo
+```{r population nhpi combo,echo=FALSE, message=FALSE, warning=FALSE}
+
+national_tbl_display(national_pop,"NHPI Detail Combo",pop_columns,"Total Pop")%>% 
+  formatPercentage(columns = c("Percent Total Pop"), digits = 2) %>% 
+  formatCurrency(columns = c("Population", "Percent Total Pop"),currency = "", interval = 3, mark = ",", digits=0)
+
+```
