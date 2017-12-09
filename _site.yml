@@ -1,0 +1,94 @@
+name: AAPI Data 2017 Ethnic Group Profiles
+output_dir: .
+navbar:
+  title: QuickStats
+  type: default
+  left:
+  - text: Home
+    icon: fa-home
+    href: index.html
+  - text: About
+    href: about.html
+  - text: National
+    icon: fa-globe
+    menu:
+    - text: CVAP
+      href: national_data.html#citizen-voting-age-population
+    - text: Education
+      href: national_data.html#education
+    - text: Limited English Proficiency
+      href: national_data.html#limited-english-proficiency
+    - text: Nativity
+      href: national_data.html#nativity
+    - text: Poverty
+      href: national_data.html#poverty
+  - text: State
+    icon: fa-globe
+    menu:
+    - text: CVAP
+      href: state_data.html#citizen-voting-age-population
+    - text: Detailed Origin
+      href: state_data.html#education
+    - text: Education
+      href: state_data.html#education
+    - text: Limited English Proficiency
+      href: state_data.html#limited-english-proficiency
+    - text: Nativity
+      href: state_data.html#nativity
+    - text: Poverty
+      href: state_data.html#poverty
+  - text: County
+    icon: fa-globe
+    menu:
+    - text: CVAP
+      href: county_data.html#citizen-voting-age-population
+    - text: Detailed Origin
+      href: county_data.html#education
+    - text: Education
+      href: county_data.html#education
+    - text: Limited English Proficiency
+      href: county_data.html#limited-english-proficiency
+    - text: Nativity
+      href: county_data.html#nativity
+    - text: Poverty
+      href: county_data.html#poverty
+  - text: Congressional District
+    icon: fa-globe
+    menu:
+    - text: CVAP
+      href: district_data.html#citizen-voting-age-population
+    - text: Detailed Origin
+      href: district_data.html#education
+    - text: Education
+      href: district_data.html#education
+    - text: Limited English Proficiency
+      href: district_data.html#limited-english-proficiency
+    - text: Nativity
+      href: district_data.html#nativity
+    - text: Poverty
+      href: district_data.html#poverty 
+  - text: Metro Area
+    icon: fa-globe
+    menu:
+    - text: CVAP
+      href: metro_data.html#citizen-voting-age-population
+    - text: Detailed Origin
+      href: metro_data.html#education
+    - text: Education
+      href: metro_data.html#education
+    - text: Limited English Proficiency
+      href: metro_data.html#limited-english-proficiency
+    - text: Nativity
+      href: metro_data.html#nativity
+    - text: Poverty
+      href: metro_data.html#poverty           
+output:
+  html_document:
+    theme: yeti
+    includes:
+      in_header: ~
+      after_body: footer.html
+    css: style.css
+    lib_dir: site_libs
+    self_contained: no
+
