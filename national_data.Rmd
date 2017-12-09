@@ -35,7 +35,7 @@ national_pop<- readxl::read_xlsx("raw_data/national/national_dta.xlsx", sheet = 
 national_edu<-national_edu %>% left_join(pop_id_lookup) %>% select(-geoid, - geodisplaylabel)
 national_lep<-national_lep %>% left_join(pop_id_lookup) %>% select(-geoid, - geodisplaylabel)
 national_nativity<-national_nativity %>% left_join(pop_id_lookup) %>% select(-geoid, - geodisplaylabel)
-national_pop<-national_pop %>% left_join(pop_id_lookup) %>% select(-geoid, - geodisplaylabel)
+national_pop<-national_pop %>% left_join(popgroupid_lookup) %>% select(-geoid, - geodisplaylabel)
 
 
 ## Specifying Column Group names, to be used later
