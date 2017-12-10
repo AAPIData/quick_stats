@@ -1,6 +1,9 @@
-.highcharts-tooltip{
-  font-size: 1vmin;
-  color: #E5790D;
+#nextsteps {
+  background-image: url(test2.svg);
+  background-repeat:no-repeat;
+  background-size:contain;
+  background-position:center;
+  
 }
 
 .dataTable{

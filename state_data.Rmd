@@ -1,0 +1,255 @@
+---
+title: ''
+output: html_document
+---
+
+```{r setup, include=FALSE}
+
+## Loading Packages
+library(forcats)
+library(DT)
+library(readxl)
+library(tidyverse)
+library(highcharter)
+library(glue)
+library(acs)
+library(stringr)
+
+## Setting Formatting for output
+knitr::knit_hooks$set(inline = function(x) { if(!is.numeric(x)){ x }else{ prettyNum(round(x,2), big.mark=",", digits=6) } })
+## Formatting for Graphics
+hcoptslang <- getOption("highcharter.lang")
+hcoptslang$thousandsSep <- ","
+options(highcharter.lang = hcoptslang)
+
+# # Getting Map Data? Can remove i think 
+# mapdata <- get_data_from_map(download_map_data("countries/us/us-all"))
+
+#Read in files
+state_edu<- readxl::read_xlsx("raw_data/state/state_edu.xlsx")
+
+
+## Using the lookup table to merge in Group Names and the proper population ID names
+pop_id_lookup <- read_csv("raw_data/pop_id_lookup.csv") #Look-up table
+state_edu<-state_edu %>% left_join(pop_id_lookup) %>% select(-geoid, -pop_id)
+
+### Specifying Groups
+groups_alone <- c("Total population", "Asian alone", "NHPI alone")
+groups_combo <- c("Total population", "NHPI alone or combo", "NHPI alone or combo")
+
+
+
+## Function that will take excel file and make it long
+state_convert_long <- function(data){
+  data %>%
+  gather(estimate_type,
+         estimate,
+         -State,
+         -Group,
+         -group_id)
+}
+
+
+ state_display_table <- function(data, whichgroup, whichestimates){
+   data %>%
+     filter(Group %in% whichgroup) %>%
+     filter(estimate_type %in% whichestimates) %>%
+     select(-group_id) %>%
+     mutate(long_key=paste(Group, estimate_type, sep=": ")) %>% #Combining Pop_ID and Estimate type
+     select(-Group, -estimate_type)  %>% 
+     spread(long_key, estimate,fill = NA) %>%
+     select(State,starts_with("Total population"),everything()) %>% 
+      datatable(extensions = 
+                list("Buttons" = NULL, 'FixedColumns'= T, "Scroller"=T),
+              rownames= FALSE, 
+              options = list(
+                dom = 'rtB',
+                buttons = c('copy', 'csv', 'excel'),
+                scrollX = TRUE,
+                lengthMenu = c(25, 50, 100), pageLength = 50))
+ }
+
+
+```
+
+```{r setup education, include = FALSE}
+
+### Getting Rid of Estimates where the "CHECK" variable is flagging uncertainty
+state_edu <- state_edu %>% 
+  mutate(est_hsless = 
+            case_when( check_hsless == 1 ~  NA_real_ ,TRUE ~ est_hsless),
+         est_hsged  =
+          case_when( check_hsged == 1 ~  NA_real_ ,TRUE ~ est_hsged),
+         est_somecollegeaa  =
+          case_when( check_somecollegeaa == 1 ~  NA_real_ ,TRUE ~ est_somecollegeaa),
+         est_bahigher  =
+          case_when( check_bahigher == 1 ~  NA_real_ ,TRUE ~ est_bahigher))
+# Dropping those indicators
+state_edu <- state_edu %>% select(-check_hsless,
+                                  -check_hsged,
+                                  -check_somecollegeaa,
+                                  -check_bahigher)
+
+# Create Columns
+state_edu <- state_edu %>% mutate(
+ pct_hsless   = est_hsless/est_totpop,
+ pct_bahigher = est_bahigher/ est_totpop)
+
+
+state_edu_map <- state_edu
+
+# Renaming columns
+state_edu<- state_edu %>% rename(Total = est_totpop,
+         `Less than HS` = est_hsless,
+         `HS or GED` = est_hsged,
+         `Some College or AA` = est_somecollegeaa,
+         `BA or higher` = est_bahigher,
+         Group = group_name,
+         `% Less than HS`= pct_hsless,
+         `% BA or higher` = pct_bahigher,
+         State = geodisplaylabel)
+
+
+
+## Converting it to Long
+state_edu_long <- state_convert_long(state_edu)
+
+
+
+## Column Specification
+education_estimates <- c("Total", "Less than HS", "HS or GED", "Some College or AA", "BA or higher")
+education_percent <- c("% Less than HS", "% BA or higher")
+
+
+
+### Calculating Average for the sentence
+avg_hs_less <- state_edu %>% filter(Group == "Total population") %>% select(State, `% Less than HS`) %>%  summarize(mean = mean(`% Less than HS`)) %>% pull() %>% round(.,4)
+avg_hs_less <- avg_hs_less*100
+ 
+avg_ba_higher <- state_edu %>% filter(Group == "Total population") %>% select(State,  `% BA or higher`) %>%  summarize(mean = mean( `% BA or higher`)) %>% pull() %>% round(.,4)
+avg_ba_higher <- avg_ba_higher*100
+
+
+```
+
+
+<div class="jumbotron">
+  <h1>State Data</h1>
+  <p>Use the buttons to select the topic and then the tabs for population groups</p>
+</div>
+
+# Education {.tabset .tabset-fade .tabset-pills}
+
+> Educational Attainment data is complied using Table [B15002](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B15002) from the 2015 ACS 5-Year estimates.
+
+Nationally, about **`r avg_hs_less`**% of Americans have less than a High School diploma and about **`r avg_ba_higher`**% have a Bachelor's Degree or higher.
+
+## % Asian & NHPI Alone
+
+
+```{r EDU-alone-pct, echo=FALSE, message=FALSE, warning=FALSE}
+
+state_display_table(state_edu_long, groups_alone,education_percent) %>% formatPercentage(columns = c(2:7), digits = 2)
+
+
+```
+
+## % Asian & NHPI Combo
+
+
+```{r EDU-combo-pct, echo=FALSE, message=FALSE, warning=FALSE}
+
+state_display_table(state_edu_long, groups_combo,education_percent) %>% formatPercentage(columns = c(2:7), digits = 2)
+
+
+```
+
+## Raw Asian & NHPI Alone
+
+
+```{r EDU-combo-Alone, echo=FALSE, message=FALSE, warning=FALSE}
+
+  
+ state_display_table(state_edu_long, groups_alone,education_estimates) %>% 
+  formatCurrency(columns = c(2:16),currency = "", interval = 3, mark = ",", digits=0) 
+
+
+```
+
+
+## Raw Asian & NHPI Combo
+
+```{r EDU-Combo, echo=FALSE, message=FALSE, warning=FALSE}
+
+ state_display_table(state_edu_long, groups_combo,education_estimates) %>% 
+  formatCurrency(columns = c(2:16),currency = "", interval = 3, mark = ",", digits=0) 
+
+
+
+```
+
+
+## Visualize Data {#nextsteps}
+
+
+
+```{r edu visualize, echo=FALSE, message=FALSE, warning=FALSE}
+
+
+# state_edu_table_pct <- state_edu_table_pct %>% mutate(value = `State Population: % BA or Higher`*100, na.omit=T)
+# state_edu_table_pct <- state_edu_table_pct %>% mutate(value2 = `Asian: % BA or Higher`*100, na.omit=T)
+# state_edu_table_pct <- state_edu_table_pct %>% mutate(value3 = `NHPI: % BA or Higher`*100, na.omit=T)
+
+# data(fips.state)
+# fips.state <- fips.state %>% rename(State = STATE_NAME)
+# state_edu_table_pct <- state_edu_table_pct %>% inner_join(fips.state, by = "State")
+
+
+ state_edu_map <- state_edu_map %>%
+  gather(estimate_type,
+         estimate,
+         -geodisplaylabel,
+         -group_name,
+         -group_id)
+
+
+
+ state_edu_map <- state_edu_map %>%
+     filter(group_name %in% groups_alone) %>%
+     filter(str_detect(estimate_type, "pct_")) %>%
+     select(-group_id) %>%
+     mutate(long_key=paste(group_name, estimate_type, sep="_")) %>% #Combining Pop_ID and Estimate type
+     select(-group_name, -estimate_type)  %>% 
+     spread(long_key, estimate,fill = NA) 
+  
+
+state_edu_map <- state_edu_map %>% mutate(
+  pct_state_bahigher = round(`Total population_pct_bahigher`*100,2),
+  pct_asian_bahigher = round(`Asian alone_pct_bahigher`*100,2),
+  pct_nhpi_bahigher = round(`NHPI alone_pct_bahigher`*100,2)
+)
+
+x <- c("{point.name}:", "Asian Alone:","NHPI Alone:")
+title<-"Percent BA or Higher"
+y <- c(" {point.value:.1f}%", " {point.pct_asian_bahigher:.1f}%",
+" {point.pct_nhpi_bahigher:.1f}%")
+#style <- "style=font-size:80%"
+
+data(usgeojson)
+highchart() %>%
+  hc_title(text = "Bachelors Degree or Higher", align = "center") %>%
+  hc_subtitle(text = "Source: 2011-2015 ACS using Asian/NHPI Alone", align = "center") %>%
+  hc_chart(backgroundColor = "transparent") %>%
+  hc_add_series_map(usgeojson, state_edu_map, name = "Education",value = "pct_state_bahigher", joinBy = c("name", "geodisplaylabel"),
+                    borderColor= "transparent") %>%
+  hc_tooltip(pointFormat = tooltip_table(x,y,title), useHTML=T,  headerFormat= "")%>%
+  hc_add_theme(hc_theme_538()) %>%
+  hc_colorAxis(stops = color_stops(5),labels= list(format = "{value}%"),showInLegend=T) %>%
+  hc_legend(title = list(text= "Statewide Percentage", fontStyle ='italic'),align = "center",verticalAlign = "bottom",
+            layout = "horizontal", padding = 5) %>% 
+  #hc_legend(layout = "vertical", align = "right",
+   #         floating = TRUE, valueDecimals = 0, valueSuffix = "%") 
+  hc_exporting(enabled = TRUE)
+
+```
+
