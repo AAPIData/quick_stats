@@ -69,26 +69,6 @@ national_tbl_display <- function(data,group,column_names,orderby){
 ```
 
 
-```{r setup-1-lep, include=FALSE}
-## this is for national estimate by detailed pop
-### Getting Rid of Estimates where the "CHECK" variable is flagging uncertainty
-
-national_pop <- national_pop %>% 
-  mutate(pct_pop = 
-            case_when( checking_tot_pop == 1 ~  NA_real_ ,TRUE ~ pct_pop),
-         est_tot_pop = 
-            case_when( checking_tot_pop == 1 ~  NA_real_ ,TRUE ~ est_tot_pop))
-
-national_pop <- national_pop %>% 
-  mutate(pct_pop = est_tot_pop / est_national_pop)  
-
-national_pop<- national_pop %>% rename(Group = group_name,
-                                       `Population` = est_tot_pop,
-                                       `Percent Total Pop` = pct_pop)
-
-```
-
-
 ```{r setup-1-education, include=FALSE}
 
 ## This is the setupt for the education data
@@ -174,15 +154,26 @@ national_nativity<- national_nativity %>% rename(Group = group_name,
 
 ```
 
-```{r setup-1-population, include=FALSE}
 
+```{r setup-1-population, include=FALSE}
+## this is for national estimate by detailed pop
 ### Getting Rid of Estimates where the "CHECK" variable is flagging uncertainty
 
-## Hey Sunny! Take a look at previous "setup blocks", to see what you need to do here to get everything in shape, but you can put all the code you use for cleaning, adding columns, etc. to the population data here.
+national_pop <- national_pop %>% 
+  mutate(pct_pop = 
+            case_when( checking_tot_pop == 1 ~  NA_real_ ,TRUE ~ pct_pop),
+         est_tot_pop = 
+            case_when( checking_tot_pop == 1 ~  NA_real_ ,TRUE ~ est_tot_pop))
 
+national_pop <- national_pop %>% 
+  mutate(pct_pop = est_tot_pop / est_national_pop)  
 
+national_pop<- national_pop %>% rename(Group = group_name,
+                                       `Population` = est_tot_pop,
+                                       `Percent Total Pop` = pct_pop)
 
 ```
+
 
 <div class="jumbotron">
   <h1>National Data</h1>
