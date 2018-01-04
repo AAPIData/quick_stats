@@ -116,19 +116,19 @@ national_edu<- national_edu %>% rename(Total = est_totpop,
 ### Getting Rid of Estimates where the "CHECK" variable is flagging uncertainty
 national_insurance <- national_insurance %>% 
   mutate(est_tot_pop = 
-            case_when( check_tot_pop == 1 ~  NA_real_ ,TRUE ~ est_tot_pop),
+            case_when( checking_tot_pop == 1 ~  NA_real_ ,TRUE ~ est_tot_pop),
          est_no_insurance  =
-          case_when( check_no_insurance == 1 ~  NA_real_ ,TRUE ~ est_no_insurance))
+          case_when( checking_no_insurance == 1 ~  NA_real_ ,TRUE ~ est_no_insurance))
       
 national_insurance <- national_insurance %>% select(-checking_tot_pop,
-                                  -check_no_insurance)
+                                  -checking_no_insurance)
 
 # Creating Columns for percentages 
 national_insurance <- national_insurance %>% mutate(
   pct_no_insurance   = est_no_insurance/est_tot_pop)
 
 # Renaming columns
-national_insurance<- national_insurance %>% rename(Total_Pop= est_tot_pop,
+national_insurance<- national_insurance %>% rename(`Total Pop`= est_tot_pop,
          `No Insurance` = est_no_insurance,
          `Percent of No Insurance` = pct_no_insurance,
          Group = group_name)
@@ -350,8 +350,7 @@ national_tbl_display(national_edu,"NHPI Detail Combo",education_columns,"Total")
 
 # Insurance Coverage {.tabset .tabset-fade .tabset-pills}
 
-> No Insurance refers to the population that do have any kinds of health insurance
-Health Insurance Data is complied using Table
+>Health Insurance Data is complied using Table
 [B27001](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B27001)
 from the 2015 ACS 5-Year estimates.
 
@@ -377,10 +376,11 @@ national_insurance %>%
            style = list(color = "#E5790D"))
 
 ```
+
 ## Major racial groups
 ```{r insurance major groups,echo=FALSE, message=FALSE, warning=FALSE}
 
-national_tbl_display(national_nativity,"Major racial groups",nativity_columns,"Total Pop")%>% 
+national_tbl_display(national_insurance,"Major racial groups",insurance_columns,"Total Pop")%>% 
   formatPercentage(columns = c("Percent of No Insurance"), digits = 2) %>% 
   formatCurrency(columns = c("Total Pop", "No Insurance"),currency = "", interval = 3, mark = ",", digits=0)
 
