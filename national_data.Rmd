@@ -29,6 +29,7 @@ national_edu<- readxl::read_xlsx("raw_data/national/national_dta.xlsx", sheet = 
 national_lep<- readxl::read_xlsx("raw_data/national/national_dta.xlsx", sheet = "lep")
 national_nativity<- readxl::read_xlsx("raw_data/national/national_dta.xlsx", sheet = "nativity")
 national_pop<- readxl::read_xlsx("raw_data/national/national_dta.xlsx", sheet = "pop")
+national_insurance<- readxl::read_xlsx("raw_data/national/national_insurance.xlsx")
   
 
 ## Using the lookup table to merge in Group Names and the proper population ID names
@@ -36,6 +37,7 @@ national_edu<-national_edu %>% left_join(pop_id_lookup) %>% select(-geoid, - geo
 national_lep<-national_lep %>% left_join(pop_id_lookup) %>% select(-geoid, - geodisplaylabel)
 national_nativity<-national_nativity %>% left_join(pop_id_lookup) %>% select(-geoid, - geodisplaylabel)
 national_pop<-national_pop %>% left_join(pop_id_lookup) %>% select(-geoid, - geodisplaylabel)
+national_insurance<-national_insurance %>% left_join(pop_id_lookup) %>% select(-geoid, - geodisplaylabel)
 
 
 ## Specifying Column Group names, to be used later
@@ -44,6 +46,7 @@ cvap_columns <- c("Group", "CVAP", "Total")
 education_columns <- c("Group", "Total","Less than HS", "HS or GED", "Some College or AA", "BA or higher")
 lep_columns <- c("Group", "Total Pop", "Speak Other Language","LEP", "Total LEP")
 pop_columns <- c("Group", "Population", "Percent Total Pop")
+insurance_columns <- c("Group", "Total Pop", "No Insurance", "Percent of No Insurance")
 
 ## Renaming CVAP
 national_cvap <-national_cvap %>% rename(Total = total_pop)
@@ -105,6 +108,36 @@ national_edu<- national_edu %>% rename(Total = est_totpop,
 
 
 ```
+
+
+```{r setup-1-insurance, include=FALSE}
+
+## This is the setupt for the insurance data
+### Getting Rid of Estimates where the "CHECK" variable is flagging uncertainty
+national_insurance <- national_insurance %>% 
+  mutate(est_tot_pop = 
+            case_when( check_tot_pop == 1 ~  NA_real_ ,TRUE ~ est_tot_pop),
+         est_no_insurance  =
+          case_when( check_no_insurance == 1 ~  NA_real_ ,TRUE ~ est_no_insurance))
+      
+national_insurance <- national_insurance %>% select(-checking_tot_pop,
+                                  -check_no_insurance)
+
+# Creating Columns for percentages 
+national_insurance <- national_insurance %>% mutate(
+  pct_no_insurance   = est_no_insurance/est_tot_pop)
+
+# Renaming columns
+national_insurance<- national_insurance %>% rename(Total_Pop= est_tot_pop,
+         `No Insurance` = est_no_insurance,
+         `Percent of No Insurance` = pct_no_insurance,
+         Group = group_name)
+
+
+
+
+```
+
 
 ```{r setup-1-lep, include=FALSE}
 
@@ -315,7 +348,79 @@ national_tbl_display(national_edu,"NHPI Detail Combo",education_columns,"Total")
 
 ```
 
+# Insurance Coverage {.tabset .tabset-fade .tabset-pills}
 
+> No Insurance refers to the population that do have any kinds of health insurance
+Health Insurance Data is complied using Table
+[B27001](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B27001)
+from the 2015 ACS 5-Year estimates.
+
+```{r insurance graph, echo=FALSE, message=FALSE, warning=FALSE}
+national_insurance %>%
+  filter(group_id ==  "Major racial groups") %>%
+  select(insurance_columns) %>% 
+  mutate(pct_no_insurance = round(`Percent of No Insurance`*100,2)) %>%
+  arrange(desc(pct_no_insurance)) %>% hchart( "bar", hcaes(x = Group , y = pct_no_insurance)) %>%
+  hc_add_theme(hc_theme_tufte2()) %>%  hc_colors(colors = c("#008fd5")) %>%
+  hc_yAxis(title = list(text = ""),
+         labels= list(style =list(color ="black", fontSize='15px'),
+                      format= "{value}%"), max = 100, opposite=TRUE) %>%
+  hc_xAxis(title = list(text = ""),
+           labels= list(style =list(color ="#E5790D", fontSize='15px')),
+            minorTickLength= 0,tickLength=0) %>%
+  hc_tooltip(useHTML=T,pointFormat = "About <span style = 'color:#E26069'>{point.y:.0f}%</span> have no health insurance.") %>%
+   hc_title(text = "Percent of No Insurance",
+           margin = 20, align = "left",
+           style = list(color = "#E5790D"))%>%
+  hc_subtitle(text = "(2011-2015 ACS)",
+            margin = 20, align = "left",
+           style = list(color = "#E5790D"))
+
+```
+## Major racial groups
+```{r insurance major groups,echo=FALSE, message=FALSE, warning=FALSE}
+
+national_tbl_display(national_nativity,"Major racial groups",nativity_columns,"Total Pop")%>% 
+  formatPercentage(columns = c("Percent of No Insurance"), digits = 2) %>% 
+  formatCurrency(columns = c("Total Pop", "No Insurance"),currency = "", interval = 3, mark = ",", digits=0)
+
+```
+
+## Asian Detailed Origin
+```{r insurance asian detail,echo=FALSE, message=FALSE, warning=FALSE}
+
+national_tbl_display(national_insurance,"Asian Detail",insurance_columns,"Total Pop")%>% 
+  formatPercentage(columns = c("Percent of No Insurance"), digits = 2) %>% 
+  formatCurrency(columns = c("Total Pop", "No Insurance"),currency = "", interval = 3, mark = ",", digits=0)
+
+```
+## Asian Detailed Origin Combo
+```{r insurance asn combo,echo=FALSE, message=FALSE, warning=FALSE}
+
+national_tbl_display(national_insurance,"Asian Detail Combo",insurance_columns,"Total Pop")%>% 
+  formatPercentage(columns = c("Percent of No Insurance"), digits = 2) %>% 
+  formatCurrency(columns = c("Total Pop", "No Insurance"),currency = "", interval = 3, mark = ",", digits=0)
+
+
+```
+
+## NHPI Detailed Origin
+```{r insurance nhpi detail,echo=FALSE, message=FALSE, warning=FALSE}
+
+national_tbl_display(national_insurance,"NHPI Detail",insurance_columns,"Total Pop")%>% 
+  formatPercentage(columns = c("Percent of No Insurance"), digits = 2) %>% 
+  formatCurrency(columns = c("Total Pop", "No Insurance"),currency = "", interval = 3, mark = ",", digits=0)
+
+```
+
+## NHPI Detailed Origin Combo
+```{r insurance nhpi combo,echo=FALSE, message=FALSE, warning=FALSE}
+
+national_tbl_display(national_insurance,"NHPI Detail Combo",insurance_columns,"Total Pop")%>% 
+  formatPercentage(columns = c("Percent of No Insurance"), digits = 2) %>% 
+  formatCurrency(columns = c("Total Pop", "No Insurance"),currency = "", interval = 3, mark = ",", digits=0)
+
+```
 
 # Limited English Proficiency {.tabset .tabset-fade .tabset-pills}
 
