@@ -22,8 +22,6 @@ hcoptslang <- getOption("highcharter.lang")
 hcoptslang$thousandsSep <- ","
 options(highcharter.lang = hcoptslang)
 
-# # Getting Map Data? Can remove i think 
-# mapdata <- get_data_from_map(download_map_data("countries/us/us-all"))
 
 #Read in files
 state_edu<- readxl::read_xlsx("raw_data/state/state_edu.xlsx")
@@ -194,15 +192,6 @@ state_display_table(state_edu_long, groups_combo,education_percent) %>% formatPe
 
 
 ```{r edu visualize, echo=FALSE, message=FALSE, warning=FALSE}
-
-
-# state_edu_table_pct <- state_edu_table_pct %>% mutate(value = `State Population: % BA or Higher`*100, na.omit=T)
-# state_edu_table_pct <- state_edu_table_pct %>% mutate(value2 = `Asian: % BA or Higher`*100, na.omit=T)
-# state_edu_table_pct <- state_edu_table_pct %>% mutate(value3 = `NHPI: % BA or Higher`*100, na.omit=T)
-
-# data(fips.state)
-# fips.state <- fips.state %>% rename(State = STATE_NAME)
-# state_edu_table_pct <- state_edu_table_pct %>% inner_join(fips.state, by = "State")
 
 
  state_edu_map <- state_edu_map %>%
