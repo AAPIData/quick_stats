@@ -424,7 +424,7 @@ national_tbl_display(national_insurance,"NHPI Detail Combo",insurance_columns,"T
 
 # Limited English Proficiency {.tabset .tabset-fade .tabset-pills}
 
-> Limited English Proficiency (LEP) refers to the proportion of individuals who a language other than english at home & speak english less than "very well".
+> Limited English Proficiency (LEP) refers to the proportion of individuals who speak a language other than english at home & speak english less than "very well".
 Limited English Proficiency data is complied using Table [B16004](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B16004) from the 2015 ACS 5-Year estimates.
 
 
