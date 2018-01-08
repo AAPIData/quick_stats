@@ -131,6 +131,55 @@ avg_ba_higher <- avg_ba_higher*100
 
 ```
 
+```{r setup LEP, include = FALSE}
+
+### Getting Rid of Estimates where the "CHECK" variable is flagging uncertainty
+state_LEP <- state_LEP %>% 
+  mutate(est_tot_pop = 
+            case_when( checking_tot_pop == 1 ~  NA_real_ ,TRUE ~ est_tot_pop),
+    est_lep = 
+            case_when( checking_lep == 1 ~  NA_real_ ,TRUE ~ est_lep),
+         est_other_lang  =
+          case_when( checking_other_lang == 1 ~  NA_real_ ,TRUE ~ est_other_lang))
+        
+# Dropping those indicators
+state_LEP <- state_LEP %>% select(-checking_tot_pop,
+                                  -checking_lep,
+                                  -checking_other_lang)
+
+# Create Columns
+state_LEP <- state_LEP %>% mutate(
+pct_lep   = est_lep/est_other_lang)
+
+
+state_LEP_map <- state_LEP
+
+# Renaming columns
+state_LEP<- state_LEP %>% rename(Total = est_tot_pop,
+         `LEP` = est_lep,
+         Group = group_name,
+         `Speak other language` = est_other_lang,
+         `% LEP`= pct_lep,
+         State = geodisplaylabel)
+
+
+
+## Converting it to Long
+state_LEP_long <- state_convert_long(state_LEP)
+## add all outcome data here (just replace state_edu with another data name)
+
+## Column Specification
+LEP_estimates <- c("Total", "LEP", "Speak Other Language")
+LEP_percent <- c("% LEP")
+
+
+### Calculating Average for the sentence
+avg_lep <- state_LEP %>% filter(Group == "Total population") %>% select(State, `% LEP`) %>%  summarize(mean = mean(`% LEP`)) %>% pull() %>% round(.,4)
+avg_lep <- avg_lep*100
+
+```
+
+
 <div class="jumbotron">
   <h1>State Data</h1>
   <p>Use the buttons to select the topic and then the tabs for population groups</p>
@@ -238,53 +287,6 @@ highchart() %>%
 
 ```
 
-```{r setup LEP, include = FALSE}
-
-### Getting Rid of Estimates where the "CHECK" variable is flagging uncertainty
-state_LEP <- state_LEP %>% 
-  mutate(est_tot_pop = 
-            case_when( checking_tot_pop == 1 ~  NA_real_ ,TRUE ~ est_tot_pop),
-    est_lep = 
-            case_when( checking_lep == 1 ~  NA_real_ ,TRUE ~ est_lep),
-         est_other_lang  =
-          case_when( checking_other_lang == 1 ~  NA_real_ ,TRUE ~ est_other_lang))
-        
-# Dropping those indicators
-state_LEP <- state_LEP %>% select(-checking_tot_pop,
-                                  -checking_lep,
-                                  -checking_other_lang)
-
-# Create Columns
-state_LEP <- state_LEP %>% mutate(
-pct_lep   = est_lep/est_other_lang)
-
-
-state_LEP_map <- state_LEP
-
-# Renaming columns
-state_LEP<- state_LEP %>% rename(Total = est_tot_pop,
-         `LEP` = est_lep,
-         Group = group_name,
-         `Speak other language` = est_other_lang,
-         `% LEP`= pct_lep,
-         State = geodisplaylabel)
-
-
-
-## Converting it to Long
-state_LEP_long <- state_convert_long(state_LEP)
-## add all outcome data here (just replace state_edu with another data name)
-
-## Column Specification
-LEP_estimates <- c("Total", "LEP", "Speak Other Language")
-LEP_percent <- c("% LEP")
-
-
-### Calculating Average for the sentence
-avg_lep <- state_LEP %>% filter(Group == "Total population") %>% select(State, `% LEP`) %>%  summarize(mean = mean(`% LEP`)) %>% pull() %>% round(.,4)
-avg_lep <- avg_lep*100
-
-```
 
 # LEP {.tabset .tabset-fade .tabset-pills}
 
@@ -338,7 +340,7 @@ state_display_table(state_LEP_long, groups_combo,LEP_percent) %>% formatPercenta
 
 
 
-
+## Visualize Data
 ```{r LEP visualize, echo=FALSE, message=FALSE, warning=FALSE}
 
 
@@ -368,8 +370,8 @@ state_LEP_map <- state_LEP_map %>% mutate(
 
 x <- c("{point.name}:", "Asian Alone:","NHPI Alone:")
 title<-"Percent of Limited English Proficiency"
-y <- c(" {point.value:.1f}%", " {point.pct_lep:.1f}%",
-" {point.pct_lep:.1f}%")
+y <- c(" {point.value:.1f}%", " {point.pct_asian_lep:.1f}%",
+" {point.pct_nhpi_lep:.1f}%")
 #style <- "style=font-size:80%"
 
 data(usgeojson)
