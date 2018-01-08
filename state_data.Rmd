@@ -258,7 +258,6 @@ state_LEP <- state_LEP %>% select(-checking_tot_pop,
 state_LEP <- state_LEP %>% mutate(
 pct_lep   = est_lep/est_other_lang)
 
-state_LEP<- state_LEP %>% select(-est_other_lang)
 
 state_LEP_map <- state_LEP
 
@@ -266,6 +265,7 @@ state_LEP_map <- state_LEP
 state_LEP<- state_LEP %>% rename(Total = est_tot_pop,
          `LEP` = est_lep,
          Group = group_name,
+         `Speak other language` = est_other_lang,
          `% LEP`= pct_lep,
          State = geodisplaylabel)
 
@@ -377,7 +377,7 @@ highchart() %>%
   hc_title(text = "Limited English Proficiency", align = "center") %>%
   hc_subtitle(text = "Source: 2011-2015 ACS using Asian/NHPI Alone", align = "center") %>%
   hc_chart(backgroundColor = "transparent") %>%
-  hc_add_series_map(usgeojson, state_LEP_map, name = "LEP",value = "pct_lep", joinBy = c("name", "geodisplaylabel"),
+  hc_add_series_map(usgeojson, state_LEP_map, name = "Limited English Proficiency",value = "pct_state_lep", joinBy = c("name", "geodisplaylabel"),
                     borderColor= "transparent") %>%
   hc_tooltip(pointFormat = tooltip_table(x,y,title), useHTML=T,  headerFormat= "")%>%
   hc_add_theme(hc_theme_538()) %>%
