@@ -131,55 +131,6 @@ avg_ba_higher <- avg_ba_higher*100
 
 ```
 
-```{r setup LEP, include = FALSE}
-
-### Getting Rid of Estimates where the "CHECK" variable is flagging uncertainty
-state_LEP <- state_LEP %>% 
-  mutate(est_tot_pop = 
-            case_when( checking_tot_pop == 1 ~  NA_real_ ,TRUE ~ est_tot_pop),
-    est_lep = 
-            case_when( checking_lep == 1 ~  NA_real_ ,TRUE ~ est_lep),
-         est_other_lang  =
-          case_when( checking_other_lang == 1 ~  NA_real_ ,TRUE ~ est_other_lang))
-        
-# Dropping those indicators
-state_LEP <- state_LEP %>% select(-checking_tot_pop,
-                                  -checking_lep,
-                                  -checking_other_lang)
-
-# Create Columns
-state_LEP <- state_LEP %>% mutate(
- pct_lep   = est_lep/est_other_lang)
-
-state_LEP_map <- state_LEP
-
-# Renaming columns
-state_LEP<- state_LEP %>% rename(Total = est_tot_pop,
-         `LEP` = est_lep,
-         `Speak Other Language` = est_other_lang,
-         Group = group_name,
-         `% LEP`= pct_lep,
-         State = geodisplaylabel)
-
-
-
-## Converting it to Long
-state_LEP_long <- state_convert_long(state_LEP)
-## add all outcome data here (just replace state_edu with another data name)
-
-## Column Specification
-LEP_estimates <- c("Total", "LEP", "Speak Other Language")
-LEP_percent <- c("% LEP")
-
-
-### Calculating Average for the sentence
-avg_lep <- state_LEP %>% filter(Group == "Total population") %>% select(State, `% LEP`) %>%  summarize(mean = mean(`% LEP`)) %>% pull() %>% round(.,4)
-avg_lep <- avg_lep*100
-
-```
-
-
-
 <div class="jumbotron">
   <h1>State Data</h1>
   <p>Use the buttons to select the topic and then the tabs for population groups</p>
@@ -234,61 +185,7 @@ state_display_table(state_edu_long, groups_combo,education_percent) %>% formatPe
 
 
 ```
-
-# LEP {.tabset .tabset-fade .tabset-pills}
-
-> Limited English Proficiency (LEP) refers to the proportion of individuals who speak a language other than english at home & speak english less than "very well".
-Limited English Proficiency data is complied using Table [B16004](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B16004) from the 2015 ACS 5-Year estimates.
-
-Nationally Among Americans who speak a language other than english at home, about **`r avg_lep`**% of them speak English less than "very well".
-
-## % Asian & NHPI Alone
-
-```{r LEP-alone-pct, echo=FALSE, message=FALSE, warning=FALSE}
-
-state_display_table(state_LEP_long, groups_alone,LEP_percent) %>% formatPercentage(columns = c(2:4), digits = 2)
-
-
-```
-
-## % Asian & NHPI Combo
-
-
-```{r LEP-combo-pct, echo=FALSE, message=FALSE, warning=FALSE}
-
-state_display_table(state_LEP_long, groups_combo,LEP_percent) %>% formatPercentage(columns = c(2:4), digits = 2)
-
-
-```
-
-## Raw Asian & NHPI Alone
-
-
-```{r LEP-combo-Alone, echo=FALSE, message=FALSE, warning=FALSE}
-
-  
- state_display_table(state_LEP_long, groups_alone,LEP_estimates) %>% 
-  formatCurrency(columns = c(2:13),currency = "", interval = 3, mark = ",", digits=0) 
-
-
-```
-
-
-## Raw Asian & NHPI Combo
-
-```{r LEP-Combo, echo=FALSE, message=FALSE, warning=FALSE}
-
- state_display_table(state_LEP_long, groups_combo,LEP_estimates) %>% 
-  formatCurrency(columns = c(2:13),currency = "", interval = 3, mark = ",", digits=0) 
-
-
-
-```
-
-
-## Visualize Data {#nextsteps}
-
-
+## Visualize Data
 
 ```{r edu visualize, echo=FALSE, message=FALSE, warning=FALSE}
 
@@ -341,6 +238,107 @@ highchart() %>%
 
 ```
 
+```{r setup LEP, include = FALSE}
+
+### Getting Rid of Estimates where the "CHECK" variable is flagging uncertainty
+state_LEP <- state_LEP %>% 
+  mutate(est_tot_pop = 
+            case_when( checking_tot_pop == 1 ~  NA_real_ ,TRUE ~ est_tot_pop),
+    est_lep = 
+            case_when( checking_lep == 1 ~  NA_real_ ,TRUE ~ est_lep),
+         est_other_lang  =
+          case_when( checking_other_lang == 1 ~  NA_real_ ,TRUE ~ est_other_lang))
+        
+# Dropping those indicators
+state_LEP <- state_LEP %>% select(-checking_tot_pop,
+                                  -checking_lep,
+                                  -checking_other_lang)
+
+# Create Columns
+state_LEP <- state_LEP %>% mutate(
+pct_lep   = est_lep/est_other_lang)
+
+state_LEP<- state_LEP %>% select(-est_other_lang)
+
+state_LEP_map <- state_LEP
+
+# Renaming columns
+state_LEP<- state_LEP %>% rename(Total = est_tot_pop,
+         `LEP` = est_lep,
+         Group = group_name,
+         `% LEP`= pct_lep,
+         State = geodisplaylabel)
+
+
+
+## Converting it to Long
+state_LEP_long <- state_convert_long(state_LEP)
+## add all outcome data here (just replace state_edu with another data name)
+
+## Column Specification
+LEP_estimates <- c("Total", "LEP", "Speak Other Language")
+LEP_percent <- c("% LEP")
+
+
+### Calculating Average for the sentence
+avg_lep <- state_LEP %>% filter(Group == "Total population") %>% select(State, `% LEP`) %>%  summarize(mean = mean(`% LEP`)) %>% pull() %>% round(.,4)
+avg_lep <- avg_lep*100
+
+```
+
+# LEP {.tabset .tabset-fade .tabset-pills}
+
+> Limited English Proficiency (LEP) refers to the proportion of individuals who speak a language other than english at home & speak english less than "very well".
+Limited English Proficiency data is complied using Table [B16004](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B16004) from the 2015 ACS 5-Year estimates.
+
+Nationally Among Americans who speak a language other than english at home, about **`r avg_lep`**% of them speak English less than "very well".
+
+## % Asian & NHPI Alone
+
+```{r LEP-alone-pct, echo=FALSE, message=FALSE, warning=FALSE}
+
+state_display_table(state_LEP_long, groups_alone,LEP_percent) %>% formatPercentage(columns = c(2:4), digits = 2)
+
+
+```
+
+## % Asian & NHPI Combo
+
+
+```{r LEP-combo-pct, echo=FALSE, message=FALSE, warning=FALSE}
+
+state_display_table(state_LEP_long, groups_combo,LEP_percent) %>% formatPercentage(columns = c(2:4), digits = 2)
+
+
+```
+
+## Raw Asian & NHPI Alone
+
+
+```{r LEP-combo-Alone, echo=FALSE, message=FALSE, warning=FALSE}
+
+  
+ state_display_table(state_LEP_long, groups_alone,LEP_estimates) %>% 
+  formatCurrency(columns = c(2:13),currency = "", interval = 3, mark = ",", digits=0) 
+
+
+```
+
+
+## Raw Asian & NHPI Combo
+
+```{r LEP-Combo, echo=FALSE, message=FALSE, warning=FALSE}
+
+ state_display_table(state_LEP_long, groups_combo,LEP_estimates) %>% 
+  formatCurrency(columns = c(2:13),currency = "", interval = 3, mark = ",", digits=0) 
+
+
+
+```
+
+
+
+
 ```{r LEP visualize, echo=FALSE, message=FALSE, warning=FALSE}
 
 
@@ -357,26 +355,29 @@ highchart() %>%
      filter(group_name %in% groups_alone) %>%
      filter(str_detect(estimate_type, "pct_")) %>%
      select(-group_id) %>%
-     mutate(long_key=paste(group_name, estimate_type, sep="_")) %>% #Combining Pop_ID and Estimate type
+     mutate(long_key=paste(group_name, estimate_type, sep="_")) %>% 
+   #Combining Pop_ID and Estimate type
      select(-group_name, -estimate_type)  %>% 
      spread(long_key, estimate,fill = NA) 
   
-# The issue is here, you have only calculated 1 percentage, the percentage LEP for the STATE, see lines # 315,516,317 to see how I created the state AA and PI versions, then see how they are expressed in the # toolip, on lines 322 and 323, Also I would consider moving the maps into each topic section, so there should be a "visualize data" tab for EDU and a separate one for LEP
 state_LEP_map <- state_LEP_map %>% mutate(
-  pct_lep = round(`Total population_pct_lep`*100,2))
+  pct_state_lep = round(`Total population_pct_lep`*100,2),
+  pct_asian_lep = round(`Asian alone_pct_lep`*100,2),
+  pct_nhpi_lep = round(`NHPI alone_pct_lep`*100,2)
+)
 
 x <- c("{point.name}:", "Asian Alone:","NHPI Alone:")
-title<-"Percent of LEP"
+title<-"Percent of Limited English Proficiency"
 y <- c(" {point.value:.1f}%", " {point.pct_lep:.1f}%",
 " {point.pct_lep:.1f}%")
 #style <- "style=font-size:80%"
 
 data(usgeojson)
 highchart() %>%
-  hc_title(text = "LEP", align = "center") %>%
+  hc_title(text = "Limited English Proficiency", align = "center") %>%
   hc_subtitle(text = "Source: 2011-2015 ACS using Asian/NHPI Alone", align = "center") %>%
   hc_chart(backgroundColor = "transparent") %>%
-  hc_add_series_map(usgeojson, state_LEP_map, name = "Limited English Proficiency",value = "pct_lep", joinBy = c("name", "geodisplaylabel"),
+  hc_add_series_map(usgeojson, state_LEP_map, name = "LEP",value = "pct_lep", joinBy = c("name", "geodisplaylabel"),
                     borderColor= "transparent") %>%
   hc_tooltip(pointFormat = tooltip_table(x,y,title), useHTML=T,  headerFormat= "")%>%
   hc_add_theme(hc_theme_538()) %>%
