@@ -361,7 +361,7 @@ highchart() %>%
      select(-group_name, -estimate_type)  %>% 
      spread(long_key, estimate,fill = NA) 
   
-
+# The issue is here, you have only calculated 1 percentage, the percentage LEP for the STATE, see lines # 315,516,317 to see how I created the state AA and PI versions, then see how they are expressed in the # toolip, on lines 322 and 323, Also I would consider moving the maps into each topic section, so there should be a "visualize data" tab for EDU and a separate one for LEP
 state_LEP_map <- state_LEP_map %>% mutate(
   pct_lep = round(`Total population_pct_lep`*100,2))
 
