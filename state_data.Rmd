@@ -25,16 +25,17 @@ options(highcharter.lang = hcoptslang)
 
 #Read in files
 state_edu<- readxl::read_xlsx("raw_data/state/state_edu.xlsx")
-
+state_LEP<- readxl::read_xlsx("raw_data/state/state_LEP.xlsx")
+## [rename the variable to pop_id] state_edu <- state_edu %>% rename(pop_id = popgroupid)
 
 ## Using the lookup table to merge in Group Names and the proper population ID names
 pop_id_lookup <- read_csv("raw_data/pop_id_lookup.csv") #Look-up table
 state_edu<-state_edu %>% left_join(pop_id_lookup) %>% select(-geoid, -pop_id)
+state_LEP<-state_LEP %>% left_join(pop_id_lookup) %>% select(-geoid, -pop_id)
 
 ### Specifying Groups
 groups_alone <- c("Total population", "Asian alone", "NHPI alone")
 groups_combo <- c("Total population", "NHPI alone or combo", "NHPI alone or combo")
-
 
 
 ## Function that will take excel file and make it long
@@ -111,7 +112,7 @@ state_edu<- state_edu %>% rename(Total = est_totpop,
 
 ## Converting it to Long
 state_edu_long <- state_convert_long(state_edu)
-
+## add all outcome data here (just replace state_edu with another data name)
 
 
 ## Column Specification
@@ -129,6 +130,54 @@ avg_ba_higher <- avg_ba_higher*100
 
 
 ```
+
+```{r setup LEP, include = FALSE}
+
+### Getting Rid of Estimates where the "CHECK" variable is flagging uncertainty
+state_LEP <- state_LEP %>% 
+  mutate(est_tot_pop = 
+            case_when( checking_tot_pop == 1 ~  NA_real_ ,TRUE ~ est_tot_pop),
+    est_lep = 
+            case_when( checking_lep == 1 ~  NA_real_ ,TRUE ~ est_lep),
+         est_other_lang  =
+          case_when( checking_other_lang == 1 ~  NA_real_ ,TRUE ~ est_other_lang))
+        
+# Dropping those indicators
+state_LEP <- state_LEP %>% select(-checking_tot_pop,
+                                  -checking_lep,
+                                  -checking_other_lang)
+
+# Create Columns
+state_LEP <- state_LEP %>% mutate(
+ pct_lep   = est_lep/est_other_lang)
+
+state_LEP_map <- state_LEP
+
+# Renaming columns
+state_LEP<- state_LEP %>% rename(Total = est_tot_pop,
+         `LEP` = est_lep,
+         `Speak Other Language` = est_other_lang,
+         Group = group_name,
+         `% LEP`= pct_lep,
+         State = geodisplaylabel)
+
+
+
+## Converting it to Long
+state_LEP_long <- state_convert_long(state_LEP)
+## add all outcome data here (just replace state_edu with another data name)
+
+## Column Specification
+LEP_estimates <- c("Total", "LEP", "Speak Other Language")
+LEP_percent <- c("% LEP")
+
+
+### Calculating Average for the sentence
+avg_lep <- state_LEP %>% filter(Group == "Total population") %>% select(State, `% LEP`) %>%  summarize(mean = mean(`% LEP`)) %>% pull() %>% round(.,4)
+avg_lep <- avg_lep*100
+
+```
+
 
 
 <div class="jumbotron">
@@ -181,6 +230,56 @@ state_display_table(state_edu_long, groups_combo,education_percent) %>% formatPe
 
  state_display_table(state_edu_long, groups_combo,education_estimates) %>% 
   formatCurrency(columns = c(2:16),currency = "", interval = 3, mark = ",", digits=0) 
+
+
+
+```
+
+# LEP {.tabset .tabset-fade .tabset-pills}
+
+> Limited English Proficiency (LEP) refers to the proportion of individuals who speak a language other than english at home & speak english less than "very well".
+Limited English Proficiency data is complied using Table [B16004](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B16004) from the 2015 ACS 5-Year estimates.
+
+Nationally Among Americans who speak a language other than english at home, about **`r avg_lep`**% of them speak English less than "very well".
+
+## % Asian & NHPI Alone
+
+```{r LEP-alone-pct, echo=FALSE, message=FALSE, warning=FALSE}
+
+state_display_table(state_LEP_long, groups_alone,LEP_percent) %>% formatPercentage(columns = c(2:4), digits = 2)
+
+
+```
+
+## % Asian & NHPI Combo
+
+
+```{r LEP-combo-pct, echo=FALSE, message=FALSE, warning=FALSE}
+
+state_display_table(state_LEP_long, groups_combo,LEP_percent) %>% formatPercentage(columns = c(2:4), digits = 2)
+
+
+```
+
+## Raw Asian & NHPI Alone
+
+
+```{r LEP-combo-Alone, echo=FALSE, message=FALSE, warning=FALSE}
+
+  
+ state_display_table(state_LEP_long, groups_alone,LEP_estimates) %>% 
+  formatCurrency(columns = c(2:13),currency = "", interval = 3, mark = ",", digits=0) 
+
+
+```
+
+
+## Raw Asian & NHPI Combo
+
+```{r LEP-Combo, echo=FALSE, message=FALSE, warning=FALSE}
+
+ state_display_table(state_LEP_long, groups_combo,LEP_estimates) %>% 
+  formatCurrency(columns = c(2:13),currency = "", interval = 3, mark = ",", digits=0) 
 
 
 
@@ -241,4 +340,54 @@ highchart() %>%
   hc_exporting(enabled = TRUE)
 
 ```
+
+```{r LEP visualize, echo=FALSE, message=FALSE, warning=FALSE}
+
+
+ state_LEP_map <- state_LEP_map %>%
+  gather(estimate_type,
+         estimate,
+         -geodisplaylabel,
+         -group_name,
+         -group_id)
+
+
+
+ state_LEP_map <- state_LEP_map %>%
+     filter(group_name %in% groups_alone) %>%
+     filter(str_detect(estimate_type, "pct_")) %>%
+     select(-group_id) %>%
+     mutate(long_key=paste(group_name, estimate_type, sep="_")) %>% #Combining Pop_ID and Estimate type
+     select(-group_name, -estimate_type)  %>% 
+     spread(long_key, estimate,fill = NA) 
+  
+
+state_LEP_map <- state_LEP_map %>% mutate(
+  pct_lep = round(`Total population_pct_lep`*100,2))
+
+x <- c("{point.name}:", "Asian Alone:","NHPI Alone:")
+title<-"Percent of LEP"
+y <- c(" {point.value:.1f}%", " {point.pct_lep:.1f}%",
+" {point.pct_lep:.1f}%")
+#style <- "style=font-size:80%"
+
+data(usgeojson)
+highchart() %>%
+  hc_title(text = "LEP", align = "center") %>%
+  hc_subtitle(text = "Source: 2011-2015 ACS using Asian/NHPI Alone", align = "center") %>%
+  hc_chart(backgroundColor = "transparent") %>%
+  hc_add_series_map(usgeojson, state_LEP_map, name = "Limited English Proficiency",value = "pct_lep", joinBy = c("name", "geodisplaylabel"),
+                    borderColor= "transparent") %>%
+  hc_tooltip(pointFormat = tooltip_table(x,y,title), useHTML=T,  headerFormat= "")%>%
+  hc_add_theme(hc_theme_538()) %>%
+  hc_colorAxis(stops = color_stops(5),labels= list(format = "{value}%"),showInLegend=T) %>%
+  hc_legend(title = list(text= "Statewide Percentage", fontStyle ='italic'),align = "center",verticalAlign = "bottom",
+            layout = "horizontal", padding = 5) %>% 
+  #hc_legend(layout = "vertical", align = "right",
+   #         floating = TRUE, valueDecimals = 0, valueSuffix = "%") 
+  hc_exporting(enabled = TRUE)
+
+```
+
+
 
