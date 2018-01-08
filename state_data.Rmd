@@ -174,7 +174,7 @@ LEP_percent <- c("% LEP")
 
 
 ### Calculating Average for the sentence
-avg_lep <- state_LEP %>% filter(Group == "Total population") %>% select(State, `% LEP`) %>%  summarize(mean = mean(`% LEP`)) %>% pull() %>% round(.,4)
+avg_lep <- state_LEP %>% filter(Group == "Total population") %>% select(State, `% LEP`) %>%  summarize(mean = mean(`% LEP`,na.rm = T)) %>% pull() %>% round(.,4)
 avg_lep <- avg_lep*100
 
 ```
@@ -288,7 +288,7 @@ highchart() %>%
 ```
 
 
-# LEP {.tabset .tabset-fade .tabset-pills}
+# Limited English Proficiency {.tabset .tabset-fade .tabset-pills}
 
 > Limited English Proficiency (LEP) refers to the proportion of individuals who speak a language other than english at home & speak english less than "very well".
 Limited English Proficiency data is complied using Table [B16004](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B16004) from the 2015 ACS 5-Year estimates.
