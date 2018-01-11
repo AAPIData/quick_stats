@@ -204,16 +204,26 @@ national_pop <- national_pop %>%
 national_pop<- national_pop %>% rename(Group = group_name,
                                        `Population` = est_tot_pop,
                                        `Percent Total Pop` = pct_pop)
-
+  
+totpop_asn_alone <- national_pop %>% filter(Group == "Asian alone") %>% select(Population) %>% pull()
+totpop_nhpi_alone <- national_pop %>% filter(Group == "NHPI alone") %>% select(Population) %>% pull()
+totpop_aapi_alone <- sum(totpop_asn_alone,totpop_nhpi_alone)
 ```
 
 
 <div class="jumbotron">
+  <div class="container">
   <h1>National Data</h1>
-  <p>Use the buttons to select the topic and then the tabs for population groups</p>
+  <p>There are about `r totpop_aapi_alone` Asian Americans, Native Hawaiians, and Pacific Islanders living in the United States today.</p>
+<div class="btn-group" role="group" aria-label="Basic example">
+  <a href="national_data.html#citizen-voting-age-population" type="button" class="btn btn-primary">CVAP</a>
+  <a href="national_data.html#education" type="button" class="btn btn-primary">Education</a>
+  <a href="national_data.html#limited-english-proficiency" type="button" class="btn btn-primary">LEP</a>
+  <a href="national_data.html#nativity" type="button" class="btn btn-primary">Nativity</a>
+  <a href="national_data.html#poverty" type="button" class="btn btn-primary">Poverty</a>
 </div>
-
-
+</div>
+</div>
 
 # Citizen Voting Age Population {.tabset .tabset-fade .tabset-pills}
 
