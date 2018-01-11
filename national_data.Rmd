@@ -225,8 +225,6 @@ totpop_aapi_alone <- sum(totpop_asn_alone,totpop_nhpi_alone)
 </div>
 </div>
 
-
-
 # Citizen Voting Age Population {.tabset .tabset-fade .tabset-pills}
 
 > Citizen Voting Age Population (CVAP) data is complied using Table [B05003](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B05003) from the 2015 ACS 5-Year estimates.
