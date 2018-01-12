@@ -468,9 +468,9 @@ Nationally, about **`r avg_pop`**% of Americans have less than a High School dip
   
 
 state_pop_map <- state_pop_map %>% mutate(
-  state_pop = `Total population_est_tot_pop`,
-  asian_pop = `Asian alone_est_tot_pop`,
-  nhpi_pop = `NHPI alone_est_tot_pop`)
+  state_pop = round(`Total population_est_tot_pop`/1000000, 2),
+  asian_pop = round(`Asian alone_est_tot_pop`/1000000, 2),
+  nhpi_pop = round(`NHPI alone_est_tot_pop`/1000000, 2))
 
 x <- c("{point.name}:", "Asian Alone:","NHPI Alone:")
 title<-"State Population"
@@ -487,11 +487,11 @@ highchart() %>%
                     borderColor= "transparent") %>%
   hc_tooltip(pointFormat = tooltip_table(x,y,title), useHTML=T,  headerFormat= "")%>%
   hc_add_theme(hc_theme_538()) %>%
-  hc_colorAxis(stops = color_stops(5),labels= list(format = "{value}%"),showInLegend=T) %>%
+  hc_colorAxis(stops = color_stops(5),labels= list(format = "{value}"),showInLegend=T) %>%
   hc_legend(title = list(text= "Statewide Population", fontStyle ='italic'),align = "center",verticalAlign = "bottom",
             layout = "horizontal", padding = 5) %>% 
   #hc_legend(layout = "vertical", align = "right",
-   #         floating = TRUE) 
+   #         floating = TRUE, valueSuffix = "million") 
   hc_exporting(enabled = TRUE)
 ```
 
