@@ -468,14 +468,14 @@ Nationally, about **`r avg_pop`**% of Americans have less than a High School dip
   
 
 state_pop_map <- state_pop_map %>% mutate(
-  state_pop = round(`Total population_est_tot_pop`/1000000, 2),
-  asian_pop = round(`Asian alone_est_tot_pop`/1000000, 2),
-  nhpi_pop = round(`NHPI alone_est_tot_pop`/1000000, 2))
+  state_pop = `Total population_est_tot_pop`/1000,
+  asian_pop = `Asian alone_est_tot_pop`/1000,
+  nhpi_pop = `NHPI alone_est_tot_pop`/1000)
 
 x <- c("{point.name}:", "Asian Alone:","NHPI Alone:")
 title<-"State Population"
-y <- c(" {point.value}", " {point.asian_pop}",
-" {point.nhpi_pop}")
+y <- c(" {point.value:,.0f} thousand", " {point.asian_pop:,.0f} thousand",
+" {point.nhpi_pop:,.0f} thousand")
 #style <- "style=font-size:80%"
 
 data(usgeojson)
@@ -483,7 +483,7 @@ highchart() %>%
   hc_title(text = "State Population", align = "center") %>%
   hc_subtitle(text = "Source: 2011-2015 ACS using Asian/NHPI Alone", align = "center") %>%
   hc_chart(backgroundColor = "transparent") %>%
-  hc_add_series_map(usgeojson, state_pop_map, name = "State Population",value = "state_pop", joinBy = c("name", "geodisplaylabel"),
+  hc_add_series_map(usgeojson, state_pop_map, name = "State Population", value = "state_pop", joinBy = c("name", "geodisplaylabel"),
                     borderColor= "transparent") %>%
   hc_tooltip(pointFormat = tooltip_table(x,y,title), useHTML=T,  headerFormat= "")%>%
   hc_add_theme(hc_theme_538()) %>%
@@ -491,7 +491,7 @@ highchart() %>%
   hc_legend(title = list(text= "Statewide Population", fontStyle ='italic'),align = "center",verticalAlign = "bottom",
             layout = "horizontal", padding = 5) %>% 
   #hc_legend(layout = "vertical", align = "right",
-   #         floating = TRUE, valueSuffix = "million") 
+   #         floating = TRUE, valueDecimals = 0, valueSuffix = " thousand") 
   hc_exporting(enabled = TRUE)
 ```
 
