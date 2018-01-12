@@ -217,8 +217,8 @@ totpop_aapi_alone <- sum(totpop_asn_alone,totpop_nhpi_alone)
   <p>There are about `r totpop_aapi_alone` Asian Americans, Native Hawaiians, and Pacific Islanders living in the United States today.</p>
 <div class="btn-group" role="group" aria-label="Basic example">
   <a href="national_data.html#citizen-voting-age-population" type="button" class="btn btn-primary">CVAP</a>
-  <a href="national_data.html#education" type="button" class="btn btn-secondary">Education</a>
-  <a href="national_data.html#limited-english-proficiency" type="button" class="btn btn-secondary">LEP</a>
+  <a href="national_data.html#education" type="button" class="btn btn-primary">Education</a>
+  <a href="national_data.html#limited-english-proficiency" type="button" class="btn btn-primary">LEP</a>
   <a href="national_data.html#nativity" type="button" class="btn btn-primary">Nativity</a>
   <a href="national_data.html#poverty" type="button" class="btn btn-primary">Poverty</a>
 </div>
