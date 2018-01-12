@@ -29,6 +29,7 @@ state_LEP<- readxl::read_xlsx("raw_data/state/state_LEP.xlsx")
 state_nativity<- readxl::read_xlsx("raw_data/state/state_nativity.xlsx")
 state_poverty<- readxl::read_xlsx("raw_data/state/state_poverty.xlsx")
 state_pop<- readxl::read_xlsx("raw_data/state/state_pop.xlsx")
+state_cvap<- readxl::read_xlsx("raw_data/state/state_cvap_alone.xlsx")
 ## [rename the variable to pop_id] state_edu <- state_edu %>% rename(pop_id = popgroupid)
 
 ## Using the lookup table to merge in Group Names and the proper population ID names
@@ -135,6 +136,48 @@ pop_percent <- c("% of the Pop")
 avg_pop <- state_pop %>% filter(Group == "Total population") %>% select(State, `% of the Pop`) %>%  summarize(mean = mean(`% of the Pop`, na.rm=TRUE)) %>% pull() %>% round(.,4)
 avg_pop <- avg_pop*100
  
+
+```
+
+```{r setup cvap-alone, include = FALSE}
+
+### Getting Rid of Estimates where the "CHECK" variable is flagging uncertainty
+state_cvap <- state_cvap %>% 
+  mutate(est_state_cvap = 
+            case_when( checking_state_cvap == 1 ~  NA_real_ ,TRUE ~ est_state_cvap),
+            est_aapi_cvap = 
+            case_when( checking_aapi_cvap == 1 ~  NA_real_ ,TRUE ~ est_aapi_cvap),
+         est_aapi_pop  =
+          case_when( checking_aapi_pop == 1 ~  NA_real_ ,TRUE ~ est_aapi_pop))
+
+# Dropping those indicators
+state_cvap <- state_cvap %>% select(-checking_state_cvap,
+                                  -checking_aapi_pop,
+                                  -checking_aapi_cvap)
+
+# Create Columns
+state_cvap <- state_cvap %>% mutate(
+ pct_state_cvap   = est_state_cvap /est_state_pop)
+
+state_cvap_map <- state_cvap
+
+# Renaming columns
+state_cvap<- state_cvap %>% rename(`Total Population`= est_state_pop,
+         `Total CVAP` = est_state_cvap,
+         `AAPI Pop`= est_aapi_pop,
+         `AAPI CVAP`= est_aapi_cvap,
+         `% AAPI CVAP` = pct_aapi_cvap,
+         `% AAPI Pop`= pct_aapi_pop,
+         `% State CVAP`= pct_state_cvap,
+         State = geoname)
+
+
+### Calculating Average for the sentence
+avg_state_cvap <- state_cvap %>% select(State, `% State CVAP`) %>%  summarize(mean = mean(`% State CVAP`, na.rm=TRUE)) %>% pull() %>% round(.,4)
+avg_state_cvap <- avg_state_cvap*100
+
+avg_aapi_cvap <- state_cvap %>% select(State, `% AAPI CVAP`) %>%  summarize(mean = mean(`% AAPI CVAP`, na.rm=TRUE)) %>% pull() %>% round(.,4)
+avg_aapi_cvap <- avg_aapi_cvap*100
 
 ```
 
@@ -914,6 +957,69 @@ highchart() %>%
 
 ```
 
+
+# Citizen Voting Age Population {.tabset .tabset-fade .tabset-pills}
+
+> CVAP data is complied using Table [B05003](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B05003) from the 2015 ACS 5-Year estimates.
+
+Nationally, about **`r avg_state_cvap`**% of Americans are eligible to vote, while the national average number for AAPI is **`r avg_aapi_cvap`**
+
+## Raw Asian & NHPI Alone
+
+
+```{r cvap-alone-raw, echo=FALSE, message=FALSE, warning=FALSE}
+
+state_cvap_estimate <- state_cvap %>% select(State, `Total CVAP`, `AAPI CVAP`, `Total Population`, `AAPI Pop`) 
+
+datatable(state_cvap_estimate) %>% formatCurrency(columns = c(2:5),currency = "", interval = 3, mark = ",", digits=0)
+```
+
+## % Asian & NHPI alone
+
+
+```{r CVAP-combo-pct, echo=FALSE, message=FALSE, warning=FALSE}
+
+state_cvap_pct <- state_cvap %>% select(State, `% AAPI CVAP`, `% AAPI Pop`) 
+
+datatable(state_cvap_pct) %>% formatPercentage(columns = c(2:3), digits = 2)
+
+
+```
+
+
+
+## Visualize Data
+
+```{r CVAP visualize, echo=FALSE, message=FALSE, warning=FALSE}
+
+state_cvap_map <- state_cvap_map %>% mutate(
+  pct_state_cvap = round(pct_state_cvap*100,2),
+  pct_aapi_cvap = round(pct_aapi_cvap*100,2))
+
+  
+
+x <- c("{point.name}:", "AAPI Alone:")
+title<-"Percent of CVAP"
+y <- c(" {point.value:.1f}%", " {point.pct_aapi_cvap:.1f}%")
+#style <- "style=font-size:80%"
+
+data(usgeojson)
+highchart() %>%
+  hc_title(text = "CVAP", align = "center") %>%
+  hc_subtitle(text = "Source: 2011-2015 ACS using Asian/NHPI Alone", align = "center") %>%
+  hc_chart(backgroundColor = "transparent") %>%
+  hc_add_series_map(usgeojson, state_cvap_map, name = "CVAP",value = "pct_state_cvap", joinBy = c("name", "geoname"),
+                    borderColor= "transparent") %>%
+  hc_tooltip(pointFormat = tooltip_table(x,y,title), useHTML=T,  headerFormat= "")%>%
+  hc_add_theme(hc_theme_538()) %>%
+  hc_colorAxis(stops = color_stops(5),labels= list(format = "{value}%"),showInLegend=T) %>%
+  hc_legend(title = list(text= "Statewide Percentage", fontStyle ='italic'),align = "center",verticalAlign = "bottom",
+            layout = "horizontal", padding = 5) %>% 
+  #hc_legend(layout = "vertical", align = "right",
+   #         floating = TRUE, valueDecimals = 0, valueSuffix = "%") 
+  hc_exporting(enabled = TRUE)
+
+```
 
 
 
