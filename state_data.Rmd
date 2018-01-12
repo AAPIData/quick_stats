@@ -28,6 +28,7 @@ state_edu<- readxl::read_xlsx("raw_data/state/state_edu.xlsx")
 state_LEP<- readxl::read_xlsx("raw_data/state/state_LEP.xlsx")
 state_nativity<- readxl::read_xlsx("raw_data/state/state_nativity.xlsx")
 state_poverty<- readxl::read_xlsx("raw_data/state/state_poverty.xlsx")
+state_pop<- readxl::read_xlsx("raw_data/state/state_pop.xlsx")
 ## [rename the variable to pop_id] state_edu <- state_edu %>% rename(pop_id = popgroupid)
 
 ## Using the lookup table to merge in Group Names and the proper population ID names
@@ -36,10 +37,28 @@ state_edu<-state_edu %>% left_join(pop_id_lookup) %>% select(-geoid, -pop_id)
 state_LEP<-state_LEP %>% left_join(pop_id_lookup) %>% select(-geoid, -pop_id)
 state_nativity<-state_nativity %>% left_join(pop_id_lookup) %>% select(-geoid, -pop_id)
 state_poverty<-state_poverty %>% left_join(pop_id_lookup) %>% select(-geoid, -pop_id)
+state_pop<-state_pop %>% left_join(pop_id_lookup) %>% select(-geoid, -pop_id)
 ### Specifying Groups
 groups_alone <- c("Total population", "Asian alone", "NHPI alone")
 groups_combo <- c("Total population", "Asian alone or combo", "NHPI alone or combo")
+groups_race <- c("Total population", "Asian alone", "NHPI alone", "Asian alone or combo", "NHPI alone or combo")
 
+groups_asian_detail_alone <-pop_id_lookup %>%
+  filter(group_id == "Asian Detail") %>% 
+  select(group_name) %>% pull()
+
+groups_asian_detail_combo <-pop_id_lookup %>%
+  filter(group_id == "Asian Detail Combo") %>% 
+  select(group_name) %>%  pull()
+
+groups_nhpi_detail_alone <-pop_id_lookup %>%
+  filter(group_id == "NHPI Detail") %>% 
+  select(group_name) %>%  pull()
+
+groups_nhpi_detail_combo <-pop_id_lookup %>%
+  filter(group_id == "NHPI Detail Combo") %>% 
+  select(group_name) %>%  pull()
+  
 
 ## Function that will take excel file and make it long
 state_convert_long <- function(data){
@@ -73,6 +92,52 @@ state_convert_long <- function(data){
 
 
 ```
+
+```{r setup pop, include = FALSE}
+
+### Getting Rid of Estimates where the "CHECK" variable is flagging uncertainty
+state_pop <- state_pop %>% 
+  mutate(est_tot_pop = 
+            case_when( checking_tot_pop == 1 ~  NA_real_ ,TRUE ~ est_tot_pop),
+         est_state_pop  =
+          case_when( checking_state_pop == 1 ~  NA_real_ ,TRUE ~ est_state_pop))
+
+# Dropping those indicators
+state_pop <- state_pop %>% select(-checking_tot_pop,
+                                  -checking_state_pop)
+
+
+
+state_pop_map <- state_pop
+
+# Renaming columns
+state_pop<- state_pop %>% rename(Total = est_tot_pop,
+         `Population` = est_state_pop,
+         Group = group_name,
+         `% of the Pop`= pct_pop,
+         State = geodisplaylabel)
+
+
+
+## Converting it to Long
+state_pop_long <- state_convert_long(state_pop)
+## add all outcome data here (just replace state_edu with another data name)
+
+
+## Column Specification
+pop_estimates <- c("Total")
+pop_percent <- c("% of the Pop")
+
+
+
+
+### Calculating Average for the sentence
+avg_pop <- state_pop %>% filter(Group == "Total population") %>% select(State, `% of the Pop`) %>%  summarize(mean = mean(`% of the Pop`, na.rm=TRUE)) %>% pull() %>% round(.,4)
+avg_pop <- avg_pop*100
+ 
+
+```
+
 
 
 ```{r setup education, include = FALSE}
@@ -298,6 +363,142 @@ avg_below_pov <- avg_below_pov*100
   <p>Use the buttons to select the topic and then the tabs for population groups</p>
 </div>
 
+# Population {.tabset .tabset-fade .tabset-pills}
+
+> Population data is complied using Table [B01003](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B01003) from the 2015 ACS 5-Year estimates.
+
+Nationally, about **`r avg_pop`**% of Americans have less than a High School diploma and about **`r avg_ba_higher`**% have a Bachelor's Degree or higher.
+
+## Major Racial Groups
+
+
+```{r pop-race, echo=FALSE, message=FALSE, warning=FALSE}
+
+  
+ state_display_table(state_pop_long, groups_race, pop_estimates) %>% 
+  formatCurrency(columns = c(2:6),currency = "", interval = 3, mark = ",", digits=0) 
+
+```
+
+## Raw Asian Alone
+
+
+```{r pop-asian-alone, echo=FALSE, message=FALSE, warning=FALSE}
+
+  state_pop %>%
+    filter(group_id %in% "Asian Detail") %>%
+    select(-group_id, - `% of the Pop`,-`Population`) %>%
+    spread(Group,Total,fill = NA) %>%
+    datatable(extensions = 
+                list("Buttons" = NULL, 'FixedColumns'= T, "Scroller"=T),
+              rownames= FALSE, 
+              options = list(
+                dom = 'rtB',
+                buttons = c('copy', 'csv', 'excel'),
+                scrollX = TRUE,
+                lengthMenu = c(25, 50, 100), pageLength = 50)) %>% 
+  formatCurrency(columns = c(2:22),currency = "", interval = 3, mark = ",", digits=0) 
+
+```
+
+## Raw NHPI Alone
+
+
+```{r pop-nhpi-alone, echo=FALSE, message=FALSE, warning=FALSE}
+
+  
+ state_display_table(state_pop_long, groups_nhpi_detail_alone, pop_estimates) %>% 
+  formatCurrency(columns = c(2:10),currency = "", interval = 3, mark = ",", digits=0) 
+
+```
+
+## Raw Asian Combo
+
+
+```{r pop-asian-combo, echo=FALSE, message=FALSE, warning=FALSE}
+
+  
+  state_pop %>%
+    filter(group_id %in% "Asian Detail Combo") %>%
+    select(-group_id, - `% of the Pop`,-`Population`) %>%
+    spread(Group,Total,fill = NA) %>%
+    datatable(extensions = 
+                list("Buttons" = NULL, 'FixedColumns'= T, "Scroller"=T),
+              rownames= FALSE, 
+              options = list(
+                dom = 'rtB',
+                buttons = c('copy', 'csv', 'excel'),
+                scrollX = TRUE,
+                lengthMenu = c(25, 50, 100), pageLength = 50)) %>% 
+  formatCurrency(columns = c(2:22),currency = "", interval = 3, mark = ",", digits=0)
+
+```
+
+## Raw NHPI Combo
+
+
+```{r pop-nhpi-combo, echo=FALSE, message=FALSE, warning=FALSE}
+
+  
+ state_display_table(state_pop_long, groups_nhpi_detail_combo, pop_estimates) %>% 
+  formatCurrency(columns = c(2:10),currency = "", interval = 3, mark = ",", digits=0) 
+
+```
+
+
+## Visualize Data
+
+```{r pop visualize, echo=FALSE, message=FALSE, warning=FALSE}
+
+
+ state_pop_map <- state_pop_map %>%
+  gather(estimate_type,
+         estimate,
+         -geodisplaylabel,
+         -group_name,
+         -group_id)
+
+ state_pop_map <- state_pop_map %>%
+     filter(group_name %in% groups_alone) %>%
+   filter(str_detect(estimate_type, "est_tot")) %>%
+     select(-group_id) %>%
+     mutate(long_key=paste(group_name, estimate_type, sep="_")) %>% #Combining Pop_ID and Estimate type
+     select(-group_name, -estimate_type)  %>% 
+     spread(long_key, estimate,fill = NA) 
+  
+
+state_pop_map <- state_pop_map %>% mutate(
+  state_pop = `Total population_est_tot_pop`,
+  asian_pop = `Asian alone_est_tot_pop`,
+  nhpi_pop = `NHPI alone_est_tot_pop`)
+
+x <- c("{point.name}:", "Asian Alone:","NHPI Alone:")
+title<-"State Population"
+y <- c(" {point.value}", " {point.asian_pop}",
+" {point.nhpi_pop}")
+#style <- "style=font-size:80%"
+
+data(usgeojson)
+highchart() %>%
+  hc_title(text = "State Population", align = "center") %>%
+  hc_subtitle(text = "Source: 2011-2015 ACS using Asian/NHPI Alone", align = "center") %>%
+  hc_chart(backgroundColor = "transparent") %>%
+  hc_add_series_map(usgeojson, state_pop_map, name = "State Population",value = "state_pop", joinBy = c("name", "geodisplaylabel"),
+                    borderColor= "transparent") %>%
+  hc_tooltip(pointFormat = tooltip_table(x,y,title), useHTML=T,  headerFormat= "")%>%
+  hc_add_theme(hc_theme_538()) %>%
+  hc_colorAxis(stops = color_stops(5),labels= list(format = "{value}%"),showInLegend=T) %>%
+  hc_legend(title = list(text= "Statewide Population", fontStyle ='italic'),align = "center",verticalAlign = "bottom",
+            layout = "horizontal", padding = 5) %>% 
+  #hc_legend(layout = "vertical", align = "right",
+   #         floating = TRUE) 
+  hc_exporting(enabled = TRUE)
+```
+
+
+
+
+
 # Education {.tabset .tabset-fade .tabset-pills}
 
 > Educational Attainment data is complied using Table [B15002](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B15002) from the 2015 ACS 5-Year estimates.
@@ -346,6 +547,7 @@ state_display_table(state_edu_long, groups_combo,education_percent) %>% formatPe
 
 
 ```
+
 ## Visualize Data
 
 ```{r edu visualize, echo=FALSE, message=FALSE, warning=FALSE}
