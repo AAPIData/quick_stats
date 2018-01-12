@@ -133,10 +133,11 @@ pop_percent <- c("% of the Pop")
 
 
 ### Calculating Average for the sentence
-avg_pop <- state_pop %>% filter(Group == "Total population") %>% select(State, `% of the Pop`) %>%  summarize(mean = mean(`% of the Pop`, na.rm=TRUE)) %>% pull() %>% round(.,4)
-avg_pop <- avg_pop*100
+avg_aa_pop <- state_pop %>% filter(Group == "Asian Alone") %>% select(State, `% of the Pop`) %>%  summarize(mean = mean(`% of the Pop`, na.rm=TRUE)) %>% pull() %>% round(.,4)
+avg_aa_pop <- avg_aa_pop*100
  
-
+avg_pi_pop <- state_pop %>% filter(Group == "NHPI Alone") %>% select(State, `% of the Pop`) %>%  summarize(mean = mean(`% of the Pop`, na.rm=TRUE)) %>% pull() %>% round(.,4)
+avg_pi_pop <- avg_pi_pop*100
 ```
 
 ```{r setup cvap-alone, include = FALSE}
@@ -406,11 +407,11 @@ avg_below_pov <- avg_below_pov*100
   <p>Use the buttons to select the topic and then the tabs for population groups</p>
 </div>
 
-# Population {.tabset .tabset-fade .tabset-pills}
+# Detailed Origin {.tabset .tabset-fade .tabset-pills}
 
-> Population data is complied using Table [B01003](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B01003) from the 2015 ACS 5-Year estimates.
+> Detailed Origin data is complied using Table [B01003](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B01003) from the 2015 ACS 5-Year estimates.
 
-Nationally, about **`r avg_pop`**% of Americans have less than a High School diploma and about **`r avg_ba_higher`**% have a Bachelor's Degree or higher.
+Nationally, about **`r avg_aa_pop`**% of the population is Asian American, and **`r avg_pi_pop`**% of the population is NHPI.
 
 ## Major Racial Groups
 
