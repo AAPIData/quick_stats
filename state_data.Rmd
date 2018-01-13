@@ -139,6 +139,13 @@ avg_aa_pop <- avg_aa_pop*100
  
 avg_pi_pop <- state_pop %>% filter(Group == "NHPI alone") %>% select(State, `% of the Pop`) %>%  summarize(mean = mean(`% of the Pop`, na.rm=TRUE)) %>% pull() %>% round(.,4)
 avg_pi_pop <- avg_pi_pop*100
+
+state_largest_aaprop <- state_pop %>% filter(Group == "Asian alone") %>% select(State, `% of the Pop`) %>%  top_n(1,`% of the Pop` )%>% pull(1) 
+state_largest_aaprop_number <- state_pop %>% filter(Group == "Asian alone") %>% select(State, `% of the Pop`) %>%  top_n(1,`% of the Pop` )%>% pull(2)  %>% round(.,4) 
+state_largest_aaprop_number<- state_largest_aaprop_number*100
+
+
+
 ```
 
 ```{r setup cvap-alone, include = FALSE}
@@ -408,9 +415,19 @@ avg_below_pov <- avg_below_pov*100
 
 
 <div class="jumbotron">
+  <div class="container">
   <h1>State Data</h1>
-  <p>Use the buttons to select the topic and then the tabs for population groups</p>
+  <p> About `r state_largest_aaprop_number`% of the population in `r state_largest_aaprop` is Asian American, the highest in the country.</p>
+<div class="btn-group" role="group" aria-label="Basic example">
+  <a href="state_data.html#citizen-voting-age-population" type="button" class="btn btn-primary">CVAP</a>
+  <a href="state_data.html#education" type="button" class="btn btn-primary">Education</a>
+  <a href="state_data.html#limited-english-proficiency" type="button" class="btn btn-primary">LEP</a>
+  <a href="state_data.html#nativity" type="button" class="btn btn-primary">Nativity</a>
+  <a href="state_data.html#poverty" type="button" class="btn btn-primary">Poverty</a>
 </div>
+</div>
+</div>
+
 
 # Detailed Origin {.tabset .tabset-fade .tabset-pills}
 <a href="#top"><button class="btn btn-outline-primary center-block btn-small"> Back to Top</button></a>
