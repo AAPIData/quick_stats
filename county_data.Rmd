@@ -29,8 +29,8 @@ county_edu<- readxl::read_xlsx("raw_data/county/county_edu.xlsx")
 county_insurance<- readxl::read_xlsx("raw_data/county/county_insurance.xlsx")
 county_poverty<- readxl::read_xlsx("raw_data/county/county_poverty.xlsx")
 county_nativity<- readxl::read_xlsx("raw_data/county/county_nativity.xlsx")
-county_lep<- readxl::read_xlsx("raw_data/county/county_LEP.xlsx")
-county_cvap_alone<- readxl::read_xlsx("raw_data/county/county_cvap_alone.xlsx")
+county_LEP<- readxl::read_xlsx("raw_data/county/county_LEP.xlsx")
+county_cvap<- readxl::read_xlsx("raw_data/county/county_cvap_alone.xlsx")
 
 ## Using the lookup table to merge in Group Names and the proper population ID names
 pop_id_lookup <- read_csv("raw_data/pop_id_lookup.csv") #Look-up table
@@ -50,8 +50,8 @@ county_poverty<-county_poverty %>% left_join(pop_id_lookup) %>% select( -pop_id)
 county_nativity <- county_nativity %>% rename(pop_id = popgroupid)
 county_nativity<-county_nativity %>% left_join(pop_id_lookup) %>% select( -pop_id)
 
-county_lep <- county_lep %>% rename(pop_id = popgroupid)
-county_lep<-county_lep %>% left_join(pop_id_lookup) %>% select( -pop_id)
+county_LEP <- county_LEP %>% rename(pop_id = popgroupid)
+county_LEP<-county_LEP %>% left_join(pop_id_lookup) %>% select( -pop_id)
 
 
 ### Specifying Groups
@@ -203,6 +203,199 @@ avg_ba_higher <- avg_ba_higher*100
 
 
 ```
+
+```{r setup LEP, include = FALSE}
+
+### Getting Rid of Estimates where the "CHECK" variable is flagging uncertainty
+county_LEP <- county_LEP %>% 
+  mutate(est_tot_pop = 
+            case_when( check_tot_pop == 1 ~  NA_real_ ,TRUE ~ est_tot_pop),
+    est_lep = 
+            case_when( check_lep == 1 ~  NA_real_ ,TRUE ~ est_lep),
+         est_other_lang  =
+          case_when( check_other_lang == 1 ~  NA_real_ ,TRUE ~ est_other_lang))
+        
+# Dropping those indicators
+county_LEP <- county_LEP %>% select(-check_tot_pop,
+                                  -check_lep,
+                                  -check_other_lang,
+                                  -geoid)
+
+
+
+county_LEP_map <- county_LEP
+
+# Renaming columns
+county_LEP<- county_LEP %>% rename(Total = est_tot_pop,
+         `LEP` = est_lep,
+         Group = group_name,
+         `Speak other language` = est_other_lang,
+         `% LEP`= pct_lep,
+         County = geodisplaylabel)
+
+
+## Converting it to Long
+county_LEP_long <- county_convert_long(county_LEP)
+## add all outcome data here (just replace county_edu with another data name)
+
+## Column Specification
+LEP_estimates <- c("Total", "LEP", "Speak Other Language")
+LEP_percent <- c("% LEP")
+
+
+### Calculating Average for the sentence
+avg_lep <- county_LEP %>% filter(Group == "Total population") %>% select(County, `% LEP`) %>%  summarize(mean = mean(`% LEP`,na.rm = T)) %>% pull() %>% round(.,4)
+avg_lep <- avg_lep*100
+
+```
+
+
+
+```{r setup nativity, include = FALSE}
+
+### Getting Rid of Estimates where the "CHECK" variable is flagging uncertainty
+county_nativity <- county_nativity %>% 
+  mutate(est_tot_pop = 
+            case_when( check_tot_pop == 1 ~  NA_real_ ,TRUE ~ est_tot_pop),
+         est_foreign_born  =
+          case_when( check_foreign_born == 1 ~  NA_real_ ,TRUE ~ est_foreign_born))
+
+
+# Dropping those indicators
+county_nativity <- county_nativity %>% select(-check_tot_pop,
+                                  -check_foreign_born,
+                                  -geoid)
+
+# Create Columns
+county_nativity <- county_nativity %>% mutate(
+pct_foreign_born   = est_foreign_born / est_tot_pop)
+
+county_nativity_map <- county_nativity
+
+# Renaming columns
+county_nativity<- county_nativity %>% rename(Total = est_tot_pop,
+         `Foreign Born` = est_foreign_born,
+         Group = group_name,
+         `% Foreign Born`= pct_foreign_born,
+         County = geodisplaylabel)
+
+
+
+## Converting it to Long
+county_nativity_long <- county_convert_long(county_nativity)
+## add all outcome data here (just replace county_edu with another data name)
+
+
+## Column Specification
+nativity_estimates <- c("Total", "Foreign Born")
+nativity_percent <- c("% Foreign Born")
+
+
+
+### Calculating Average for the sentence
+avg_foreign_born <- county_nativity %>% filter(Group == "Total population") %>% select(County, `% Foreign Born`) %>%  summarize(mean = mean(`% Foreign Born`, na.rm = T)) %>% pull() %>% round(.,4)
+avg_foreign_born <- avg_foreign_born*100
+ 
+```
+
+```{r setup poverty, include = FALSE}
+
+### Getting Rid of Estimates where the "CHECK" variable is flagging uncertainty
+county_poverty <- county_poverty %>% 
+  mutate(est_tot_pop = 
+            case_when( check_tot_pop == 1 ~  NA_real_ ,TRUE ~ est_tot_pop),
+         est_below_pov  =
+          case_when( check_below_pov == 1 ~  NA_real_ ,TRUE ~ est_below_pov),
+         est_above_pov  =
+          case_when( check_above_pov == 1 ~  NA_real_ ,TRUE ~ est_above_pov))
+
+# Dropping those indicators
+county_poverty <- county_poverty %>% select(-check_tot_pop,
+                                  -check_below_pov,
+                                  -check_above_pov,
+                                  -geoid)
+
+# Create Columns
+county_poverty <- county_poverty %>% mutate(
+ pct_below_pov   = est_below_pov/est_tot_pop,
+ pct_above_pov = est_above_pov/ est_tot_pop)
+
+
+county_poverty_map <- county_poverty
+
+# Renaming columns
+county_poverty<- county_poverty %>% rename(Total = est_tot_pop,
+         `Below Poverty` = est_below_pov,
+         `Above Poverty` = est_above_pov,
+         Group = group_name,
+         `% Below Poverty`= pct_below_pov,
+         `% Above Poverty` = pct_above_pov,
+         County = geodisplaylabel)
+
+
+
+
+## Converting it to Long
+county_poverty_long <- county_convert_long(county_poverty)
+## add all outcome data here (just replace county_poverty with another data name)
+
+
+## Column Specification
+poverty_estimates <- c("Total", "Below Poverty", "Above Poverty")
+poverty_percent <- c("% Below Poverty", "% Above Poverty")
+
+
+
+### Calculating Average for the sentence
+avg_below_pov <- county_poverty %>% filter(Group == "Total population") %>% select(County, `% Below Poverty`) %>%  summarize(mean = mean(`% Below Poverty`, na.rm=T)) %>% pull() %>% round(.,4)
+avg_below_pov <- avg_below_pov*100
+
+
+
+```
+
+```
+#{r setup cvap-alone, include = FALSE}
+### Getting Rid of Estimates where the "CHECK" variable is flagging uncertainty
+county_cvap <- county_cvap %>% 
+  mutate(est_county_cvap = 
+            case_when( checking_county_cvap == 1 ~  NA_real_ ,TRUE ~ est_county_cvap),
+            est_aapi_cvap = 
+            case_when( checking_aapi_cvap == 1 ~  NA_real_ ,TRUE ~ est_aapi_cvap),
+         est_aapi_pop  =
+          case_when( checking_aapi_pop == 1 ~  NA_real_ ,TRUE ~ est_aapi_pop))
+
+# Dropping those indicators
+county_cvap <- county_cvap %>% select(-checking_county_cvap,
+                                  -checking_aapi_pop,
+                                  -checking_aapi_cvap)
+
+# Create Columns
+county_cvap <- county_cvap %>% mutate(
+ pct_county_cvap   = est_county_cvap /est_county_pop)
+
+county_cvap_map <- county_cvap
+
+# Renaming columns
+county_cvap<- county_cvap %>% rename(`Total Population`= est_county_pop,
+         `Total CVAP` = est_county_cvap,
+         `AAPI Pop`= est_aapi_pop,
+         `AAPI CVAP`= est_aapi_cvap,
+         `% AAPI CVAP` = pct_aapi_cvap,
+         `% AAPI Pop`= pct_aapi_pop,
+         `% County CVAP`= pct_county_cvap,
+         County = geoname)
+
+
+### Calculating Average for the sentence
+avg_county_cvap <- county_cvap %>% select(County, `% County CVAP`) %>%  summarize(mean = mean(`% County CVAP`, na.rm=TRUE)) %>% pull() %>% round(.,4)
+avg_county_cvap <- avg_county_cvap*100
+
+avg_aapi_cvap <- county_cvap %>% select(County, `% AAPI CVAP`) %>%  summarize(mean = mean(`% AAPI CVAP`, na.rm=TRUE)) %>% pull() %>% round(.,4)
+avg_aapi_cvap <- avg_aapi_cvap*100
+
+```
+
 
 
 <div class="jumbotron">
@@ -361,4 +554,199 @@ county_display_table(county_edu_long, groups_combo,education_percent) %>% format
 #   hc_exporting(enabled = TRUE)
 
 ```
+
+# Limited English Proficiency {.tabset .tabset-fade .tabset-pills}
+<a href="#top"><button class="btn btn-outline-primary center-block btn-small"> Back to Top</button></a>
+
+> Limited English Proficiency (LEP) refers to the proportion of individuals who speak a language other than english at home & speak english less than "very well".
+Limited English Proficiency data is complied using Table [B16004](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B16004) from the 2015 ACS 5-Year estimates.
+
+Nationally Among Americans who speak a language other than english at home, about **`r avg_lep`**% of them speak English less than "very well".
+
+## % Asian & NHPI Alone
+
+```{r LEP-alone-pct, echo=FALSE, message=FALSE, warning=FALSE}
+
+county_display_table(county_LEP_long, groups_alone,LEP_percent) %>% formatPercentage(columns = c(3:5), digits = 2)
+
+
+```
+
+## % Asian & NHPI Combo
+
+
+```{r LEP-combo-pct, echo=FALSE, message=FALSE, warning=FALSE}
+
+county_display_table(county_LEP_long, groups_combo,LEP_percent) %>% formatPercentage(columns = c(3:5), digits = 2)
+
+
+```
+
+## Raw Asian & NHPI Alone
+
+
+```{r LEP-combo-Alone, echo=FALSE, message=FALSE, warning=FALSE}
+
+  
+ county_display_table(county_LEP_long, groups_alone,LEP_estimates) %>% 
+  formatCurrency(columns = c(3:8),currency = "", interval = 3, mark = ",", digits=0) 
+
+
+```
+
+
+## Raw Asian & NHPI Combo
+
+```{r LEP-Combo, echo=FALSE, message=FALSE, warning=FALSE}
+
+ county_display_table(county_LEP_long, groups_combo,LEP_estimates) %>% 
+  formatCurrency(columns = c(3:8),currency = "", interval = 3, mark = ",", digits=0) 
+
+
+
+```
+
+# Nativity {.tabset .tabset-fade .tabset-pills}
+<a href="#top"><button class="btn btn-outline-primary center-block btn-small"> Back to Top</button></a>
+
+> Nativity data is complied using Table [B05012](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B05012) from the 2015 ACS 5-Year estimates.
+
+Nationally, about **`r avg_foreign_born`**% of Americans are foreign born.
+
+## % Asian & NHPI Alone
+
+
+```{r nativity-alone-pct, echo=FALSE, message=FALSE, warning=FALSE}
+
+county_display_table(county_nativity_long, groups_alone,nativity_percent) %>% formatPercentage(columns = c(3:5), digits = 2)
+
+
+```
+
+## % Asian & NHPI Combo
+
+
+
+```{r nativity-combo-pct, echo=FALSE, message=FALSE, warning=FALSE}
+
+county_display_table(county_nativity_long, groups_combo,nativity_percent) %>% formatPercentage(columns = c(3:5), digits = 2)
+
+
+```
+
+## Raw Asian & NHPI Alone
+
+
+```{r nativity-combo-Alone, echo=FALSE, message=FALSE, warning=FALSE}
+
+  
+ county_display_table(county_nativity_long, groups_alone,nativity_estimates) %>% 
+  formatCurrency(columns = c(3:8),currency = "", interval = 3, mark = ",", digits=0) 
+
+
+```
+
+
+## Raw Asian & NHPI Combo
+
+```{r nativity-Combo, echo=FALSE, message=FALSE, warning=FALSE}
+
+ county_display_table(county_nativity_long, groups_combo,nativity_estimates) %>% 
+  formatCurrency(columns = c(3:8),currency = "", interval = 3, mark = ",", digits=0) 
+
+
+
+```
+
+# Poverty {.tabset .tabset-fade .tabset-pills}
+<a href="#top"><button class="btn btn-outline-primary center-block btn-small"> Back to Top</button></a>
+
+> Poverty data is complied using Table [B17001](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B17001) from the 2015 ACS 5-Year estimates.
+
+Nationally, about **`r avg_below_pov`**% of Americans are living below poverty line.
+
+## % Asian & NHPI Alone
+
+
+```{r poverty-alone-pct, echo=FALSE, message=FALSE, warning=FALSE}
+
+county_display_table(county_poverty_long, groups_alone,poverty_percent) %>% formatPercentage(columns = c(3:5), digits = 2)
+
+```
+
+## % Asian & NHPI Combo
+
+
+```{r poverty-combo-pct, echo=FALSE, message=FALSE, warning=FALSE}
+
+county_display_table(county_poverty_long, groups_combo,poverty_percent) %>% formatPercentage(columns = c(3:5), digits = 2)
+
+
+```
+
+## Raw Asian & NHPI Alone
+
+
+```{r poverty-combo-Alone, echo=FALSE, message=FALSE, warning=FALSE}
+
+  
+ county_display_table(county_poverty_long, groups_alone,poverty_estimates) %>% 
+  formatCurrency(columns = c(3:8),currency = "", interval = 3, mark = ",", digits=0) 
+
+
+```
+
+
+## Raw Asian & NHPI Combo
+
+```{r poverty-Combo, echo=FALSE, message=FALSE, warning=FALSE}
+
+ county_display_table(county_poverty_long, groups_combo,poverty_estimates) %>% 
+  formatCurrency(columns = c(3:8),currency = "", interval = 3, mark = ",", digits=0) 
+
+
+
+```
+
+# Citizen Voting Age Population {.tabset .tabset-fade .tabset-pills}
+<a href="#top"><button class="btn btn-outline-primary center-block btn-small"> Back to Top</button></a>
+
+> CVAP data is complied using Table [B05003](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B05003) from the 2015 ACS 5-Year estimates.
+
+Nationally, about **`r avg_state_cvap`**% of Americans are eligible to vote, while the national average number for AAPI is **`r avg_aapi_cvap`**%
+
+## Raw Asian & NHPI Alone
+
+
+```{r cvap-alone-raw, echo=FALSE, message=FALSE, warning=FALSE}
+
+county_cvap_estimate <- county_cvap %>% select(County, `Total CVAP`, `AAPI CVAP`, `Total Population`, `AAPI Pop`) 
+
+datatable(county_cvap_estimate, extensions = list("Buttons" = NULL, 'FixedColumns'= T, "Scroller"=T),
+              rownames= FALSE, 
+              options = list(
+                dom = 'rtB',
+                buttons = c('copy', 'csv', 'excel'),
+                scrollX = TRUE,
+                lengthMenu = c(25, 50, 100), pageLength = 50)) %>% formatCurrency(columns = c(2:5),currency = "", interval = 3, mark = ",", digits=0)
+```
+
+## % Asian & NHPI alone
+
+
+```{r CVAP-combo-pct, echo=FALSE, message=FALSE, warning=FALSE}
+
+county_cvap_pct <- county_cvap %>% select(County, `% AAPI CVAP`, `% AAPI Pop`) 
+
+datatable(county_cvap_pct, extensions = list("Buttons" = NULL, 'FixedColumns'= T, "Scroller"=T),
+              rownames= FALSE, 
+              options = list(
+                dom = 'rtB',
+                buttons = c('copy', 'csv', 'excel'),
+                scrollX = TRUE,
+                lengthMenu = c(25, 50, 100), pageLength = 50)) %>% formatPercentage(columns = c(2:3), digits = 2)
+
+
+```
+
 
