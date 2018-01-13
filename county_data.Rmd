@@ -56,7 +56,7 @@ county_lep<-county_lep %>% left_join(pop_id_lookup) %>% select( -pop_id)
 
 ### Specifying Groups
 groups_alone <- c("Total population", "Asian alone", "NHPI alone")
-groups_combo <- c("Total population", "NHPI alone or combo", "NHPI alone or combo")
+groups_combo <- c("Total population", "Asian alone or combo", "NHPI alone or combo")
 
 
 
@@ -102,13 +102,13 @@ county_convert_long <- function(data){
 ### Getting Rid of Estimates where the "CHECK" variable is flagging uncertainty
 county_pop <- county_pop %>% 
    mutate(est_tot_pop = 
-            case_when( checking_tot_pop == 1 ~  NA_real_ ,TRUE ~ est_tot_pop),
+            case_when( check_tot_pop == 1 ~  NA_real_ ,TRUE ~ est_tot_pop),
          est_county_pop  =
-          case_when( checking_county_pop == 1 ~  NA_real_ ,TRUE ~ est_county_pop))
+          case_when( check_county_pop == 1 ~  NA_real_ ,TRUE ~ est_county_pop))
 
 # Dropping those indicators
-county_pop <- county_pop %>% select(-checking_tot_pop,
-                                  -checking_county_pop)
+county_pop <- county_pop %>% select(-check_tot_pop,
+                                  -check_county_pop)
 
 
 
@@ -119,25 +119,22 @@ county_pop<- county_pop %>% rename(Total = est_tot_pop,
          `Population` = est_county_pop,
          Group = group_name,
          `% of the Pop`= pct_pop,
-         county = geodisplaylabel)
+         County = geodisplaylabel)
 
 
 
 ## Converting it to Long
 county_pop_long <- county_convert_long(county_pop)
-## add all outcome data here (just replace state_edu with another data name)
-
-
 
 ## Column Specification
 pop_estimates <- c("Total")
 pop_percent <- c("% of the Pop")
 
 ### Calculating Average for the sentence
-avg_aa_pop <- county_pop %>% filter(Group == "Asian alone") %>% select(county, `% of the Pop`) %>%  summarize(mean = mean(`% of the Pop`, na.rm=TRUE)) %>% pull() %>% round(.,4)
+avg_aa_pop <- county_pop %>% filter(Group == "Asian alone") %>% select(County, `% of the Pop`) %>%  summarize(mean = mean(`% of the Pop`, na.rm=TRUE)) %>% pull() %>% round(.,4)
 avg_aa_pop <- avg_aa_pop*100
  
-avg_pi_pop <- county_pop %>% filter(Group == "NHPI alone") %>% select(county, `% of the Pop`) %>%  summarize(mean = mean(`% of the Pop`, na.rm=TRUE)) %>% pull() %>% round(.,4)
+avg_pi_pop <- county_pop %>% filter(Group == "NHPI alone") %>% select(County, `% of the Pop`) %>%  summarize(mean = mean(`% of the Pop`, na.rm=TRUE)) %>% pull() %>% round(.,4)
 avg_pi_pop <- avg_pi_pop*100
 
 ```
