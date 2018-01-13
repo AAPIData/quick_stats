@@ -204,20 +204,35 @@ national_pop <- national_pop %>%
 national_pop<- national_pop %>% rename(Group = group_name,
                                        `Population` = est_tot_pop,
                                        `Percent Total Pop` = pct_pop)
-
+  
+totpop_asn_alone <- national_pop %>% filter(Group == "Asian alone") %>% select(Population) %>% pull()
+totpop_nhpi_alone <- national_pop %>% filter(Group == "NHPI alone") %>% select(Population) %>% pull()
+totpop_aapi_alone <- sum(totpop_asn_alone,totpop_nhpi_alone)
 ```
 
 
 <div class="jumbotron">
+  <div class="container">
   <h1>National Data</h1>
-  <p>Use the buttons to select the topic and then the tabs for population groups</p>
+  <p>There are about `r totpop_aapi_alone` Asian Americans, Native Hawaiians, and Pacific Islanders living in the United States today.</p>
+<div class="btn-group" role="group" aria-label="Basic example">
+  <a href="national_data.html#citizen-voting-age-population" type="button" class="btn btn-primary">CVAP</a>
+  <a href="national_data.html#education" type="button" class="btn btn-primary">Education</a>
+  <a href="national_data.html#limited-english-proficiency" type="button" class="btn btn-primary">LEP</a>
+  <a href="national_data.html#nativity" type="button" class="btn btn-primary">Nativity</a>
+  <a href="national_data.html#poverty" type="button" class="btn btn-primary">Poverty</a>
 </div>
-
-
+</div>
+</div>
 
 # Citizen Voting Age Population {.tabset .tabset-fade .tabset-pills}
 
+<a href="#top"><button class="btn btn-outline-primary center-block btn-small"> Back to Top</button></a>
+
+
 > Citizen Voting Age Population (CVAP) data is complied using Table [B05003](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B05003) from the 2015 ACS 5-Year estimates.
+
+
 
 ## Major Racial Groups
 
@@ -269,6 +284,9 @@ national_tbl_display(national_cvap,"NHPI Detail Combo",cvap_columns,"CVAP")%>%
 
 
 # Education {.tabset .tabset-fade .tabset-pills}
+
+<a href="#top"><button class="btn bbtn-outline-primary center-block btn-small"> Back to Top</button></a>
+
 
 > Educational Attainment data is complied using Table [B15002](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B15002) from the 2015 ACS 5-Year estimates.
 
@@ -350,6 +368,8 @@ national_tbl_display(national_edu,"NHPI Detail Combo",education_columns,"Total")
 
 # Insurance Coverage {.tabset .tabset-fade .tabset-pills}
 
+<a href="#top"><button class="btn btn-outline-primary center-block btn-small"> Back to Top</button></a>
+
 >Health Insurance Data is complied using Table
 [B27001](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B27001)
 from the 2015 ACS 5-Year estimates.
@@ -423,8 +443,10 @@ national_tbl_display(national_insurance,"NHPI Detail Combo",insurance_columns,"T
 ```
 
 # Limited English Proficiency {.tabset .tabset-fade .tabset-pills}
+<a href="#top"><button class="btn btn-outline-primary center-block btn-small"> Back to Top</button></a>
 
-> Limited English Proficiency (LEP) refers to the proportion of individuals who a language other than english at home & speak english less than "very well".
+
+> Limited English Proficiency (LEP) refers to the proportion of individuals who speak a language other than english at home & speak english less than "very well".
 Limited English Proficiency data is complied using Table [B16004](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B16004) from the 2015 ACS 5-Year estimates.
 
 
@@ -503,6 +525,9 @@ national_tbl_display(national_lep,"NHPI Detail Combo",lep_columns,"Total Lep")%>
 
 
 # Nativity {.tabset .tabset-fade .tabset-pills}
+
+<a href="#top"><button class="btn btn-outline-primary center-block btn-small"> Back to Top</button></a>
+
 
 > Limited English Proficiency data is complied using Table [B05012](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B05012) from the 2015 ACS 5-Year estimates.
 
@@ -584,6 +609,7 @@ national_tbl_display(national_nativity,"NHPI Detail Combo",nativity_columns,"Tot
 
 
 # Population {.tabset .tabset-fade .tabset-pills}
+<a href="#top"><button class="btn btn-outline-primary center-block btn-small"> Back to Top</button></a>
 
 > Population data is complied using Table [B01003](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B01003) from the 2015 ACS 5-Year estimates.
 

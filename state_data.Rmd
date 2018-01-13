@@ -25,17 +25,41 @@ options(highcharter.lang = hcoptslang)
 
 #Read in files
 state_edu<- readxl::read_xlsx("raw_data/state/state_edu.xlsx")
-
+state_LEP<- readxl::read_xlsx("raw_data/state/state_LEP.xlsx")
+state_nativity<- readxl::read_xlsx("raw_data/state/state_nativity.xlsx")
+state_poverty<- readxl::read_xlsx("raw_data/state/state_poverty.xlsx")
+state_pop<- readxl::read_xlsx("raw_data/state/state_pop.xlsx")
+state_cvap<- readxl::read_xlsx("raw_data/state/state_cvap_alone.xlsx")
+## [rename the variable to pop_id] state_edu <- state_edu %>% rename(pop_id = popgroupid)
 
 ## Using the lookup table to merge in Group Names and the proper population ID names
 pop_id_lookup <- read_csv("raw_data/pop_id_lookup.csv") #Look-up table
 state_edu<-state_edu %>% left_join(pop_id_lookup) %>% select(-geoid, -pop_id)
-
+state_LEP<-state_LEP %>% left_join(pop_id_lookup) %>% select(-geoid, -pop_id)
+state_nativity<-state_nativity %>% left_join(pop_id_lookup) %>% select(-geoid, -pop_id)
+state_poverty<-state_poverty %>% left_join(pop_id_lookup) %>% select(-geoid, -pop_id)
+state_pop<-state_pop %>% left_join(pop_id_lookup) %>% select(-geoid, -pop_id)
 ### Specifying Groups
 groups_alone <- c("Total population", "Asian alone", "NHPI alone")
-groups_combo <- c("Total population", "NHPI alone or combo", "NHPI alone or combo")
+groups_combo <- c("Total population", "Asian alone or combo", "NHPI alone or combo")
+groups_race <- c("Total population", "Asian alone", "NHPI alone", "Asian alone or combo", "NHPI alone or combo")
 
+groups_asian_detail_alone <-pop_id_lookup %>%
+  filter(group_id == "Asian Detail") %>% 
+  select(group_name) %>% pull()
 
+groups_asian_detail_combo <-pop_id_lookup %>%
+  filter(group_id == "Asian Detail Combo") %>% 
+  select(group_name) %>%  pull()
+
+groups_nhpi_detail_alone <-pop_id_lookup %>%
+  filter(group_id == "NHPI Detail") %>% 
+  select(group_name) %>%  pull()
+
+groups_nhpi_detail_combo <-pop_id_lookup %>%
+  filter(group_id == "NHPI Detail Combo") %>% 
+  select(group_name) %>%  pull()
+  
 
 ## Function that will take excel file and make it long
 state_convert_long <- function(data){
@@ -70,6 +94,96 @@ state_convert_long <- function(data){
 
 ```
 
+```{r setup pop, include = FALSE}
+
+### Getting Rid of Estimates where the "CHECK" variable is flagging uncertainty
+state_pop <- state_pop %>% 
+  mutate(est_tot_pop = 
+            case_when( checking_tot_pop == 1 ~  NA_real_ ,TRUE ~ est_tot_pop),
+         est_state_pop  =
+          case_when( checking_state_pop == 1 ~  NA_real_ ,TRUE ~ est_state_pop))
+
+# Dropping those indicators
+state_pop <- state_pop %>% select(-checking_tot_pop,
+                                  -checking_state_pop)
+
+
+
+state_pop_map <- state_pop
+
+# Renaming columns
+state_pop<- state_pop %>% rename(Total = est_tot_pop,
+         `Population` = est_state_pop,
+         Group = group_name,
+         `% of the Pop`= pct_pop,
+         State = geodisplaylabel)
+
+
+
+## Converting it to Long
+state_pop_long <- state_convert_long(state_pop)
+## add all outcome data here (just replace state_edu with another data name)
+
+
+## Column Specification
+pop_estimates <- c("Total")
+pop_percent <- c("% of the Pop")
+
+
+
+
+### Calculating Average for the sentence
+avg_aa_pop <- state_pop %>% filter(Group == "Asian alone") %>% select(State, `% of the Pop`) %>%  summarize(mean = mean(`% of the Pop`, na.rm=TRUE)) %>% pull() %>% round(.,4)
+avg_aa_pop <- avg_aa_pop*100
+ 
+avg_pi_pop <- state_pop %>% filter(Group == "NHPI alone") %>% select(State, `% of the Pop`) %>%  summarize(mean = mean(`% of the Pop`, na.rm=TRUE)) %>% pull() %>% round(.,4)
+avg_pi_pop <- avg_pi_pop*100
+```
+
+```{r setup cvap-alone, include = FALSE}
+
+### Getting Rid of Estimates where the "CHECK" variable is flagging uncertainty
+state_cvap <- state_cvap %>% 
+  mutate(est_state_cvap = 
+            case_when( checking_state_cvap == 1 ~  NA_real_ ,TRUE ~ est_state_cvap),
+            est_aapi_cvap = 
+            case_when( checking_aapi_cvap == 1 ~  NA_real_ ,TRUE ~ est_aapi_cvap),
+         est_aapi_pop  =
+          case_when( checking_aapi_pop == 1 ~  NA_real_ ,TRUE ~ est_aapi_pop))
+
+# Dropping those indicators
+state_cvap <- state_cvap %>% select(-checking_state_cvap,
+                                  -checking_aapi_pop,
+                                  -checking_aapi_cvap)
+
+# Create Columns
+state_cvap <- state_cvap %>% mutate(
+ pct_state_cvap   = est_state_cvap /est_state_pop)
+
+state_cvap_map <- state_cvap
+
+# Renaming columns
+state_cvap<- state_cvap %>% rename(`Total Population`= est_state_pop,
+         `Total CVAP` = est_state_cvap,
+         `AAPI Pop`= est_aapi_pop,
+         `AAPI CVAP`= est_aapi_cvap,
+         `% AAPI CVAP` = pct_aapi_cvap,
+         `% AAPI Pop`= pct_aapi_pop,
+         `% State CVAP`= pct_state_cvap,
+         State = geoname)
+
+
+### Calculating Average for the sentence
+avg_state_cvap <- state_cvap %>% select(State, `% State CVAP`) %>%  summarize(mean = mean(`% State CVAP`, na.rm=TRUE)) %>% pull() %>% round(.,4)
+avg_state_cvap <- avg_state_cvap*100
+
+avg_aapi_cvap <- state_cvap %>% select(State, `% AAPI CVAP`) %>%  summarize(mean = mean(`% AAPI CVAP`, na.rm=TRUE)) %>% pull() %>% round(.,4)
+avg_aapi_cvap <- avg_aapi_cvap*100
+
+```
+
+
+
 ```{r setup education, include = FALSE}
 
 ### Getting Rid of Estimates where the "CHECK" variable is flagging uncertainty
@@ -91,19 +205,23 @@ state_edu <- state_edu %>% select(-check_hsless,
 # Create Columns
 state_edu <- state_edu %>% mutate(
  pct_hsless   = est_hsless/est_totpop,
- pct_bahigher = est_bahigher/ est_totpop)
+ pct_bahigher = est_bahigher/ est_totpop,
+ pct_somecollegeaa = est_somecollegeaa / est_totpop,
+ pct_hsged = est_hsged / est_totpop)
 
 
 state_edu_map <- state_edu
 
 # Renaming columns
-state_edu<- state_edu %>% rename(Total = est_totpop,
+state_edu<- state_edu %>% rename(`Total 25yrs+ old`= est_totpop,
          `Less than HS` = est_hsless,
          `HS or GED` = est_hsged,
          `Some College or AA` = est_somecollegeaa,
          `BA or higher` = est_bahigher,
          Group = group_name,
          `% Less than HS`= pct_hsless,
+         `% HS and GED` = pct_hsged,
+         `% Some College or AA` = pct_somecollegeaa,
          `% BA or higher` = pct_bahigher,
          State = geodisplaylabel)
 
@@ -111,12 +229,12 @@ state_edu<- state_edu %>% rename(Total = est_totpop,
 
 ## Converting it to Long
 state_edu_long <- state_convert_long(state_edu)
-
+## add all outcome data here (just replace state_edu with another data name)
 
 
 ## Column Specification
-education_estimates <- c("Total", "Less than HS", "HS or GED", "Some College or AA", "BA or higher")
-education_percent <- c("% Less than HS", "% BA or higher")
+education_estimates <- c("Total 25yrs+ old", "Less than HS", "HS or GED", "Some College or AA", "BA or higher")
+education_percent <- c("% Less than HS", "% BA or higher", "% HS and GED", "% Some College or AA")
 
 
 
@@ -130,13 +248,309 @@ avg_ba_higher <- avg_ba_higher*100
 
 ```
 
+```{r setup LEP, include = FALSE}
+
+### Getting Rid of Estimates where the "CHECK" variable is flagging uncertainty
+state_LEP <- state_LEP %>% 
+  mutate(est_tot_pop = 
+            case_when( checking_tot_pop == 1 ~  NA_real_ ,TRUE ~ est_tot_pop),
+    est_lep = 
+            case_when( checking_lep == 1 ~  NA_real_ ,TRUE ~ est_lep),
+         est_other_lang  =
+          case_when( checking_other_lang == 1 ~  NA_real_ ,TRUE ~ est_other_lang))
+        
+# Dropping those indicators
+state_LEP <- state_LEP %>% select(-checking_tot_pop,
+                                  -checking_lep,
+                                  -checking_other_lang)
+
+# Create Columns
+state_LEP <- state_LEP %>% mutate(
+pct_lep   = est_lep/est_other_lang)
+
+
+state_LEP_map <- state_LEP
+
+# Renaming columns
+state_LEP<- state_LEP %>% rename(Total = est_tot_pop,
+         `LEP` = est_lep,
+         Group = group_name,
+         `Speak other language` = est_other_lang,
+         `% LEP`= pct_lep,
+         State = geodisplaylabel)
+
+
+## Converting it to Long
+state_LEP_long <- state_convert_long(state_LEP)
+## add all outcome data here (just replace state_edu with another data name)
+
+## Column Specification
+LEP_estimates <- c("Total", "LEP", "Speak Other Language")
+LEP_percent <- c("% LEP")
+
+
+### Calculating Average for the sentence
+avg_lep <- state_LEP %>% filter(Group == "Total population") %>% select(State, `% LEP`) %>%  summarize(mean = mean(`% LEP`,na.rm = T)) %>% pull() %>% round(.,4)
+avg_lep <- avg_lep*100
+
+```
+
+
+
+```{r setup nativity, include = FALSE}
+
+### Getting Rid of Estimates where the "CHECK" variable is flagging uncertainty
+state_nativity <- state_nativity %>% 
+  mutate(est_tot_pop = 
+            case_when( checking_tot_pop == 1 ~  NA_real_ ,TRUE ~ est_tot_pop),
+         est_foreign_born  =
+          case_when( checking_foreign_born == 1 ~  NA_real_ ,TRUE ~ est_foreign_born))
+
+
+# Dropping those indicators
+state_nativity <- state_nativity %>% select(-checking_tot_pop,
+                                  -checking_foreign_born)
+
+# Create Columns
+state_nativity <- state_nativity %>% mutate(
+pct_foreign_born   = est_foreign_born / est_tot_pop)
+
+state_nativity_map <- state_nativity
+
+# Renaming columns
+state_nativity<- state_nativity %>% rename(Total = est_tot_pop,
+         `Foreign Born` = est_foreign_born,
+         Group = group_name,
+         `% Foreign Born`= pct_foreign_born,
+         State = geodisplaylabel)
+
+
+
+## Converting it to Long
+state_nativity_long <- state_convert_long(state_nativity)
+## add all outcome data here (just replace state_edu with another data name)
+
+
+## Column Specification
+nativity_estimates <- c("Total", "Foreign Born")
+nativity_percent <- c("% Foreign Born")
+
+
+
+### Calculating Average for the sentence
+avg_foreign_born <- state_nativity %>% filter(Group == "Total population") %>% select(State, `% Foreign Born`) %>%  summarize(mean = mean(`% Foreign Born`, na.rm = T)) %>% pull() %>% round(.,4)
+avg_foreign_born <- avg_foreign_born*100
+ 
+```
+
+```{r setup poverty, include = FALSE}
+
+### Getting Rid of Estimates where the "CHECK" variable is flagging uncertainty
+state_poverty <- state_poverty %>% 
+  mutate(est_tot_pop = 
+            case_when( checking_tot_pop == 1 ~  NA_real_ ,TRUE ~ est_tot_pop),
+         est_below_pov  =
+          case_when( checking_below_pov == 1 ~  NA_real_ ,TRUE ~ est_below_pov),
+         est_above_pov  =
+          case_when( checking_above_pov == 1 ~  NA_real_ ,TRUE ~ est_above_pov))
+
+# Dropping those indicators
+state_poverty <- state_poverty %>% select(-checking_tot_pop,
+                                  -checking_below_pov,
+                                  -checking_above_pov)
+
+# Create Columns
+state_poverty <- state_poverty %>% mutate(
+ pct_below_pov   = est_below_pov/est_tot_pop,
+ pct_above_pov = est_above_pov/ est_tot_pop)
+
+
+state_poverty_map <- state_poverty
+
+# Renaming columns
+state_poverty<- state_poverty %>% rename(Total = est_tot_pop,
+         `Below Poverty` = est_below_pov,
+         `Above Poverty` = est_above_pov,
+         Group = group_name,
+         `% Below Poverty`= pct_below_pov,
+         `% Above Poverty` = pct_above_pov,
+         State = geodisplaylabel)
+
+
+
+
+## Converting it to Long
+state_poverty_long <- state_convert_long(state_poverty)
+## add all outcome data here (just replace state_poverty with another data name)
+
+
+## Column Specification
+poverty_estimates <- c("Total", "Below Poverty", "Above Poverty")
+poverty_percent <- c("% Below Poverty", "% Above Poverty")
+
+
+
+### Calculating Average for the sentence
+avg_below_pov <- state_poverty %>% filter(Group == "Total population") %>% select(State, `% Below Poverty`) %>%  summarize(mean = mean(`% Below Poverty`, na.rm=T)) %>% pull() %>% round(.,4)
+avg_below_pov <- avg_below_pov*100
+
+
+
+```
+
+
+
+
+
+
+
+
 
 <div class="jumbotron">
   <h1>State Data</h1>
   <p>Use the buttons to select the topic and then the tabs for population groups</p>
 </div>
 
+# Detailed Origin {.tabset .tabset-fade .tabset-pills}
+<a href="#top"><button class="btn btn-outline-primary center-block btn-small"> Back to Top</button></a>
+
+> Detailed Origin data is complied using Table [B01003](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B01003) from the 2015 ACS 5-Year estimates.
+
+Nationally, about **`r avg_aa_pop`**% of the population is Asian American, and **`r avg_pi_pop`**% of the population is NHPI.
+
+## Major Racial Groups
+
+
+```{r pop-race, echo=FALSE, message=FALSE, warning=FALSE}
+
+  
+ state_display_table(state_pop_long, groups_race, pop_estimates) %>% 
+  formatCurrency(columns = c(2:6),currency = "", interval = 3, mark = ",", digits=0) 
+
+```
+
+## Raw Asian Alone
+
+
+```{r pop-asian-alone, echo=FALSE, message=FALSE, warning=FALSE}
+
+  state_pop %>%
+    filter(group_id %in% "Asian Detail") %>%
+    select(-group_id, - `% of the Pop`,-`Population`) %>%
+    spread(Group,Total,fill = NA) %>%
+    datatable(extensions = 
+                list("Buttons" = NULL, 'FixedColumns'= T, "Scroller"=T),
+              rownames= FALSE, 
+              options = list(
+                dom = 'rtB',
+                buttons = c('copy', 'csv', 'excel'),
+                scrollX = TRUE,
+                lengthMenu = c(25, 50, 100), pageLength = 50)) %>% 
+  formatCurrency(columns = c(2:22),currency = "", interval = 3, mark = ",", digits=0) 
+
+```
+
+## Raw NHPI Alone
+
+
+```{r pop-nhpi-alone, echo=FALSE, message=FALSE, warning=FALSE}
+
+  
+ state_display_table(state_pop_long, groups_nhpi_detail_alone, pop_estimates) %>% 
+  formatCurrency(columns = c(2:10),currency = "", interval = 3, mark = ",", digits=0) 
+
+```
+
+## Raw Asian Combo
+
+
+```{r pop-asian-combo, echo=FALSE, message=FALSE, warning=FALSE}
+
+  
+  state_pop %>%
+    filter(group_id %in% "Asian Detail Combo") %>%
+    select(-group_id, - `% of the Pop`,-`Population`) %>%
+    spread(Group,Total,fill = NA) %>%
+    datatable(extensions = 
+                list("Buttons" = NULL, 'FixedColumns'= T, "Scroller"=T),
+              rownames= FALSE, 
+              options = list(
+                dom = 'rtB',
+                buttons = c('copy', 'csv', 'excel'),
+                scrollX = TRUE,
+                lengthMenu = c(25, 50, 100), pageLength = 50)) %>% 
+  formatCurrency(columns = c(2:22),currency = "", interval = 3, mark = ",", digits=0)
+
+```
+
+## Raw NHPI Combo
+
+
+```{r pop-nhpi-combo, echo=FALSE, message=FALSE, warning=FALSE}
+
+  
+ state_display_table(state_pop_long, groups_nhpi_detail_combo, pop_estimates) %>% 
+  formatCurrency(columns = c(2:10),currency = "", interval = 3, mark = ",", digits=0) 
+
+```
+
+
+## Visualize Data
+
+```{r pop visualize, echo=FALSE, message=FALSE, warning=FALSE}
+
+
+ state_pop_map <- state_pop_map %>%
+  gather(estimate_type,
+         estimate,
+         -geodisplaylabel,
+         -group_name,
+         -group_id)
+
+ state_pop_map <- state_pop_map %>%
+     filter(group_name %in% groups_alone) %>%
+   filter(str_detect(estimate_type, "est_tot")) %>%
+     select(-group_id) %>%
+     mutate(long_key=paste(group_name, estimate_type, sep="_")) %>% #Combining Pop_ID and Estimate type
+     select(-group_name, -estimate_type)  %>% 
+     spread(long_key, estimate,fill = NA) 
+  
+
+state_pop_map <- state_pop_map %>% mutate(
+  state_pop = `Total population_est_tot_pop`/1000,
+  asian_pop = `Asian alone_est_tot_pop`/1000,
+  nhpi_pop = `NHPI alone_est_tot_pop`/1000)
+
+x <- c("{point.name}:", "Asian Alone:","NHPI Alone:")
+title<-"State Population"
+y <- c(" {point.value:,.0f} thousand", " {point.asian_pop:,.0f} thousand",
+" {point.nhpi_pop:,.0f} thousand")
+#style <- "style=font-size:80%"
+
+data(usgeojson)
+highchart() %>%
+  hc_title(text = "State Population", align = "center") %>%
+  hc_subtitle(text = "Source: 2011-2015 ACS using Asian/NHPI Alone", align = "center") %>%
+  hc_chart(backgroundColor = "transparent") %>%
+  hc_add_series_map(usgeojson, state_pop_map, name = "State Population", value = "state_pop", joinBy = c("name", "geodisplaylabel"),
+                    borderColor= "transparent") %>%
+  hc_tooltip(pointFormat = tooltip_table(x,y,title), useHTML=T,  headerFormat= "")%>%
+  hc_add_theme(hc_theme_538()) %>%
+  hc_colorAxis(stops = color_stops(5),labels= list(format = "{value}"),showInLegend=T) %>%
+  hc_legend(title = list(text= "Statewide Population", fontStyle ='italic'),align = "center",verticalAlign = "bottom",
+            layout = "horizontal", padding = 5) %>% 
+  #hc_legend(layout = "vertical", align = "right",
+   #         floating = TRUE, valueDecimals = 0, valueSuffix = " thousand") 
+  hc_exporting(enabled = TRUE)
+```
+
+
+
+
+
 # Education {.tabset .tabset-fade .tabset-pills}
+<a href="#top"><button class="btn btn-outline-primary center-block btn-small"> Back to Top</button></a>
+
 
 > Educational Attainment data is complied using Table [B15002](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B15002) from the 2015 ACS 5-Year estimates.
 
@@ -147,8 +561,7 @@ Nationally, about **`r avg_hs_less`**% of Americans have less than a High School
 
 ```{r EDU-alone-pct, echo=FALSE, message=FALSE, warning=FALSE}
 
-state_display_table(state_edu_long, groups_alone,education_percent) %>% formatPercentage(columns = c(2:7), digits = 2)
-
+state_display_table(state_edu_long, groups_alone,education_percent) %>% formatPercentage(columns = c(2:13), digits = 2)
 
 ```
 
@@ -157,39 +570,13 @@ state_display_table(state_edu_long, groups_alone,education_percent) %>% formatPe
 
 ```{r EDU-combo-pct, echo=FALSE, message=FALSE, warning=FALSE}
 
-state_display_table(state_edu_long, groups_combo,education_percent) %>% formatPercentage(columns = c(2:7), digits = 2)
-
-
-```
-
-## Raw Asian & NHPI Alone
-
-
-```{r EDU-combo-Alone, echo=FALSE, message=FALSE, warning=FALSE}
-
-  
- state_display_table(state_edu_long, groups_alone,education_estimates) %>% 
-  formatCurrency(columns = c(2:16),currency = "", interval = 3, mark = ",", digits=0) 
+state_display_table(state_edu_long, groups_combo,education_percent) %>% formatPercentage(columns = c(2:13), digits = 2)
 
 
 ```
 
 
-## Raw Asian & NHPI Combo
-
-```{r EDU-Combo, echo=FALSE, message=FALSE, warning=FALSE}
-
- state_display_table(state_edu_long, groups_combo,education_estimates) %>% 
-  formatCurrency(columns = c(2:16),currency = "", interval = 3, mark = ",", digits=0) 
-
-
-
-```
-
-
-## Visualize Data {#nextsteps}
-
-
+## Visualize Data
 
 ```{r edu visualize, echo=FALSE, message=FALSE, warning=FALSE}
 
@@ -241,4 +628,400 @@ highchart() %>%
   hc_exporting(enabled = TRUE)
 
 ```
+
+
+# Limited English Proficiency {.tabset .tabset-fade .tabset-pills}
+<a href="#top"><button class="btn btn-outline-primary center-block btn-small"> Back to Top</button></a>
+
+> Limited English Proficiency (LEP) refers to the proportion of individuals who speak a language other than english at home & speak english less than "very well".
+Limited English Proficiency data is complied using Table [B16004](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B16004) from the 2015 ACS 5-Year estimates.
+
+Nationally Among Americans who speak a language other than english at home, about **`r avg_lep`**% of them speak English less than "very well".
+
+## % Asian & NHPI Alone
+
+```{r LEP-alone-pct, echo=FALSE, message=FALSE, warning=FALSE}
+
+state_display_table(state_LEP_long, groups_alone,LEP_percent) %>% formatPercentage(columns = c(2:4), digits = 2)
+
+
+```
+
+## % Asian & NHPI Combo
+
+
+```{r LEP-combo-pct, echo=FALSE, message=FALSE, warning=FALSE}
+
+state_display_table(state_LEP_long, groups_combo,LEP_percent) %>% formatPercentage(columns = c(2:4), digits = 2)
+
+
+```
+
+## Raw Asian & NHPI Alone
+
+
+```{r LEP-combo-Alone, echo=FALSE, message=FALSE, warning=FALSE}
+
+  
+ state_display_table(state_LEP_long, groups_alone,LEP_estimates) %>% 
+  formatCurrency(columns = c(2:13),currency = "", interval = 3, mark = ",", digits=0) 
+
+
+```
+
+
+## Raw Asian & NHPI Combo
+
+```{r LEP-Combo, echo=FALSE, message=FALSE, warning=FALSE}
+
+ state_display_table(state_LEP_long, groups_combo,LEP_estimates) %>% 
+  formatCurrency(columns = c(2:13),currency = "", interval = 3, mark = ",", digits=0) 
+
+
+
+```
+
+
+
+## Visualize Data
+
+```{r LEP visualize, echo=FALSE, message=FALSE, warning=FALSE}
+
+
+ state_LEP_map <- state_LEP_map %>%
+  gather(estimate_type,
+         estimate,
+         -geodisplaylabel,
+         -group_name,
+         -group_id)
+
+
+
+ state_LEP_map <- state_LEP_map %>%
+     filter(group_name %in% groups_alone) %>%
+     filter(str_detect(estimate_type, "pct_")) %>%
+     select(-group_id) %>%
+     mutate(long_key=paste(group_name, estimate_type, sep="_")) %>% 
+   #Combining Pop_ID and Estimate type
+     select(-group_name, -estimate_type)  %>% 
+     spread(long_key, estimate,fill = NA) 
+  
+state_LEP_map <- state_LEP_map %>% mutate(
+  pct_state_lep = round(`Total population_pct_lep`*100,2),
+  pct_asian_lep = round(`Asian alone_pct_lep`*100,2),
+  pct_nhpi_lep = round(`NHPI alone_pct_lep`*100,2)
+)
+
+x <- c("{point.name}:", "Asian Alone:","NHPI Alone:")
+title<-"Percent of Limited English Proficiency"
+y <- c(" {point.value:.1f}%", " {point.pct_asian_lep:.1f}%",
+" {point.pct_nhpi_lep:.1f}%")
+#style <- "style=font-size:80%"
+
+data(usgeojson)
+highchart() %>%
+  hc_title(text = "Limited English Proficiency", align = "center") %>%
+  hc_subtitle(text = "Source: 2011-2015 ACS using Asian/NHPI Alone", align = "center") %>%
+  hc_chart(backgroundColor = "transparent") %>%
+  hc_add_series_map(usgeojson, state_LEP_map, name = "Limited English Proficiency",value = "pct_state_lep", joinBy = c("name", "geodisplaylabel"),
+                    borderColor= "transparent") %>%
+  hc_tooltip(pointFormat = tooltip_table(x,y,title), useHTML=T,  headerFormat= "")%>%
+  hc_add_theme(hc_theme_538()) %>%
+  hc_colorAxis(stops = color_stops(5),labels= list(format = "{value}%"),showInLegend=T) %>%
+  hc_legend(title = list(text= "Statewide Percentage", fontStyle ='italic'),align = "center",verticalAlign = "bottom",
+            layout = "horizontal", padding = 5) %>% 
+  #hc_legend(layout = "vertical", align = "right",
+   #         floating = TRUE, valueDecimals = 0, valueSuffix = "%") 
+  hc_exporting(enabled = TRUE)
+
+```
+
+# Nativity {.tabset .tabset-fade .tabset-pills}
+<a href="#top"><button class="btn btn-outline-primary center-block btn-small"> Back to Top</button></a>
+
+> Nativity data is complied using Table [B05012](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B05012) from the 2015 ACS 5-Year estimates.
+
+Nationally, about **`r avg_foreign_born`**% of Americans are foreign born.
+
+## % Asian & NHPI Alone
+
+
+```{r nativity-alone-pct, echo=FALSE, message=FALSE, warning=FALSE}
+
+state_display_table(state_nativity_long, groups_alone,nativity_percent) %>% formatPercentage(columns = c(2:4), digits = 2)
+
+
+```
+
+## % Asian & NHPI Combo
+
+
+
+```{r nativity-combo-pct, echo=FALSE, message=FALSE, warning=FALSE}
+
+state_display_table(state_nativity_long, groups_combo,nativity_percent) %>% formatPercentage(columns = c(2:4), digits = 2)
+
+
+```
+
+## Raw Asian & NHPI Alone
+
+
+```{r nativity-combo-Alone, echo=FALSE, message=FALSE, warning=FALSE}
+
+  
+ state_display_table(state_nativity_long, groups_alone,nativity_estimates) %>% 
+  formatCurrency(columns = c(2:7),currency = "", interval = 3, mark = ",", digits=0) 
+
+
+```
+
+
+## Raw Asian & NHPI Combo
+
+```{r nativity-Combo, echo=FALSE, message=FALSE, warning=FALSE}
+
+ state_display_table(state_nativity_long, groups_combo,nativity_estimates) %>% 
+  formatCurrency(columns = c(2:7),currency = "", interval = 3, mark = ",", digits=0) 
+
+
+
+```
+
+## Visualize Data
+
+```{r nativity visualize, echo=FALSE, message=FALSE, warning=FALSE}
+
+
+ state_nativity_map <- state_nativity_map %>%
+  gather(estimate_type,
+         estimate,
+         -geodisplaylabel,
+         -group_name,
+         -group_id)
+
+
+
+ state_nativity_map <- state_nativity_map %>%
+     filter(group_name %in% groups_alone) %>%
+     filter(str_detect(estimate_type, "pct_")) %>%
+     select(-group_id) %>%
+     mutate(long_key=paste(group_name, estimate_type, sep="_")) %>% #Combining Pop_ID and Estimate type
+     select(-group_name, -estimate_type)  %>% 
+     spread(long_key, estimate,fill = NA) 
+  
+
+state_nativity_map <- state_nativity_map %>% mutate(
+  pct_state_foreign_born = round(`Total population_pct_foreign_born`*100,2),
+  pct_asian_foreign_born = round(`Asian alone_pct_foreign_born`*100,2),
+  pct_nhpi_foreign_born = round(`NHPI alone_pct_foreign_born`*100,2)
+)
+
+x <- c("{point.name}:", "Asian Alone:","NHPI Alone:")
+title<-"Percent Foreign Born"
+y <- c(" {point.value:.1f}%", " {point.pct_asian_foreign_born:.1f}%",
+" {point.pct_nhpi_foreign_born:.1f}%")
+#style <- "style=font-size:80%"
+
+data(usgeojson)
+highchart() %>%
+  hc_title(text = "Foreign Born Population", align = "center") %>%
+  hc_subtitle(text = "Source: 2011-2015 ACS using Asian/NHPI Alone", align = "center") %>%
+  hc_chart(backgroundColor = "transparent") %>%
+  hc_add_series_map(usgeojson, state_nativity_map, name = "Nativity",value = "pct_state_foreign_born", joinBy = c("name", "geodisplaylabel"),
+                    borderColor= "transparent") %>%
+  hc_tooltip(pointFormat = tooltip_table(x,y,title), useHTML=T,  headerFormat= "")%>%
+  hc_add_theme(hc_theme_538()) %>%
+  hc_colorAxis(stops = color_stops(5),labels= list(format = "{value}%"),showInLegend=T) %>%
+  hc_legend(title = list(text= "Statewide Percentage", fontStyle ='italic'),align = "center",verticalAlign = "bottom",
+            layout = "horizontal", padding = 5) %>% 
+  #hc_legend(layout = "vertical", align = "right",
+   #         floating = TRUE, valueDecimals = 0, valueSuffix = "%") 
+  hc_exporting(enabled = TRUE)
+
+```
+
+
+# Poverty {.tabset .tabset-fade .tabset-pills}
+<a href="#top"><button class="btn btn-outline-primary center-block btn-small"> Back to Top</button></a>
+
+> Poverty data is complied using Table [B17001](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B17001) from the 2015 ACS 5-Year estimates.
+
+Nationally, about **`r avg_below_pov`**% of Americans are living below poverty line.
+
+## % Asian & NHPI Alone
+
+
+```{r poverty-alone-pct, echo=FALSE, message=FALSE, warning=FALSE}
+
+state_display_table(state_poverty_long, groups_alone,poverty_percent) %>% formatPercentage(columns = c(2:7), digits = 2)
+
+```
+
+## % Asian & NHPI Combo
+
+
+```{r poverty-combo-pct, echo=FALSE, message=FALSE, warning=FALSE}
+
+state_display_table(state_poverty_long, groups_combo,poverty_percent) %>% formatPercentage(columns = c(2:7), digits = 2)
+
+
+```
+
+## Raw Asian & NHPI Alone
+
+
+```{r poverty-combo-Alone, echo=FALSE, message=FALSE, warning=FALSE}
+
+  
+ state_display_table(state_poverty_long, groups_alone,poverty_estimates) %>% 
+  formatCurrency(columns = c(2:10),currency = "", interval = 3, mark = ",", digits=0) 
+
+
+```
+
+
+## Raw Asian & NHPI Combo
+
+```{r poverty-Combo, echo=FALSE, message=FALSE, warning=FALSE}
+
+ state_display_table(state_poverty_long, groups_combo,poverty_estimates) %>% 
+  formatCurrency(columns = c(2:10),currency = "", interval = 3, mark = ",", digits=0) 
+
+
+
+```
+
+
+## Visualize Data
+
+```{r poverty visualize, echo=FALSE, message=FALSE, warning=FALSE}
+
+
+ state_poverty_map <- state_poverty_map %>%
+  gather(estimate_type,
+         estimate,
+         -geodisplaylabel,
+         -group_name,
+         -group_id)
+
+
+
+ state_poverty_map <- state_poverty_map %>%
+     filter(group_name %in% groups_alone) %>%
+     filter(str_detect(estimate_type, "pct_")) %>%
+     select(-group_id) %>%
+     mutate(long_key=paste(group_name, estimate_type, sep="_")) %>% #Combining Pop_ID and Estimate type
+     select(-group_name, -estimate_type)  %>% 
+     spread(long_key, estimate,fill = NA) 
+  
+
+state_poverty_map <- state_poverty_map %>% mutate(
+  pct_state_below_pov = round(`Total population_pct_below_pov`*100,2),
+  pct_asian_below_pov = round(`Asian alone_pct_below_pov`*100,2),
+  pct_nhpi_below_pov = round(`NHPI alone_pct_below_pov`*100,2)
+)
+
+x <- c("{point.name}:", "Asian Alone:","NHPI Alone:")
+title<-"Percent Below Poverty"
+y <- c(" {point.value:.1f}%", " {point.pct_asian_below_pov:.1f}%",
+" {point.pct_nhpi_below_pov:.1f}%")
+#style <- "style=font-size:80%"
+
+data(usgeojson)
+highchart() %>%
+  hc_title(text = "Poverty", align = "center") %>%
+  hc_subtitle(text = "Source: 2011-2015 ACS using Asian/NHPI Alone", align = "center") %>%
+  hc_chart(backgroundColor = "transparent") %>%
+  hc_add_series_map(usgeojson, state_poverty_map, name = "Below Poverty",value = "pct_state_below_pov", joinBy = c("name", "geodisplaylabel"),
+                    borderColor= "transparent") %>%
+  hc_tooltip(pointFormat = tooltip_table(x,y,title), useHTML=T,  headerFormat= "")%>%
+  hc_add_theme(hc_theme_538()) %>%
+  hc_colorAxis(stops = color_stops(5),labels= list(format = "{value}%"),showInLegend=T) %>%
+  hc_legend(title = list(text= "Statewide Percentage", fontStyle ='italic'),align = "center",verticalAlign = "bottom",
+            layout = "horizontal", padding = 5) %>% 
+  #hc_legend(layout = "vertical", align = "right",
+   #         floating = TRUE, valueDecimals = 0, valueSuffix = "%") 
+  hc_exporting(enabled = TRUE)
+
+```
+
+
+# Citizen Voting Age Population {.tabset .tabset-fade .tabset-pills}
+<a href="#top"><button class="btn btn-outline-primary center-block btn-small"> Back to Top</button></a>
+
+> CVAP data is complied using Table [B05003](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B05003) from the 2015 ACS 5-Year estimates.
+
+Nationally, about **`r avg_state_cvap`**% of Americans are eligible to vote, while the national average number for AAPI is **`r avg_aapi_cvap`**%
+
+## Raw Asian & NHPI Alone
+
+
+```{r cvap-alone-raw, echo=FALSE, message=FALSE, warning=FALSE}
+
+state_cvap_estimate <- state_cvap %>% select(State, `Total CVAP`, `AAPI CVAP`, `Total Population`, `AAPI Pop`) 
+
+datatable(state_cvap_estimate, extensions = list("Buttons" = NULL, 'FixedColumns'= T, "Scroller"=T),
+              rownames= FALSE, 
+              options = list(
+                dom = 'rtB',
+                buttons = c('copy', 'csv', 'excel'),
+                scrollX = TRUE,
+                lengthMenu = c(25, 50, 100), pageLength = 50)) %>% formatCurrency(columns = c(2:5),currency = "", interval = 3, mark = ",", digits=0)
+```
+
+## % Asian & NHPI alone
+
+
+```{r CVAP-combo-pct, echo=FALSE, message=FALSE, warning=FALSE}
+
+state_cvap_pct <- state_cvap %>% select(State, `% AAPI CVAP`, `% AAPI Pop`) 
+
+datatable(state_cvap_pct, extensions = list("Buttons" = NULL, 'FixedColumns'= T, "Scroller"=T),
+              rownames= FALSE, 
+              options = list(
+                dom = 'rtB',
+                buttons = c('copy', 'csv', 'excel'),
+                scrollX = TRUE,
+                lengthMenu = c(25, 50, 100), pageLength = 50)) %>% formatPercentage(columns = c(2:3), digits = 2)
+
+
+```
+
+
+
+## Visualize Data
+
+```{r CVAP visualize, echo=FALSE, message=FALSE, warning=FALSE}
+
+state_cvap_map <- state_cvap_map %>% mutate(
+  pct_state_cvap = round(pct_state_cvap*100,2),
+  pct_aapi_cvap = round(pct_aapi_cvap*100,2))
+
+  
+
+x <- c("{point.name}:", "AAPI Alone:")
+title<-"Percent of CVAP"
+y <- c(" {point.value:.1f}%", " {point.pct_aapi_cvap:.1f}%")
+#style <- "style=font-size:80%"
+
+data(usgeojson)
+highchart() %>%
+  hc_title(text = "CVAP", align = "center") %>%
+  hc_subtitle(text = "Source: 2011-2015 ACS using Asian/NHPI Alone", align = "center") %>%
+  hc_chart(backgroundColor = "transparent") %>%
+  hc_add_series_map(usgeojson, state_cvap_map, name = "CVAP",value = "pct_state_cvap", joinBy = c("name", "geoname"),
+                    borderColor= "transparent") %>%
+  hc_tooltip(pointFormat = tooltip_table(x,y,title), useHTML=T,  headerFormat= "")%>%
+  hc_add_theme(hc_theme_538()) %>%
+  hc_colorAxis(stops = color_stops(5),labels= list(format = "{value}%"),showInLegend=T) %>%
+  hc_legend(title = list(text= "Statewide Percentage", fontStyle ='italic'),align = "center",verticalAlign = "bottom",
+            layout = "horizontal", padding = 5) %>% 
+  #hc_legend(layout = "vertical", align = "right",
+   #         floating = TRUE, valueDecimals = 0, valueSuffix = "%") 
+  hc_exporting(enabled = TRUE)
+
+```
+
+
 

@@ -20,12 +20,19 @@ table {
   font-weight: 500;
 }
 
+.jumbotron{
+  background-color:#666666;
+  width:100%;
+}
 .jumbotron h1{
   color:#E5790D;
+  font-size:50px;
+  text-align:left;
 }
 
 .jumbotron p{
   font-weight:500;
+  color:white;
 }
 
 .thead{
