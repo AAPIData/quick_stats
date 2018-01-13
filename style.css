@@ -35,6 +35,11 @@ table {
   color:white;
 }
 
+.jumbotron .btn-primary {
+    color: #ffffff;
+    background-color: #E5790D;
+    border-color: #E5790D;
+}
 .thead{
   font-family: Avenir Next;
   font-size: 3vmin;
