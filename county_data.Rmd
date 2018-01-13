@@ -57,7 +57,7 @@ county_lep<-county_lep %>% left_join(pop_id_lookup) %>% select( -pop_id)
 ### Specifying Groups
 groups_alone <- c("Total population", "Asian alone", "NHPI alone")
 groups_combo <- c("Total population", "Asian alone or combo", "NHPI alone or combo")
-
+groups_race <- c("Total population", "Asian alone", "NHPI alone", "Asian alone or combo", "NHPI alone or combo")
 
 
 ## Function that will take excel file and make it long
@@ -210,6 +210,51 @@ avg_ba_higher <- avg_ba_higher*100
   <p>Use the buttons to select the topic and then the tabs for population groups</p>
 </div>
 
+# Detailed Origin {.tabset .tabset-fade .tabset-pills}
+
+> Detailed Origin data is complied using Table [B03001](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B03001) from the 2015 ACS 5-Year estimates.
+
+Nationally, about **`r avg_aa_pop`**% of Americans is Asian, and **`r avg_pi_pop`**% of Americans is NHPI.
+
+## Major Racial Groups
+
+
+```{r pop-race, echo=FALSE, message=FALSE, warning=FALSE}
+
+  
+ county_display_table(county_pop_long, groups_race,pop_estimates) %>% 
+  formatCurrency(columns = c(3:7),currency = "", interval = 3, mark = ",", digits=0) 
+
+
+```
+
+
+## Raw Asian & NHPI Alone
+
+
+```{r pop-Alone, echo=FALSE, message=FALSE, warning=FALSE}
+
+  
+ county_display_table(county_pop_long, groups_alone,pop_estimates) %>% 
+  formatCurrency(columns = c(3:5),currency = "", interval = 3, mark = ",", digits=0) 
+
+
+```
+
+
+## Raw Asian & NHPI Combo
+
+```{r pop-Combo, echo=FALSE, message=FALSE, warning=FALSE}
+
+ county_display_table(county_pop_long, groups_combo,pop_estimates) %>% 
+  formatCurrency(columns = c(3:5),currency = "", interval = 3, mark = ",", digits=0) 
+
+
+
+```
+
+
+
 # Education {.tabset .tabset-fade .tabset-pills}
 
 > Educational Attainment data is complied using Table [B15002](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B15002) from the 2015 ACS 5-Year estimates.
@@ -316,55 +361,4 @@ county_display_table(county_edu_long, groups_combo,education_percent) %>% format
 #   hc_exporting(enabled = TRUE)
 
 ```
-
-# Detailed Origin {.tabset .tabset-fade .tabset-pills}
-
-> Detailed Origin data is complied using Table [B03001](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B03001) from the 2015 ACS 5-Year estimates.
-
-Nationally, about **`r avg_aa_pop`**% of Americans is Asian, and **`r avg_pi_pop`**% of Americans is NHPI.
-
-## % Asian & NHPI Alone
-
-
-```{r pop-alone-pct, echo=FALSE, message=FALSE, warning=FALSE}
-
-county_display_table(county_pop_long, groups_alone,pop_percent) %>% formatPercentage(columns = c(3:8), digits = 2)
-
-
-```
-
-## % Asian & NHPI Combo
-
-
-```{r pop-combo-pct, echo=FALSE, message=FALSE, warning=FALSE}
-
-county_display_table(county_pop_long, groups_combo,pop_percent) %>% formatPercentage(columns = c(2:7), digits = 2)
-
-
-```
-
-## Raw Asian & NHPI Alone
-
-
-```{r pop-combo-Alone, echo=FALSE, message=FALSE, warning=FALSE}
-
-  
- county_display_table(county_pop_long, groups_alone,pop_estimates) %>% 
-  formatCurrency(columns = c(3:17),currency = "", interval = 3, mark = ",", digits=0) 
-
-
-```
-
-
-## Raw Asian & NHPI Combo
-
-```{r pop-Combo, echo=FALSE, message=FALSE, warning=FALSE}
-
- county_display_table(county_pop_long, groups_combo,pop_estimates) %>% 
-  formatCurrency(columns = c(3:17),currency = "", interval = 3, mark = ",", digits=0) 
-
-
-
-```
-
 
