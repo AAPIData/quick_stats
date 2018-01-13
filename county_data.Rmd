@@ -24,13 +24,35 @@ options(highcharter.lang = hcoptslang)
 
 
 #Read in files
+county_pop<- readxl::read_xlsx("raw_data/county/county_pop.xlsx")
 county_edu<- readxl::read_xlsx("raw_data/county/county_edu.xlsx")
-
+county_insurance<- readxl::read_xlsx("raw_data/county/county_insurance.xlsx")
+county_poverty<- readxl::read_xlsx("raw_data/county/county_poverty.xlsx")
+county_nativity<- readxl::read_xlsx("raw_data/county/county_nativity.xlsx")
+county_lep<- readxl::read_xlsx("raw_data/county/county_LEP.xlsx")
+county_cvap_alone<- readxl::read_xlsx("raw_data/county/county_cvap_alone.xlsx")
 
 ## Using the lookup table to merge in Group Names and the proper population ID names
 pop_id_lookup <- read_csv("raw_data/pop_id_lookup.csv") #Look-up table
+
+county_pop <- county_pop %>% rename(pop_id = popgroupid)
+county_pop<-county_pop %>% left_join(pop_id_lookup) %>% select( -pop_id)
+
 county_edu <- county_edu %>% rename(pop_id = popgroupid)
 county_edu<-county_edu %>% left_join(pop_id_lookup) %>% select( -pop_id)
+
+county_insurance <- county_insurance %>% rename(pop_id = popgroupid)
+county_insurance<-county_insurance %>% left_join(pop_id_lookup) %>% select( -pop_id)
+
+county_poverty <- county_poverty %>% rename(pop_id = popgroupid)
+county_poverty<-county_poverty %>% left_join(pop_id_lookup) %>% select( -pop_id)
+
+county_nativity <- county_nativity %>% rename(pop_id = popgroupid)
+county_nativity<-county_nativity %>% left_join(pop_id_lookup) %>% select( -pop_id)
+
+county_lep <- county_lep %>% rename(pop_id = popgroupid)
+county_lep<-county_lep %>% left_join(pop_id_lookup) %>% select( -pop_id)
+
 
 ### Specifying Groups
 groups_alone <- c("Total population", "Asian alone", "NHPI alone")
@@ -72,6 +94,54 @@ county_convert_long <- function(data){
 
 
 ```
+
+
+
+```{r setup pop, include = FALSE}
+
+### Getting Rid of Estimates where the "CHECK" variable is flagging uncertainty
+county_pop <- county_pop %>% 
+   mutate(est_tot_pop = 
+            case_when( checking_tot_pop == 1 ~  NA_real_ ,TRUE ~ est_tot_pop),
+         est_county_pop  =
+          case_when( checking_county_pop == 1 ~  NA_real_ ,TRUE ~ est_county_pop))
+
+# Dropping those indicators
+county_pop <- county_pop %>% select(-checking_tot_pop,
+                                  -checking_county_pop)
+
+
+
+county_pop_map <- county_pop
+
+# Renaming columns
+county_pop<- county_pop %>% rename(Total = est_tot_pop,
+         `Population` = est_county_pop,
+         Group = group_name,
+         `% of the Pop`= pct_pop,
+         county = geodisplaylabel)
+
+
+
+## Converting it to Long
+county_pop_long <- county_convert_long(county_pop)
+## add all outcome data here (just replace state_edu with another data name)
+
+
+
+## Column Specification
+pop_estimates <- c("Total")
+pop_percent <- c("% of the Pop")
+
+### Calculating Average for the sentence
+avg_aa_pop <- county_pop %>% filter(Group == "Asian alone") %>% select(county, `% of the Pop`) %>%  summarize(mean = mean(`% of the Pop`, na.rm=TRUE)) %>% pull() %>% round(.,4)
+avg_aa_pop <- avg_aa_pop*100
+ 
+avg_pi_pop <- county_pop %>% filter(Group == "NHPI alone") %>% select(county, `% of the Pop`) %>%  summarize(mean = mean(`% of the Pop`, na.rm=TRUE)) %>% pull() %>% round(.,4)
+avg_pi_pop <- avg_pi_pop*100
+
+```
+
 
 ```{r setup education, include = FALSE}
 
@@ -249,4 +319,55 @@ county_display_table(county_edu_long, groups_combo,education_percent) %>% format
 #   hc_exporting(enabled = TRUE)
 
 ```
+
+# Detailed Origin {.tabset .tabset-fade .tabset-pills}
+
+> Detailed Origin data is complied using Table [B03001](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B03001) from the 2015 ACS 5-Year estimates.
+
+Nationally, about **`r avg_aa_pop`**% of Americans is Asian, and **`r avg_pi_pop`**% of Americans is NHPI.
+
+## % Asian & NHPI Alone
+
+
+```{r pop-alone-pct, echo=FALSE, message=FALSE, warning=FALSE}
+
+county_display_table(county_pop_long, groups_alone,pop_percent) %>% formatPercentage(columns = c(3:8), digits = 2)
+
+
+```
+
+## % Asian & NHPI Combo
+
+
+```{r pop-combo-pct, echo=FALSE, message=FALSE, warning=FALSE}
+
+county_display_table(county_pop_long, groups_combo,pop_percent) %>% formatPercentage(columns = c(2:7), digits = 2)
+
+
+```
+
+## Raw Asian & NHPI Alone
+
+
+```{r pop-combo-Alone, echo=FALSE, message=FALSE, warning=FALSE}
+
+  
+ county_display_table(county_pop_long, groups_alone,pop_estimates) %>% 
+  formatCurrency(columns = c(3:17),currency = "", interval = 3, mark = ",", digits=0) 
+
+
+```
+
+
+## Raw Asian & NHPI Combo
+
+```{r pop-Combo, echo=FALSE, message=FALSE, warning=FALSE}
+
+ county_display_table(county_pop_long, groups_combo,pop_estimates) %>% 
+  formatCurrency(columns = c(3:17),currency = "", interval = 3, mark = ",", digits=0) 
+
+
+
+```
+
 
