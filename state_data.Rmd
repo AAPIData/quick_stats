@@ -133,10 +133,10 @@ pop_percent <- c("% of the Pop")
 
 
 ### Calculating Average for the sentence
-avg_aa_pop <- state_pop %>% filter(Group == "Asian Alone") %>% select(State, `% of the Pop`) %>%  summarize(mean = mean(`% of the Pop`, na.rm=TRUE)) %>% pull() %>% round(.,4)
+avg_aa_pop <- state_pop %>% filter(Group == "Asian alone") %>% select(State, `% of the Pop`) %>%  summarize(mean = mean(`% of the Pop`, na.rm=TRUE)) %>% pull() %>% round(.,4)
 avg_aa_pop <- avg_aa_pop*100
  
-avg_pi_pop <- state_pop %>% filter(Group == "NHPI Alone") %>% select(State, `% of the Pop`) %>%  summarize(mean = mean(`% of the Pop`, na.rm=TRUE)) %>% pull() %>% round(.,4)
+avg_pi_pop <- state_pop %>% filter(Group == "NHPI alone") %>% select(State, `% of the Pop`) %>%  summarize(mean = mean(`% of the Pop`, na.rm=TRUE)) %>% pull() %>% round(.,4)
 avg_pi_pop <- avg_pi_pop*100
 ```
 
@@ -205,19 +205,23 @@ state_edu <- state_edu %>% select(-check_hsless,
 # Create Columns
 state_edu <- state_edu %>% mutate(
  pct_hsless   = est_hsless/est_totpop,
- pct_bahigher = est_bahigher/ est_totpop)
+ pct_bahigher = est_bahigher/ est_totpop,
+ pct_somecollegeaa = est_somecollegeaa / est_totpop,
+ pct_hsged = est_hsged / est_totpop)
 
 
 state_edu_map <- state_edu
 
 # Renaming columns
-state_edu<- state_edu %>% rename(Total = est_totpop,
+state_edu<- state_edu %>% rename(`Total 25yrs+ old`= est_totpop,
          `Less than HS` = est_hsless,
          `HS or GED` = est_hsged,
          `Some College or AA` = est_somecollegeaa,
          `BA or higher` = est_bahigher,
          Group = group_name,
          `% Less than HS`= pct_hsless,
+         `% HS and GED` = pct_hsged,
+         `% Some College or AA` = pct_somecollegeaa,
          `% BA or higher` = pct_bahigher,
          State = geodisplaylabel)
 
@@ -229,8 +233,8 @@ state_edu_long <- state_convert_long(state_edu)
 
 
 ## Column Specification
-education_estimates <- c("Total", "Less than HS", "HS or GED", "Some College or AA", "BA or higher")
-education_percent <- c("% Less than HS", "% BA or higher")
+education_estimates <- c("Total 25yrs+ old", "Less than HS", "HS or GED", "Some College or AA", "BA or higher")
+education_percent <- c("% Less than HS", "% BA or higher", "% HS and GED", "% Some College or AA")
 
 
 
@@ -557,7 +561,7 @@ Nationally, about **`r avg_hs_less`**% of Americans have less than a High School
 
 ```{r EDU-alone-pct, echo=FALSE, message=FALSE, warning=FALSE}
 
-state_display_table(state_edu_long, groups_alone,education_percent) %>% formatPercentage(columns = c(2:7), digits = 2)
+state_display_table(state_edu_long, groups_alone,education_percent) %>% formatPercentage(columns = c(2:13), digits = 2)
 
 ```
 
@@ -566,34 +570,11 @@ state_display_table(state_edu_long, groups_alone,education_percent) %>% formatPe
 
 ```{r EDU-combo-pct, echo=FALSE, message=FALSE, warning=FALSE}
 
-state_display_table(state_edu_long, groups_combo,education_percent) %>% formatPercentage(columns = c(2:7), digits = 2)
+state_display_table(state_edu_long, groups_combo,education_percent) %>% formatPercentage(columns = c(2:13), digits = 2)
 
 
 ```
 
-## Raw Asian & NHPI Alone
-
-
-```{r EDU-combo-Alone, echo=FALSE, message=FALSE, warning=FALSE}
-
-  
- state_display_table(state_edu_long, groups_alone,education_estimates) %>% 
-  formatCurrency(columns = c(2:16),currency = "", interval = 3, mark = ",", digits=0) 
-
-
-```
-
-
-## Raw Asian & NHPI Combo
-
-```{r EDU-Combo, echo=FALSE, message=FALSE, warning=FALSE}
-
- state_display_table(state_edu_long, groups_combo,education_estimates) %>% 
-  formatCurrency(columns = c(2:16),currency = "", interval = 3, mark = ",", digits=0) 
-
-
-
-```
 
 ## Visualize Data
 
@@ -911,6 +892,7 @@ state_display_table(state_poverty_long, groups_combo,poverty_percent) %>% format
 
 ```
 
+
 ## Visualize Data
 
 ```{r poverty visualize, echo=FALSE, message=FALSE, warning=FALSE}
@@ -941,7 +923,7 @@ state_poverty_map <- state_poverty_map %>% mutate(
 )
 
 x <- c("{point.name}:", "Asian Alone:","NHPI Alone:")
-title<-"Percent BA or Higher"
+title<-"Percent Below Poverty"
 y <- c(" {point.value:.1f}%", " {point.pct_asian_below_pov:.1f}%",
 " {point.pct_nhpi_below_pov:.1f}%")
 #style <- "style=font-size:80%"
@@ -970,7 +952,7 @@ highchart() %>%
 
 > CVAP data is complied using Table [B05003](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B05003) from the 2015 ACS 5-Year estimates.
 
-Nationally, about **`r avg_state_cvap`**% of Americans are eligible to vote, while the national average number for AAPI is **`r avg_aapi_cvap`**
+Nationally, about **`r avg_state_cvap`**% of Americans are eligible to vote, while the national average number for AAPI is **`r avg_aapi_cvap`**%
 
 ## Raw Asian & NHPI Alone
 
@@ -979,7 +961,13 @@ Nationally, about **`r avg_state_cvap`**% of Americans are eligible to vote, whi
 
 state_cvap_estimate <- state_cvap %>% select(State, `Total CVAP`, `AAPI CVAP`, `Total Population`, `AAPI Pop`) 
 
-datatable(state_cvap_estimate) %>% formatCurrency(columns = c(2:5),currency = "", interval = 3, mark = ",", digits=0)
+datatable(state_cvap_estimate, extensions = list("Buttons" = NULL, 'FixedColumns'= T, "Scroller"=T),
+              rownames= FALSE, 
+              options = list(
+                dom = 'rtB',
+                buttons = c('copy', 'csv', 'excel'),
+                scrollX = TRUE,
+                lengthMenu = c(25, 50, 100), pageLength = 50)) %>% formatCurrency(columns = c(2:5),currency = "", interval = 3, mark = ",", digits=0)
 ```
 
 ## % Asian & NHPI alone
@@ -989,7 +977,13 @@ datatable(state_cvap_estimate) %>% formatCurrency(columns = c(2:5),currency = ""
 
 state_cvap_pct <- state_cvap %>% select(State, `% AAPI CVAP`, `% AAPI Pop`) 
 
-datatable(state_cvap_pct) %>% formatPercentage(columns = c(2:3), digits = 2)
+datatable(state_cvap_pct, extensions = list("Buttons" = NULL, 'FixedColumns'= T, "Scroller"=T),
+              rownames= FALSE, 
+              options = list(
+                dom = 'rtB',
+                buttons = c('copy', 'csv', 'excel'),
+                scrollX = TRUE,
+                lengthMenu = c(25, 50, 100), pageLength = 50)) %>% formatPercentage(columns = c(2:3), digits = 2)
 
 
 ```
