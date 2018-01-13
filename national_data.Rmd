@@ -43,7 +43,7 @@ national_insurance<-national_insurance %>% left_join(pop_id_lookup) %>% select(-
 ## Specifying Column Group names, to be used later
 nativity_columns <- c("Group", "Total Pop", "Foreign Born","Total Foreign Born")
 cvap_columns <- c("Group", "CVAP", "Total")
-education_columns <- c("Group", "Total","Less than HS", "HS or GED", "Some College or AA", "BA or higher")
+education_columns <- c("Group", "Total 25yrs+ old", "Less than HS", "HS or GED", "Some College or AA", "BA or higher")
 lep_columns <- c("Group", "Total Pop", "Speak Other Language","LEP", "Total LEP")
 pop_columns <- c("Group", "Population", "Percent Total Pop")
 insurance_columns <- c("Group", "Total Pop", "No Insurance", "Percent of No Insurance")
@@ -94,15 +94,9 @@ national_edu <- national_edu %>% select(-check_hsless,
 # Creating Columns for percentages 
 national_edu <- national_edu %>% mutate(
   pct_hsless   = est_hsless/est_totpop,
-  pct_bahigher = est_bahigher/ est_totpop)
-
-# Renaming columns
-national_edu<- national_edu %>% rename(Total = est_totpop,
-         `Less than HS` = est_hsless,
-         `HS or GED` = est_hsged,
-         `Some College or AA` = est_somecollegeaa,
-         `BA or higher` = est_bahigher,
-         Group = group_name)
+  pct_bahigher = est_bahigher/ est_totpop,
+  pct_hsged = est_hsged / est_totpop,
+  pct_somecollegeaa = est_somecollegeaa / est_totpop)
 
 
 
@@ -298,13 +292,13 @@ According to the latest national estimates, about **1 in 2** Asian Americans hav
 ## Creating the graph
 national_edu %>% # Take education data and then,
   filter(group_id ==  "Major racial groups") %>% # filter it so we only get rows belonging to "major racial groups" and then,
-  select(Group, pct_hsless, pct_bahigher) %>% # Select the columns named: Group, pct_hsless, pct_bahigher and then, 
+  select(group_name, pct_hsless, pct_bahigher) %>% # Select the columns named: Group, pct_hsless, pct_bahigher and then, 
   arrange(desc(pct_bahigher)) %>% # Sort the columns according to: pct_bahigher and then,
   mutate(`BA or Higher` = round((pct_bahigher*100),2), 
          `Less than HS` = round((pct_hsless*100),2))  %>% # Create new columns, just taking pcts and multiplying by 100 for display and then,
    select(-pct_hsless, -pct_bahigher) %>% # Drop those old columns and then,
-  gather(estimate_type,estimate, -Group) %>% # gather the columns (i.e pivot) and then,
-hchart( "bar", hcaes(x = Group , y = estimate, group = estimate_type)) %>% # Create a bar chart with X = Group, Y = estimate, and Group = Estimate_type and then,
+  gather(estimate_type,estimate, -group_name) %>% # gather the columns (i.e pivot) and then,
+hchart( "bar", hcaes(x = group_name , y = estimate, group = estimate_type)) %>% # Create a bar chart with X = Group, Y = estimate, and Group = Estimate_type and then,
 hc_add_theme(hc_theme_tufte2()) %>%  hc_colors(colors = c("#E26069","#008fd5")) %>% # add a theme and choose colors and then,
   hc_yAxis(title = list(text = ""),
          labels= list(style =list(color ="black", fontSize='18px'),
@@ -321,28 +315,40 @@ hc_add_theme(hc_theme_tufte2()) %>%  hc_colors(colors = c("#E26069","#008fd5")) 
            style = list(color = "#E5790D")) # Add subtitle
 ```
 
+```{r setup-2-education, include=FALSE}
+# Renaming columns
+national_edu<- national_edu %>% rename(`Total 25yrs+ old` = est_totpop,
+         `Less than HS` = pct_hsless,
+         `HS or GED` = pct_hsged,
+         `Some College or AA` = pct_somecollegeaa,
+         `BA or higher` = pct_bahigher,
+         Group = group_name)
+```
+
+
 
 ## Major Racial Groups
 ```{r edu major groups, echo=FALSE, message=FALSE, warning=FALSE}
 
-national_tbl_display(national_edu,"Major racial groups",education_columns,"Total")%>% 
-  formatCurrency(columns = education_columns,currency = "", interval = 3, mark = ",", digits=0)
+national_tbl_display(national_edu,"Major racial groups",education_columns,"Total 25yrs+ old") %>% formatCurrency(columns = education_columns[2],currency = "", interval = 3, mark = ",", digits=0) %>% 
+  formatPercentage(columns = education_columns[3:6], digits = 2)
 
 ```
 
 
 ## Asian Detailed Origin
 ```{r edu asian alone, echo=FALSE, message=FALSE, warning=FALSE}
-national_tbl_display(national_edu,"Asian Detail",education_columns,"Total")%>% 
-  formatCurrency(columns = education_columns,currency = "", interval = 3, mark = ",", digits=0)
+
+national_tbl_display(national_edu,"Asian Detail",education_columns,"Total") %>% formatCurrency(columns = education_columns[2],currency = "", interval = 3, mark = ",", digits=0) %>% 
+  formatPercentage(columns = education_columns[3:6], digits = 2)
 
 ```
 
 ## Asian Detailed Origin Combo
 ```{r edu asian combo, echo=FALSE, message=FALSE, warning=FALSE}
 
-national_tbl_display(national_edu,"Asian Detail Combo",education_columns,"Total")%>% 
-  formatCurrency(columns = education_columns,currency = "", interval = 3, mark = ",", digits=0)
+national_tbl_display(national_edu,"Asian Detail Combo",education_columns,"Total") %>% formatCurrency(columns = education_columns[2],currency = "", interval = 3, mark = ",", digits=0) %>% 
+  formatPercentage(columns = education_columns[3:6], digits = 2)
 
 
 ```
@@ -350,8 +356,8 @@ national_tbl_display(national_edu,"Asian Detail Combo",education_columns,"Total"
 ## NHPI Detailed Origin
 ```{r edu nhpi alone, echo=FALSE, message=FALSE, warning=FALSE}
 
-national_tbl_display(national_edu,"NHPI Detail",education_columns,"Total")%>% 
-  formatCurrency(columns = education_columns,currency = "", interval = 3, mark = ",", digits=0)
+national_tbl_display(national_edu,"NHPI Detail",education_columns,"Total") %>% formatCurrency(columns = education_columns[2],currency = "", interval = 3, mark = ",", digits=0) %>% 
+  formatPercentage(columns = education_columns[3:6], digits = 2)
 
 
 
@@ -360,8 +366,8 @@ national_tbl_display(national_edu,"NHPI Detail",education_columns,"Total")%>%
 ## NHPI Detailed Origin Combo
 ```{r edu nhpi combo,echo=FALSE, message=FALSE, warning=FALSE}
 
-national_tbl_display(national_edu,"NHPI Detail Combo",education_columns,"Total")%>% 
-  formatCurrency(columns = education_columns,currency = "", interval = 3, mark = ",", digits=0)
+national_tbl_display(national_edu,"NHPI Detail Combo",education_columns,"Total") %>% formatCurrency(columns = education_columns[2],currency = "", interval = 3, mark = ",", digits=0) %>% 
+  formatPercentage(columns = education_columns[3:6], digits = 2)
 
 
 ```
