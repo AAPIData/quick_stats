@@ -66,7 +66,7 @@ navbar:
     - text: Nativity
       href: metro_data.html#nativity
     - text: Poverty
-      href: metro_data.html#poverty           
+      href: metro_data.html#poverty
 output:
   html_document:
     theme: yeti

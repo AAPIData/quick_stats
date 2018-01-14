@@ -59,7 +59,22 @@ groups_alone <- c("Total population", "Asian alone", "NHPI alone")
 groups_combo <- c("Total population", "Asian alone or combo", "NHPI alone or combo")
 groups_race <- c("Total population", "Asian alone", "NHPI alone", "Asian alone or combo", "NHPI alone or combo")
 
+groups_asian_detail_alone <-pop_id_lookup %>%
+  filter(group_id == "Asian Detail") %>% 
+  select(group_name) %>% pull()
 
+groups_asian_detail_combo <-pop_id_lookup %>%
+  filter(group_id == "Asian Detail Combo") %>% 
+  select(group_name) %>%  pull()
+
+groups_nhpi_detail_alone <-pop_id_lookup %>%
+  filter(group_id == "NHPI Detail") %>% 
+  select(group_name) %>%  pull()
+
+groups_nhpi_detail_combo <-pop_id_lookup %>%
+  filter(group_id == "NHPI Detail Combo") %>% 
+  select(group_name) %>%  pull()
+  
 ## Function that will take excel file and make it long
 county_convert_long <- function(data){
   data %>%
@@ -108,7 +123,8 @@ county_pop <- county_pop %>%
 
 # Dropping those indicators
 county_pop <- county_pop %>% select(-check_tot_pop,
-                                  -check_county_pop)
+                                  -check_county_pop,
+                                  -geoid)
 
 
 
@@ -160,27 +176,34 @@ county_edu <- county_edu %>% select(-check_hsless,
                                   -check_some_college,
                                   -check_ba_higher,
                                   -check_ba_higher,
-                                  -check_tot_pop)
+                                  -check_tot_pop,
+                                  -geoid)
 
 # Create Columns
 county_edu <- county_edu %>% mutate(
  pct_hsless   = est_hsless/est_tot_pop,
- pct_bahigher = est_bahigher/ est_tot_pop)
+ pct_bahigher = est_bahigher/ est_tot_pop,
+ pct_hs_ged = est_hs_ged / est_tot_pop,
+ pct_some_college = est_some_college / est_tot_pop)
 
-
-county_edu_map <- county_edu
+county_edu <- county_edu %>% select(geodisplaylabel,
+                                    group_name,
+                                    est_tot_pop,
+                                    pct_hsless,
+                                    pct_hs_ged,
+                                    pct_some_college,
+                                    pct_bahigher,
+                                    group_id)
+  
 
 # Renaming columns
-county_edu<- county_edu %>% rename(Total = est_tot_pop,
-         `Less than HS` = est_hsless,
-         `HS or GED` = est_hs_ged,
-         `Some College or AA` = est_somecollegeaa,
-         `BA or higher` = est_ba_higher,
+county_edu<- county_edu %>% rename(`Total 25yrs+ Old` = est_tot_pop,
          Group = group_name,
          `% Less than HS`= pct_hsless,
          `% BA or higher` = pct_bahigher,
+         `% Some College or AA` = pct_some_college,
+         `% HS or GED` = pct_hs_ged,
          County = geodisplaylabel)
-
 
 
 ## Converting it to Long
@@ -189,8 +212,7 @@ county_edu_long <- county_convert_long(county_edu)
 
 
 ## Column Specification
-education_estimates <- c("Total", "Less than HS", "HS or GED", "Some College or AA", "BA or higher")
-education_percent <- c("% Less than HS", "% BA or higher")
+education_percent <- c("Total 25yrs+ Old", "% Less than HS", "% BA or higher", "% HS or GED", "% Some College or AA")
 
 
 
@@ -354,21 +376,20 @@ avg_below_pov <- avg_below_pov*100
 
 ```
 
-```
-#{r setup cvap-alone, include = FALSE}
+```{r setup cvap-alone, include = FALSE}
 ### Getting Rid of Estimates where the "CHECK" variable is flagging uncertainty
 county_cvap <- county_cvap %>% 
   mutate(est_county_cvap = 
-            case_when( checking_county_cvap == 1 ~  NA_real_ ,TRUE ~ est_county_cvap),
+            case_when( check_county_cvap == 1 ~  NA_real_ ,TRUE ~ est_county_cvap),
             est_aapi_cvap = 
-            case_when( checking_aapi_cvap == 1 ~  NA_real_ ,TRUE ~ est_aapi_cvap),
+            case_when( check_aapi_cvap == 1 ~  NA_real_ ,TRUE ~ est_aapi_cvap),
          est_aapi_pop  =
-          case_when( checking_aapi_pop == 1 ~  NA_real_ ,TRUE ~ est_aapi_pop))
+          case_when( check_aapi_pop == 1 ~  NA_real_ ,TRUE ~ est_aapi_pop))
 
 # Dropping those indicators
-county_cvap <- county_cvap %>% select(-checking_county_cvap,
-                                  -checking_aapi_pop,
-                                  -checking_aapi_cvap)
+county_cvap <- county_cvap %>% select(-check_county_cvap,
+                                  -check_aapi_pop,
+                                  -check_aapi_cvap)
 
 # Create Columns
 county_cvap <- county_cvap %>% mutate(
@@ -403,9 +424,9 @@ avg_aapi_cvap <- avg_aapi_cvap*100
   <p>Use the buttons to select the topic and then the tabs for population groups</p>
 </div>
 
-# Detailed Origin {.tabset .tabset-fade .tabset-pills}
+# Population {.tabset .tabset-fade .tabset-pills}
 
-> Detailed Origin data is complied using Table [B03001](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B03001) from the 2015 ACS 5-Year estimates.
+> Population data is complied using Table [B03001](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B03001) from the 2015 ACS 5-Year estimates.
 
 Nationally, about **`r avg_aa_pop`**% of Americans is Asian, and **`r avg_pi_pop`**% of Americans is NHPI.
 
@@ -422,27 +443,93 @@ Nationally, about **`r avg_aa_pop`**% of Americans is Asian, and **`r avg_pi_pop
 ```
 
 
-## Raw Asian & NHPI Alone
+## Detailed Asian Alone 
 
 
-```{r pop-Alone, echo=FALSE, message=FALSE, warning=FALSE}
+```{r pop-aa_alone, echo=FALSE, message=FALSE, warning=FALSE}
 
   
- county_display_table(county_pop_long, groups_alone,pop_estimates) %>% 
-  formatCurrency(columns = c(3:5),currency = "", interval = 3, mark = ",", digits=0) 
+county_pop %>%
+    filter(group_id %in% "Asian Detail") %>%
+    select(-group_id, - `% of the Pop`,-`Population`) %>%
+    spread(Group,Total,fill = NA) %>% separate(County, into = c("County","State"), sep = ",") %>%
+    datatable(extensions = 
+                list("Buttons" = NULL, 'FixedColumns'= T, "Scroller"=T),
+              rownames= FALSE, 
+              options = list(
+                dom = 'rtB',
+                buttons = c('copy', 'csv', 'excel'),
+                scrollX = TRUE,
+                lengthMenu = c(25, 50, 100), pageLength = 50)) %>% 
+  formatCurrency(columns = c(3:23),currency = "", interval = 3, mark = ",", digits=0) 
 
 
 ```
 
 
-## Raw Asian & NHPI Combo
+## Detailed NHPI Alone
 
-```{r pop-Combo, echo=FALSE, message=FALSE, warning=FALSE}
+```{r pop-nhpi_alone, echo=FALSE, message=FALSE, warning=FALSE}
 
- county_display_table(county_pop_long, groups_combo,pop_estimates) %>% 
-  formatCurrency(columns = c(3:5),currency = "", interval = 3, mark = ",", digits=0) 
+  
+county_pop %>%
+    filter(group_id %in% "NHPI Detail") %>%
+    select(-group_id, - `% of the Pop`,-`Population`) %>%
+    spread(Group,Total,fill = NA) %>% separate(County, into = c("County","State"), sep = ",") %>%
+    datatable(extensions = 
+                list("Buttons" = NULL, 'FixedColumns'= T, "Scroller"=T),
+              rownames= FALSE, 
+              options = list(
+                dom = 'rtB',
+                buttons = c('copy', 'csv', 'excel'),
+                scrollX = TRUE,
+                lengthMenu = c(25, 50, 100), pageLength = 50)) %>% 
+  formatCurrency(columns = c(3:11),currency = "", interval = 3, mark = ",", digits=0) 
+
+```
+
+## Detailed Asian Combo
 
 
+```{r pop_aa_alone, echo=FALSE, message=FALSE, warning=FALSE}
+
+  
+county_pop %>%
+    filter(group_id %in% "Asian Detail Combo") %>%
+    select(-group_id, - `% of the Pop`,-`Population`) %>%
+    spread(Group,Total,fill = NA) %>% separate(County, into = c("County","State"), sep = ",") %>%
+    datatable(extensions = 
+                list("Buttons" = NULL, 'FixedColumns'= T, "Scroller"=T),
+              rownames= FALSE, 
+              options = list(
+                dom = 'rtB',
+                buttons = c('copy', 'csv', 'excel'),
+                scrollX = TRUE,
+                lengthMenu = c(25, 50, 100), pageLength = 50)) %>% 
+  formatCurrency(columns = c(3:23),currency = "", interval = 3, mark = ",", digits=0) 
+
+
+```
+
+
+## Detailed NHPI Combo
+
+```{r pop_nhpi_alone, echo=FALSE, message=FALSE, warning=FALSE}
+
+  
+county_pop %>%
+    filter(group_id %in% "NHPI Detail Combo") %>%
+    select(-group_id, - `% of the Pop`,-`Population`) %>%
+    spread(Group,Total,fill = NA) %>% separate(County, into = c("County","State"), sep = ",") %>%
+    datatable(extensions = 
+                list("Buttons" = NULL, 'FixedColumns'= T, "Scroller"=T),
+              rownames= FALSE, 
+              options = list(
+                dom = 'rtB',
+                buttons = c('copy', 'csv', 'excel'),
+                scrollX = TRUE,
+                lengthMenu = c(25, 50, 100), pageLength = 50)) %>% 
+  formatCurrency(columns = c(3:11),currency = "", interval = 3, mark = ",", digits=0) 
 
 ```
 
@@ -459,7 +546,7 @@ Nationally, about **`r avg_hs_less`**% of Americans have less than a High School
 
 ```{r EDU-alone-pct, echo=FALSE, message=FALSE, warning=FALSE}
 
-county_display_table(county_edu_long, groups_alone,education_percent) %>% formatPercentage(columns = c(3:8), digits = 2)
+county_display_table(county_edu_long, groups_alone,education_percent) %>% formatPercentage(columns = c(3,4,5,6,8,9,10,11), digits = 2) %>% formatCurrency(columns = c(7,12),currency = "", interval = 3, mark = ",", digits=0)
 
 
 ```
@@ -469,91 +556,11 @@ county_display_table(county_edu_long, groups_alone,education_percent) %>% format
 
 ```{r EDU-combo-pct, echo=FALSE, message=FALSE, warning=FALSE}
 
-county_display_table(county_edu_long, groups_combo,education_percent) %>% formatPercentage(columns = c(2:7), digits = 2)
-
-
-```
-
-## Raw Asian & NHPI Alone
-
-
-```{r EDU-combo-Alone, echo=FALSE, message=FALSE, warning=FALSE}
-
-  
- county_display_table(county_edu_long, groups_alone,education_estimates) %>% 
-  formatCurrency(columns = c(3:17),currency = "", interval = 3, mark = ",", digits=0) 
-
+county_display_table(county_edu_long, groups_combo,education_percent) %>% formatPercentage(columns = c(3:6, 8:11, 13:16), digits = 2) %>% formatCurrency(columns = c(7,12,17),currency = "", interval = 3, mark = ",", digits=0)
 
 ```
 
 
-## Raw Asian & NHPI Combo
-
-```{r EDU-Combo, echo=FALSE, message=FALSE, warning=FALSE}
-
- county_display_table(county_edu_long, groups_combo,education_estimates) %>% 
-  formatCurrency(columns = c(3:17),currency = "", interval = 3, mark = ",", digits=0) 
-
-
-
-```
-
-
-
-```{r edu visualize, echo=FALSE, message=FALSE, warning=FALSE}
-### No mapping for this section
-
-
-# 
-# county_edu_map <- county_edu_map %>%
-#   gather(estimate_type,
-#          estimate,
-#          -geoid,
-#          -geodisplaylabel,
-#          -group_name,
-#          -group_id)
-# 
-# 
-# 
-#   county_edu_map <- county_edu_map %>%
-#      filter(group_name %in% groups_alone) %>%
-#      filter(str_detect(estimate_type, "pct_")) %>%
-#      select(-group_id) %>%
-#      mutate(long_key=paste(group_name, estimate_type, sep="_")) %>% #Combining Pop_ID and Estimate type
-#      select(-group_name, -estimate_type)  %>% 
-#      spread(long_key, estimate,fill = NA) 
-#   
-# county_edu_map<- county_edu_map %>% mutate(fips = str_sub(geoid, start= -5))  
-# 
-# county_edu_map <- county_edu_map %>% mutate(
-#   pct_county_bahigher = round(`Total population_pct_bahigher`*100,2),
-#   pct_asian_bahigher = round(`Asian alone_pct_bahigher`*100,2),
-#   pct_nhpi_bahigher = round(`NHPI alone_pct_bahigher`*100,2)
-# )
-# 
-# x <- c("{point.name}:", "Asian Alone:","NHPI Alone:")
-# title<-"Percent BA or Higher"
-# y <- c(" {point.value:.1f}%", " {point.pct_asian_bahigher:.1f}%",
-# " {point.pct_nhpi_bahigher:.1f}%")
-# #style <- "style=font-size:80%"
-# 
-# data(uscountygeojson)
-# highchart() %>%
-#   hc_title(text = "Bachelors Degree or Higher", align = "center") %>%
-#   hc_subtitle(text = "Source: 2011-2015 ACS using Asian/NHPI Alone", align = "center") %>%
-#   hc_chart(backgroundColor = "transparent") %>%
-#   hc_add_series_map(uscountygeojson, county_edu_map, name = "Education",value = "pct_county_bahigher", joinBy = c("fips", "fips"),
-#                     borderColor= "transparent") %>%
-#   hc_tooltip(pointFormat = tooltip_table(x,y,title), useHTML=T,  headerFormat= "")%>%
-#   hc_add_theme(hc_theme_538()) %>%
-#   hc_colorAxis(stops = color_stops(5),labels= list(format = "{value}%"),showInLegend=T) %>%
-#   hc_legend(title = list(text= "Statewide Percentage", fontStyle ='italic'),align = "center",verticalAlign = "bottom",
-#             layout = "horizontal", padding = 5) %>% 
-#   #hc_legend(layout = "vertical", align = "right",
-#    #         floating = TRUE, valueDecimals = 0, valueSuffix = "%") 
-#   hc_exporting(enabled = TRUE)
-
-```
 
 # Limited English Proficiency {.tabset .tabset-fade .tabset-pills}
 <a href="#top"><button class="btn btn-outline-primary center-block btn-small"> Back to Top</button></a>
@@ -713,14 +720,14 @@ county_display_table(county_poverty_long, groups_combo,poverty_percent) %>% form
 
 > CVAP data is complied using Table [B05003](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B05003) from the 2015 ACS 5-Year estimates.
 
-Nationally, about **`r avg_state_cvap`**% of Americans are eligible to vote, while the national average number for AAPI is **`r avg_aapi_cvap`**%
+Nationally, about **`r avg_county_cvap`**% of Americans are eligible to vote, while the national average number for AAPI is **`r avg_aapi_cvap`**%
 
 ## Raw Asian & NHPI Alone
 
 
 ```{r cvap-alone-raw, echo=FALSE, message=FALSE, warning=FALSE}
 
-county_cvap_estimate <- county_cvap %>% select(County, `Total CVAP`, `AAPI CVAP`, `Total Population`, `AAPI Pop`) 
+county_cvap_estimate <- county_cvap %>% select(County, `Total CVAP`, `AAPI CVAP`, `Total Population`, `AAPI Pop`) %>% separate(County, into = c("County","State"), sep = ",")
 
 datatable(county_cvap_estimate, extensions = list("Buttons" = NULL, 'FixedColumns'= T, "Scroller"=T),
               rownames= FALSE, 
@@ -728,7 +735,7 @@ datatable(county_cvap_estimate, extensions = list("Buttons" = NULL, 'FixedColumn
                 dom = 'rtB',
                 buttons = c('copy', 'csv', 'excel'),
                 scrollX = TRUE,
-                lengthMenu = c(25, 50, 100), pageLength = 50)) %>% formatCurrency(columns = c(2:5),currency = "", interval = 3, mark = ",", digits=0)
+                lengthMenu = c(25, 50, 100), pageLength = 50)) %>% formatCurrency(columns = c(3:6),currency = "", interval = 3, mark = ",", digits=0)
 ```
 
 ## % Asian & NHPI alone
@@ -736,7 +743,7 @@ datatable(county_cvap_estimate, extensions = list("Buttons" = NULL, 'FixedColumn
 
 ```{r CVAP-combo-pct, echo=FALSE, message=FALSE, warning=FALSE}
 
-county_cvap_pct <- county_cvap %>% select(County, `% AAPI CVAP`, `% AAPI Pop`) 
+county_cvap_pct <- county_cvap %>% select(County, `% AAPI CVAP`, `% AAPI Pop`) %>% separate(County, into = c("County","State"), sep = ",")
 
 datatable(county_cvap_pct, extensions = list("Buttons" = NULL, 'FixedColumns'= T, "Scroller"=T),
               rownames= FALSE, 
@@ -744,7 +751,7 @@ datatable(county_cvap_pct, extensions = list("Buttons" = NULL, 'FixedColumns'= T
                 dom = 'rtB',
                 buttons = c('copy', 'csv', 'excel'),
                 scrollX = TRUE,
-                lengthMenu = c(25, 50, 100), pageLength = 50)) %>% formatPercentage(columns = c(2:3), digits = 2)
+                lengthMenu = c(25, 50, 100), pageLength = 50)) %>% formatPercentage(columns = c(3:4), digits = 2)
 
 
 ```
