@@ -188,8 +188,8 @@ msa_largestAAprop_number<- round(msa_largestAAprop_number*100,0)
   <p> About `r msa_largestAAprop_number`% of the population in `r msa_largestAAprop` is Asian American, the highest in the country.</p>
 <div class="btn-group" role="group" aria-label="Basic example">
   <a href="metro_data.html#percent-aapi-population" type="button" class="btn btn-primary">AAPI Population</a>
-  <a href="metro_data.html#education" type="button" class="btn btn-primary">Education</a>
-  <a href="metro_data.html#limited-english-proficiency" type="button" class="btn btn-primary">LEP</a>
+  <a href="metro_data.html#asian-american-detailed-origin" type="button" class="btn btn-primary">Asian Detailed Origin</a>
+  <a href="metro_data.html#nhpi-american-detailed-origin" type="button" class="btn btn-primary">NHPI Detailed Origin</a>
 </div>
 </div>
 </div>
@@ -226,6 +226,7 @@ msa_display_table(msa_pop,msa_rawnumbers) %>%
 
 ```
 
+
 # Asian American Detailed Origin {.tabset .tabset-fade .tabset-pills}
 <a href="#top"><button class="btn btn-outline-primary center-block btn-small"> Back to Top</button></a>
 
@@ -255,6 +256,9 @@ msa_display_table(msa_aa_origin_counts, colnames(msa_aa_origin_counts)) %>%
 
 ```
 
+# NHPI American Detailed Origin {.tabset .tabset-fade .tabset-pills}
+<a href="#top"><button class="btn btn-outline-primary center-block btn-small"> Back to Top</button></a>
+
 ## Percent NHPI Detailed Origin
 
 ```{r pop-NHPI-origin-pct, echo=FALSE, message=FALSE, warning=FALSE}
@@ -262,7 +266,7 @@ msa_display_table(msa_aa_origin_counts, colnames(msa_aa_origin_counts)) %>%
   
 msa_display_table(msa_nhpi_origin_pct, colnames(msa_nhpi_origin_pct)) %>% 
   formatCurrency(columns = c(2),currency = "", interval = 3, mark = ",", digits=0)%>%
-  formatPercentage(columns = c(3:26), digits= 1)
+  formatPercentage(columns = c(3:13), digits= 1)
 
 
 ```
@@ -274,7 +278,7 @@ msa_display_table(msa_nhpi_origin_pct, colnames(msa_nhpi_origin_pct)) %>%
 
   
 msa_display_table(msa_nhpi_origin_counts, colnames(msa_nhpi_origin_counts)) %>% 
-  formatCurrency(columns = c(2:26),currency = "", interval = 3, mark = ",", digits=0)
+  formatCurrency(columns = c(2:13),currency = "", interval = 3, mark = ",", digits=0)
 
 
 ```
