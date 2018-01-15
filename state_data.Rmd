@@ -436,6 +436,60 @@ avg_below_pov <- avg_below_pov*100
 
 Nationally, about **`r avg_aa_pop`**% of the population is Asian American, and **`r avg_pi_pop`**% of the population is NHPI.
 
+
+## Visualize Data
+
+```{r pop visualize, echo=FALSE, message=FALSE, warning=FALSE}
+
+
+ state_pop_map <- state_pop_map %>%
+  gather(estimate_type,
+         estimate,
+         -geodisplaylabel,
+         -group_name,
+         -group_id)
+
+ state_pop_map <- state_pop_map %>%
+     filter(group_name %in% groups_alone) %>%
+   filter(str_detect(estimate_type, "est_tot")) %>%
+     select(-group_id) %>%
+     mutate(long_key=paste(group_name, estimate_type, sep="_")) %>% #Combining Pop_ID and Estimate type
+     select(-group_name, -estimate_type)  %>% 
+     spread(long_key, estimate,fill = NA) 
+  
+
+state_pop_map <- state_pop_map %>% mutate(
+  state_pop = `Total population_est_tot_pop`,
+  state_pop_mill =`Total population_est_tot_pop`/1000000,
+  asian_pop = `Asian alone_est_tot_pop`,
+  nhpi_pop = `NHPI alone_est_tot_pop`)
+
+x <- c("{point.name}:", "Asian Alone:","NHPI Alone:")
+title<-"State Population"
+y <- c(" {point.value:.2f} Million", " {point.asian_pop:,.0f}",
+" {point.nhpi_pop:,.0f}")
+#style <- "style=font-size:80%"
+
+data(usgeojson)
+highchart() %>%
+  hc_title(text = "State Population", align = "center") %>%
+  hc_subtitle(text = "Source: 2011-2015 ACS using Asian/NHPI Alone", align = "center") %>%
+  hc_chart(backgroundColor = "transparent") %>%
+  hc_add_series_map(usgeojson, state_pop_map, name = "State Population", value = "state_pop_mill", joinBy = c("name", "geodisplaylabel"),
+                    borderColor= "transparent") %>%
+  hc_tooltip(pointFormat = tooltip_table(x,y,title), useHTML=T,  headerFormat= "")%>%
+  hc_add_theme(hc_theme_538()) %>%
+  hc_colorAxis(stops = color_stops(5),labels= list(format = "{value}"),showInLegend=T) %>%
+  hc_legend(title = list(text= "Statewide Population (millions)", fontStyle ='italic'),align = "center",verticalAlign = "bottom",
+            layout = "horizontal", padding = 5) %>% 
+  #hc_legend(layout = "vertical", align = "right",
+   #         floating = TRUE, valueDecimals = 0, valueSuffix = " thousand") 
+  hc_exporting(enabled = TRUE)
+```
+
+
+
+
 ## Major Racial Groups
 
 
@@ -513,55 +567,7 @@ Nationally, about **`r avg_aa_pop`**% of the population is Asian American, and *
 ```
 
 
-## Visualize Data
 
-```{r pop visualize, echo=FALSE, message=FALSE, warning=FALSE}
-
-
- state_pop_map <- state_pop_map %>%
-  gather(estimate_type,
-         estimate,
-         -geodisplaylabel,
-         -group_name,
-         -group_id)
-
- state_pop_map <- state_pop_map %>%
-     filter(group_name %in% groups_alone) %>%
-   filter(str_detect(estimate_type, "est_tot")) %>%
-     select(-group_id) %>%
-     mutate(long_key=paste(group_name, estimate_type, sep="_")) %>% #Combining Pop_ID and Estimate type
-     select(-group_name, -estimate_type)  %>% 
-     spread(long_key, estimate,fill = NA) 
-  
-
-state_pop_map <- state_pop_map %>% mutate(
-  state_pop = `Total population_est_tot_pop`,
-  state_pop_mill =`Total population_est_tot_pop`/1000000,
-  asian_pop = `Asian alone_est_tot_pop`,
-  nhpi_pop = `NHPI alone_est_tot_pop`)
-
-x <- c("{point.name}:", "Asian Alone:","NHPI Alone:")
-title<-"State Population"
-y <- c(" {point.value:.2f} Million", " {point.asian_pop:,.0f}",
-" {point.nhpi_pop:,.0f}")
-#style <- "style=font-size:80%"
-
-data(usgeojson)
-highchart() %>%
-  hc_title(text = "State Population", align = "center") %>%
-  hc_subtitle(text = "Source: 2011-2015 ACS using Asian/NHPI Alone", align = "center") %>%
-  hc_chart(backgroundColor = "transparent") %>%
-  hc_add_series_map(usgeojson, state_pop_map, name = "State Population", value = "state_pop_mill", joinBy = c("name", "geodisplaylabel"),
-                    borderColor= "transparent") %>%
-  hc_tooltip(pointFormat = tooltip_table(x,y,title), useHTML=T,  headerFormat= "")%>%
-  hc_add_theme(hc_theme_538()) %>%
-  hc_colorAxis(stops = color_stops(5),labels= list(format = "{value}"),showInLegend=T) %>%
-  hc_legend(title = list(text= "Statewide Population (millions)", fontStyle ='italic'),align = "center",verticalAlign = "bottom",
-            layout = "horizontal", padding = 5) %>% 
-  #hc_legend(layout = "vertical", align = "right",
-   #         floating = TRUE, valueDecimals = 0, valueSuffix = " thousand") 
-  hc_exporting(enabled = TRUE)
-```
 
 
 
@@ -574,26 +580,6 @@ highchart() %>%
 > Educational Attainment data is complied using Table [B15002](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B15002) from the 2015 ACS 5-Year estimates.
 
 Nationally, about **`r avg_hs_less`**% of Americans have less than a High School diploma and about **`r avg_ba_higher`**% have a Bachelor's Degree or higher.
-
-## % Asian & NHPI Alone
-
-
-```{r EDU-alone-pct, echo=FALSE, message=FALSE, warning=FALSE}
-
-state_display_table(state_edu_long, groups_alone,education_percent) %>% formatPercentage(columns = c(2:13), digits = 2)
-
-```
-
-## % Asian & NHPI Combo
-
-
-```{r EDU-combo-pct, echo=FALSE, message=FALSE, warning=FALSE}
-
-state_display_table(state_edu_long, groups_combo,education_percent) %>% formatPercentage(columns = c(2:13), digits = 2)
-
-
-```
-
 
 ## Visualize Data
 
@@ -649,6 +635,29 @@ highchart() %>%
 ```
 
 
+## % Asian & NHPI Alone
+
+
+```{r EDU-alone-pct, echo=FALSE, message=FALSE, warning=FALSE}
+
+state_display_table(state_edu_long, groups_alone,education_percent) %>% formatPercentage(columns = c(2:13), digits = 2)
+
+```
+
+## % Asian & NHPI Combo
+
+
+```{r EDU-combo-pct, echo=FALSE, message=FALSE, warning=FALSE}
+
+state_display_table(state_edu_long, groups_combo,education_percent) %>% formatPercentage(columns = c(2:13), digits = 2)
+
+
+```
+
+
+
+
+
 # Limited English Proficiency {.tabset .tabset-fade .tabset-pills}
 <a href="#top"><button class="btn btn-outline-primary center-block btn-small"> Back to Top</button></a>
 
@@ -656,51 +665,6 @@ highchart() %>%
 Limited English Proficiency data is complied using Table [B16004](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B16004) from the 2015 ACS 5-Year estimates.
 
 Nationally Among Americans who speak a language other than english at home, about **`r avg_lep`**% of them speak English less than "very well".
-
-## % Asian & NHPI Alone
-
-```{r LEP-alone-pct, echo=FALSE, message=FALSE, warning=FALSE}
-
-state_display_table(state_LEP_long, groups_alone,LEP_percent) %>% formatPercentage(columns = c(2:4), digits = 2)
-
-
-```
-
-## % Asian & NHPI Combo
-
-
-```{r LEP-combo-pct, echo=FALSE, message=FALSE, warning=FALSE}
-
-state_display_table(state_LEP_long, groups_combo,LEP_percent) %>% formatPercentage(columns = c(2:4), digits = 2)
-
-
-```
-
-## Raw Asian & NHPI Alone
-
-
-```{r LEP-combo-Alone, echo=FALSE, message=FALSE, warning=FALSE}
-
-  
- state_display_table(state_LEP_long, groups_alone,LEP_estimates) %>% 
-  formatCurrency(columns = c(2:13),currency = "", interval = 3, mark = ",", digits=0) 
-
-
-```
-
-
-## Raw Asian & NHPI Combo
-
-```{r LEP-Combo, echo=FALSE, message=FALSE, warning=FALSE}
-
- state_display_table(state_LEP_long, groups_combo,LEP_estimates) %>% 
-  formatCurrency(columns = c(2:13),currency = "", interval = 3, mark = ",", digits=0) 
-
-
-
-```
-
-
 
 ## Visualize Data
 
@@ -755,19 +719,12 @@ highchart() %>%
 
 ```
 
-# Nativity {.tabset .tabset-fade .tabset-pills}
-<a href="#top"><button class="btn btn-outline-primary center-block btn-small"> Back to Top</button></a>
-
-> Nativity data is complied using Table [B05012](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B05012) from the 2015 ACS 5-Year estimates.
-
-Nationally, about **`r avg_foreign_born`**% of Americans are foreign born.
 
 ## % Asian & NHPI Alone
 
+```{r LEP-alone-pct, echo=FALSE, message=FALSE, warning=FALSE}
 
-```{r nativity-alone-pct, echo=FALSE, message=FALSE, warning=FALSE}
-
-state_display_table(state_nativity_long, groups_alone,nativity_percent) %>% formatPercentage(columns = c(2:4), digits = 2)
+state_display_table(state_LEP_long, groups_alone,LEP_percent) %>% formatPercentage(columns = c(2:4), digits = 2)
 
 
 ```
@@ -775,10 +732,9 @@ state_display_table(state_nativity_long, groups_alone,nativity_percent) %>% form
 ## % Asian & NHPI Combo
 
 
+```{r LEP-combo-pct, echo=FALSE, message=FALSE, warning=FALSE}
 
-```{r nativity-combo-pct, echo=FALSE, message=FALSE, warning=FALSE}
-
-state_display_table(state_nativity_long, groups_combo,nativity_percent) %>% formatPercentage(columns = c(2:4), digits = 2)
+state_display_table(state_LEP_long, groups_combo,LEP_percent) %>% formatPercentage(columns = c(2:4), digits = 2)
 
 
 ```
@@ -786,11 +742,11 @@ state_display_table(state_nativity_long, groups_combo,nativity_percent) %>% form
 ## Raw Asian & NHPI Alone
 
 
-```{r nativity-combo-Alone, echo=FALSE, message=FALSE, warning=FALSE}
+```{r LEP-combo-Alone, echo=FALSE, message=FALSE, warning=FALSE}
 
   
- state_display_table(state_nativity_long, groups_alone,nativity_estimates) %>% 
-  formatCurrency(columns = c(2:7),currency = "", interval = 3, mark = ",", digits=0) 
+ state_display_table(state_LEP_long, groups_alone,LEP_estimates) %>% 
+  formatCurrency(columns = c(2:13),currency = "", interval = 3, mark = ",", digits=0) 
 
 
 ```
@@ -798,14 +754,24 @@ state_display_table(state_nativity_long, groups_combo,nativity_percent) %>% form
 
 ## Raw Asian & NHPI Combo
 
-```{r nativity-Combo, echo=FALSE, message=FALSE, warning=FALSE}
+```{r LEP-Combo, echo=FALSE, message=FALSE, warning=FALSE}
 
- state_display_table(state_nativity_long, groups_combo,nativity_estimates) %>% 
-  formatCurrency(columns = c(2:7),currency = "", interval = 3, mark = ",", digits=0) 
+ state_display_table(state_LEP_long, groups_combo,LEP_estimates) %>% 
+  formatCurrency(columns = c(2:13),currency = "", interval = 3, mark = ",", digits=0) 
 
 
 
 ```
+
+
+
+
+# Nativity {.tabset .tabset-fade .tabset-pills}
+<a href="#top"><button class="btn btn-outline-primary center-block btn-small"> Back to Top</button></a>
+
+> Nativity data is complied using Table [B05012](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B05012) from the 2015 ACS 5-Year estimates.
+
+Nationally, about **`r avg_foreign_born`**% of Americans are foreign born.
 
 ## Visualize Data
 
@@ -861,28 +827,24 @@ highchart() %>%
 ```
 
 
-# Poverty {.tabset .tabset-fade .tabset-pills}
-<a href="#top"><button class="btn btn-outline-primary center-block btn-small"> Back to Top</button></a>
-
-> Poverty data is complied using Table [B17001](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B17001) from the 2015 ACS 5-Year estimates.
-
-Nationally, about **`r avg_below_pov`**% of Americans are living below poverty line.
 
 ## % Asian & NHPI Alone
 
 
-```{r poverty-alone-pct, echo=FALSE, message=FALSE, warning=FALSE}
+```{r nativity-alone-pct, echo=FALSE, message=FALSE, warning=FALSE}
 
-state_display_table(state_poverty_long, groups_alone,poverty_percent) %>% formatPercentage(columns = c(2:7), digits = 2)
+state_display_table(state_nativity_long, groups_alone,nativity_percent) %>% formatPercentage(columns = c(2:4), digits = 2)
+
 
 ```
 
 ## % Asian & NHPI Combo
 
 
-```{r poverty-combo-pct, echo=FALSE, message=FALSE, warning=FALSE}
 
-state_display_table(state_poverty_long, groups_combo,poverty_percent) %>% formatPercentage(columns = c(2:7), digits = 2)
+```{r nativity-combo-pct, echo=FALSE, message=FALSE, warning=FALSE}
+
+state_display_table(state_nativity_long, groups_combo,nativity_percent) %>% formatPercentage(columns = c(2:4), digits = 2)
 
 
 ```
@@ -890,11 +852,11 @@ state_display_table(state_poverty_long, groups_combo,poverty_percent) %>% format
 ## Raw Asian & NHPI Alone
 
 
-```{r poverty-combo-Alone, echo=FALSE, message=FALSE, warning=FALSE}
+```{r nativity-combo-Alone, echo=FALSE, message=FALSE, warning=FALSE}
 
   
- state_display_table(state_poverty_long, groups_alone,poverty_estimates) %>% 
-  formatCurrency(columns = c(2:10),currency = "", interval = 3, mark = ",", digits=0) 
+ state_display_table(state_nativity_long, groups_alone,nativity_estimates) %>% 
+  formatCurrency(columns = c(2:7),currency = "", interval = 3, mark = ",", digits=0) 
 
 
 ```
@@ -902,15 +864,22 @@ state_display_table(state_poverty_long, groups_combo,poverty_percent) %>% format
 
 ## Raw Asian & NHPI Combo
 
-```{r poverty-Combo, echo=FALSE, message=FALSE, warning=FALSE}
+```{r nativity-Combo, echo=FALSE, message=FALSE, warning=FALSE}
 
- state_display_table(state_poverty_long, groups_combo,poverty_estimates) %>% 
-  formatCurrency(columns = c(2:10),currency = "", interval = 3, mark = ",", digits=0) 
+ state_display_table(state_nativity_long, groups_combo,nativity_estimates) %>% 
+  formatCurrency(columns = c(2:7),currency = "", interval = 3, mark = ",", digits=0) 
 
 
 
 ```
 
+
+# Poverty {.tabset .tabset-fade .tabset-pills}
+<a href="#top"><button class="btn btn-outline-primary center-block btn-small"> Back to Top</button></a>
+
+> Poverty data is complied using Table [B17001](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B17001) from the 2015 ACS 5-Year estimates.
+
+Nationally, about **`r avg_below_pov`**% of Americans are living below poverty line.
 
 ## Visualize Data
 
@@ -966,12 +935,95 @@ highchart() %>%
 ```
 
 
+
+## % Asian & NHPI Alone
+
+
+```{r poverty-alone-pct, echo=FALSE, message=FALSE, warning=FALSE}
+
+state_display_table(state_poverty_long, groups_alone,poverty_percent) %>% formatPercentage(columns = c(2:7), digits = 2)
+
+```
+
+## % Asian & NHPI Combo
+
+
+```{r poverty-combo-pct, echo=FALSE, message=FALSE, warning=FALSE}
+
+state_display_table(state_poverty_long, groups_combo,poverty_percent) %>% formatPercentage(columns = c(2:7), digits = 2)
+
+
+```
+
+## Raw Asian & NHPI Alone
+
+
+```{r poverty-combo-Alone, echo=FALSE, message=FALSE, warning=FALSE}
+
+  
+ state_display_table(state_poverty_long, groups_alone,poverty_estimates) %>% 
+  formatCurrency(columns = c(2:10),currency = "", interval = 3, mark = ",", digits=0) 
+
+
+```
+
+
+## Raw Asian & NHPI Combo
+
+```{r poverty-Combo, echo=FALSE, message=FALSE, warning=FALSE}
+
+ state_display_table(state_poverty_long, groups_combo,poverty_estimates) %>% 
+  formatCurrency(columns = c(2:10),currency = "", interval = 3, mark = ",", digits=0) 
+
+
+
+```
+
+
+
 # Citizen Voting Age Population {.tabset .tabset-fade .tabset-pills}
 <a href="#top"><button class="btn btn-outline-primary center-block btn-small"> Back to Top</button></a>
 
 > CVAP data is complied using Table [B05003](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B05003) from the 2015 ACS 5-Year estimates.
 
 Nationally, about **`r avg_state_cvap`**% of Americans are eligible to vote, while the national average number for AAPI is **`r avg_aapi_cvap`**%
+
+## Visualize Data
+
+```{r CVAP visualize, echo=FALSE, message=FALSE, warning=FALSE}
+
+state_cvap_map <- state_cvap_map %>% mutate(
+  pct_state_cvap = round(pct_state_cvap*100,2),
+  pct_aapi_cvap = round(pct_aapi_cvap*100,2))
+
+  
+
+x <- c("{point.name}:", "AAPI Alone:")
+title<-"Percent of CVAP"
+y <- c(" {point.value:.1f}%", " {point.pct_aapi_cvap:.1f}%")
+#style <- "style=font-size:80%"
+
+data(usgeojson)
+highchart() %>%
+  hc_title(text = "CVAP", align = "center") %>%
+  hc_subtitle(text = "Source: 2011-2015 ACS using Asian/NHPI Alone", align = "center") %>%
+  hc_chart(backgroundColor = "transparent") %>%
+  hc_add_series_map(usgeojson, state_cvap_map, name = "CVAP",value = "pct_state_cvap", joinBy = c("name", "geoname"),
+                    borderColor= "transparent") %>%
+  hc_tooltip(pointFormat = tooltip_table(x,y,title), useHTML=T,  headerFormat= "")%>%
+  hc_add_theme(hc_theme_538()) %>%
+  hc_colorAxis(stops = color_stops(5),labels= list(format = "{value}%"),showInLegend=T) %>%
+  hc_legend(title = list(text= "Statewide Percentage", fontStyle ='italic'),align = "center",verticalAlign = "bottom",
+            layout = "horizontal", padding = 5) %>% 
+  #hc_legend(layout = "vertical", align = "right",
+   #         floating = TRUE, valueDecimals = 0, valueSuffix = "%") 
+  hc_exporting(enabled = TRUE)
+
+```
+
+
+
+
 
 ## Raw Asian & NHPI Alone
 
@@ -1004,41 +1056,6 @@ datatable(state_cvap_pct, extensions = list("Buttons" = NULL, 'FixedColumns'= T,
                 scrollX = TRUE,
                 lengthMenu = c(25, 50, 100), pageLength = 50)) %>% formatPercentage(columns = c(2:3), digits = 2)
 
-
-```
-
-
-
-## Visualize Data
-
-```{r CVAP visualize, echo=FALSE, message=FALSE, warning=FALSE}
-
-state_cvap_map <- state_cvap_map %>% mutate(
-  pct_state_cvap = round(pct_state_cvap*100,2),
-  pct_aapi_cvap = round(pct_aapi_cvap*100,2))
-
-  
-
-x <- c("{point.name}:", "AAPI Alone:")
-title<-"Percent of CVAP"
-y <- c(" {point.value:.1f}%", " {point.pct_aapi_cvap:.1f}%")
-#style <- "style=font-size:80%"
-
-data(usgeojson)
-highchart() %>%
-  hc_title(text = "CVAP", align = "center") %>%
-  hc_subtitle(text = "Source: 2011-2015 ACS using Asian/NHPI Alone", align = "center") %>%
-  hc_chart(backgroundColor = "transparent") %>%
-  hc_add_series_map(usgeojson, state_cvap_map, name = "CVAP",value = "pct_state_cvap", joinBy = c("name", "geoname"),
-                    borderColor= "transparent") %>%
-  hc_tooltip(pointFormat = tooltip_table(x,y,title), useHTML=T,  headerFormat= "")%>%
-  hc_add_theme(hc_theme_538()) %>%
-  hc_colorAxis(stops = color_stops(5),labels= list(format = "{value}%"),showInLegend=T) %>%
-  hc_legend(title = list(text= "Statewide Percentage", fontStyle ='italic'),align = "center",verticalAlign = "bottom",
-            layout = "horizontal", padding = 5) %>% 
-  #hc_legend(layout = "vertical", align = "right",
-   #         floating = TRUE, valueDecimals = 0, valueSuffix = "%") 
-  hc_exporting(enabled = TRUE)
 
 ```
 
