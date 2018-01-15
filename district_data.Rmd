@@ -1,0 +1,137 @@
+---
+title: ''
+output: html_document
+---
+
+```{r setup, include=FALSE}
+
+## Loading Packages
+library(forcats)
+library(DT)
+library(readxl)
+library(tidyverse)
+library(highcharter)
+library(glue)
+library(acs)
+library(stringr)
+
+## Setting Formatting for output
+knitr::knit_hooks$set(inline = function(x) { if(!is.numeric(x)){ x }else{ prettyNum(round(x,2), big.mark=",", digits=6) } })
+## Formatting for Graphics
+hcoptslang <- getOption("highcharter.lang")
+hcoptslang$thousandsSep <- ","
+options(highcharter.lang = hcoptslang)
+
+
+#Read in files
+district_pop <- readxl::read_xlsx("raw_data/district/congressional_pop.xlsx")
+district_pop <- district_pop %>% mutate(geodisplaylabel = 
+                                str_replace(string = geodisplaylabel, pattern = "\\(115th Congress\\)", replacement = ""))
+district_pop <- district_pop %>% separate(geodisplaylabel, into = c("District", "State"), sep = ",")
+
+district_origin_aa <- readxl::read_xlsx("raw_data/district/congressional_detailed_aa.xlsx")
+district_origin_aa <- district_origin_aa %>% mutate(geodisplaylabel = 
+                                str_replace(string = geodisplaylabel, pattern = "\\(115th Congress\\)", replacement = ""))
+district_origin_aa <- district_origin_aa %>% separate(geodisplaylabel, into = c("District", "State"), sep = ",")
+
+
+
+
+### Renaming Pop
+district_pop <- district_pop %>% rename(
+  `Total Population`= est_tot_pop,
+  `Asian Alone` = est_aa_alone,
+  `Asian Alone % Total Pop` = pct_aa_alone,
+  `Asian Combo` = est_aa_combo,
+  `Asian Combo % Total Pop` = pct_aa_combo,
+  `NHPI Alone` = est_nhpi_alone,
+  `NHPI Alone % Total Pop` = pct_nhpi_alone,
+  `NHPI Combo` = est_nhpi_combo,
+  `NHPI Combo % Total pop` = pct_nhpi_combo
+)
+
+district_rawnumbers <- c("District","State", "Total Population", "Asian Alone", "Asian Combo", "NHPI Alone", "NHPI Combo")
+district_percent <- c("District","State", "Total Population", "Asian Alone % Total Pop", "Asian Combo % Total Pop", "NHPI Alone % Total Pop", "NHPI Combo % Total pop")
+
+ district_display_table <- function(data, whichestimates){
+   data %>%
+    select(whichestimates) %>%
+     arrange(State)%>%
+     select(District, State,starts_with("Total population"),everything()) %>% 
+      datatable(extensions = 
+                list("Buttons" = NULL, 'FixedColumns'= T, "Scroller"=T),
+              rownames= FALSE, 
+              options = list(
+                dom = 'rtB',
+                buttons = c('copy', 'csv', 'excel'),
+                scrollX = TRUE,
+                fixedColumns = list(leftColumns = 1),
+                lengthMenu = c(25, 50, 100), pageLength = 50))
+ }
+ 
+
+ ## Sentence for geo-highlight
+largest_district_aa <- district_pop %>% top_n(1,`Asian Alone % Total Pop`) %>% pull(District)
+largest_district_aa_state <- district_pop %>% top_n(1,`Asian Alone % Total Pop`) %>% pull(State)
+largest_district_aa_pct <- district_pop %>% top_n(1,`Asian Alone % Total Pop`) %>% pull(`Asian Alone % Total Pop`)
+
+largest_district_aa_pct<- round(largest_district_aa_pct*100,0)
+```
+
+```{r setup-detailed origin, include=FALSE}
+
+
+
+```
+
+
+<div class="jumbotron">
+  <div class="container">
+  <h1>Congressional District Data</h1>
+  <p> About `r largest_district_aa_pct`% of the population in `r largest_district_aa`, `r largest_district_aa_state` is Asian American, the highest in the country.</p>
+<div class="btn-group" role="group" aria-label="Basic example">
+  <a href="district_data.html#percent-aapi-population" type="button" class="btn btn-primary">AAPI Population</a>
+  <a href="district_data.html#asian-american-detailed-origin" type="button" class="btn btn-primary">Asian Detailed Origin</a>
+  <a href="district_data.html#nhpi-american-detailed-origin" type="button" class="btn btn-primary">NHPI Detailed Origin</a>
+</div>
+</div>
+</div>
+
+# Population {.tabset .tabset-fade .tabset-pills}
+<a href="#top"><button class="btn btn-outline-primary center-block btn-small"> Back to Top</button></a>
+
+> Population data is complied using Tables: [B02001](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B02001), [B02011](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B02011), and [B02012](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B02012) from the 2016 ACS 5-Year estimates.
+
+  
+
+
+## Percent AAPI Population 
+
+
+```{r pop-pct, echo=FALSE, message=FALSE, warning=FALSE}
+
+  
+ district_display_table(district_pop,district_percent) %>% 
+  formatCurrency(columns = c(3),currency = "", interval = 3, mark = ",", digits=0) %>%
+  formatPercentage(columns = c(4,5,6,7),digits = 2)
+
+
+```
+
+
+## AAPI Population
+
+
+```{r pop-number, echo=FALSE, message=FALSE, warning=FALSE}
+
+  
+ district_display_table(district_pop,district_rawnumbers) %>% 
+  formatCurrency(columns = c(3:7),currency = "", interval = 3, mark = ",", digits=0)
+
+
+```
+
+
+
+
+
