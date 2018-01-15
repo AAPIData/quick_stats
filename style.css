@@ -53,6 +53,11 @@ body{
   font-weight: 400;
  
 }
+
+.section h1{
+ padding-top: 100px !important;
+}
+
 /* Headers */
 h1{
   font-size: 2vw;
