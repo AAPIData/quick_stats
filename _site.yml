@@ -15,11 +15,13 @@ navbar:
     - text: CVAP
       href: national_data.html#citizen-voting-age-population
     - text: Education
-      href: national_data.html#education
+      href: national_data.html#educational-attainment
     - text: Limited English Proficiency
       href: national_data.html#limited-english-proficiency
-    - text: Nativity
-      href: national_data.html#nativity
+    - text: Asian Origin
+      href: national_data.html#asian-american-detailed-origin
+    - text: NHPI Origin
+      href: national_data.html#nhpi-american-detailed-origin
     - text: Poverty
       href: national_data.html#poverty
   - text: State
@@ -56,15 +58,15 @@ navbar:
     icon: fa-globe
     menu:
     - text: CVAP
-      href: county_data.html#citizen-voting-age-population
+      href: district_data.html#citizen-voting-age-population
     - text: Detailed Origin
-      href: county_data.html#education
+      href: district_data.html#education
     - text: Education
-      href: county_data.html#education
+      href: district_data.html#education
     - text: Limited English Proficiency
-      href: county_data.html#limited-english-proficiency
+      href: district_data.html#limited-english-proficiency
     - text: Poverty
-      href: county_data.html#poverty      
+      href: district_data.html#poverty      
   - text: Metro Area
     icon: fa-globe
     menu:
