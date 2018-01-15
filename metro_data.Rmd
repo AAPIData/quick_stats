@@ -197,7 +197,9 @@ msa_largestAAprop_number<- round(msa_largestAAprop_number*100,0)
 # Population {.tabset .tabset-fade .tabset-pills}
 <a href="#top"><button class="btn btn-outline-primary center-block btn-small"> Back to Top</button></a>
 
-> Attribution sentence here
+> Population data is complied using Tables: [B02001](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B02001), [B02011](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B02011), and [B02012](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B02012) from the 2016 ACS 5-Year estimates.
+
+  
 
 
 ## Percent AAPI Population 
@@ -230,7 +232,8 @@ msa_display_table(msa_pop,msa_rawnumbers) %>%
 # Asian American Detailed Origin {.tabset .tabset-fade .tabset-pills}
 <a href="#top"><button class="btn btn-outline-primary center-block btn-small"> Back to Top</button></a>
 
-> Attribution sentence here
+> Population data is complied using Tables: [B02015](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B02015) from the 2016 ACS 5-Year estimates.
+
 
 ## Percent Asian Detailed Origin
 
@@ -258,6 +261,9 @@ msa_display_table(msa_aa_origin_counts, colnames(msa_aa_origin_counts)) %>%
 
 # NHPI American Detailed Origin {.tabset .tabset-fade .tabset-pills}
 <a href="#top"><button class="btn btn-outline-primary center-block btn-small"> Back to Top</button></a>
+
+> Population data is complied using Tables: [B02016](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B02016) from the 2016 ACS 5-Year estimates.
+
 
 ## Percent NHPI Detailed Origin
 
