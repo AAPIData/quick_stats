@@ -1,0 +1,284 @@
+---
+title: ''
+output: html_document
+---
+
+```{r setup, include=FALSE}
+
+## Loading Packages
+library(forcats)
+library(DT)
+library(readxl)
+library(tidyverse)
+library(highcharter)
+library(glue)
+library(acs)
+library(stringr)
+
+## Setting Formatting for output
+knitr::knit_hooks$set(inline = function(x) { if(!is.numeric(x)){ x }else{ prettyNum(round(x,2), big.mark=",", digits=6) } })
+## Formatting for Graphics
+hcoptslang <- getOption("highcharter.lang")
+hcoptslang$thousandsSep <- ","
+options(highcharter.lang = hcoptslang)
+
+
+#Read in files
+
+msa_pop <- readxl::read_xlsx("raw_data/metro/msa_aapi_prop.xlsx")
+msa_aa_origin <- readxl::read_xlsx("raw_data/metro/msa_detailed_aa.xlsx")
+msa_nhpi_origin <- readxl::read_xlsx("raw_data/metro/msa_detailed_nhpi.xlsx")
+
+msa_pop <- msa_pop %>% mutate(geodisplaylabel = 
+                                str_replace(string = geodisplaylabel, pattern = "Metro Area", replacement = ""))
+msa_aa_origin <- msa_aa_origin %>% mutate(geodisplaylabel = 
+                                str_replace(string = geodisplaylabel, pattern = "Metro Area", replacement = ""))
+
+msa_nhpi_origin <- msa_nhpi_origin %>% mutate(geodisplaylabel = 
+                                str_replace(string = geodisplaylabel, pattern = "Metro Area", replacement = ""))
+
+msa_aa_origin_counts <- msa_aa_origin %>% select(geodisplaylabel, starts_with("Hd01_"))
+msa_aa_origin_pct <- msa_aa_origin %>% select(geodisplaylabel,hd01_vd01, starts_with("pct_"))
+
+msa_nhpi_origin_counts <- msa_nhpi_origin %>% select(geodisplaylabel, starts_with("Hd01_"))
+msa_nhpi_origin_pct <- msa_nhpi_origin %>% select(geodisplaylabel,hd01_vd01, starts_with("pct_"))
+
+
+msa_aa_origin_counts <- msa_aa_origin_counts %>% rename(
+"MSA" = geodisplaylabel,
+"Total Asian Alone" = hd01_vd01,
+"Asian Indian" = hd01_vd02,
+"Bangladeshi" = hd01_vd03,
+"Bhutanese" = hd01_vd04,
+"Burmese" = hd01_vd05,
+"Cambodian" = hd01_vd06,
+"Chinese" = hd01_vd07,
+"Filipino" = hd01_vd08,
+"Hmong" = hd01_vd09,
+"Indonesian" = hd01_vd10,
+"Japanese" = hd01_vd11,
+"Korean" = hd01_vd12,
+"Laotian" = hd01_vd13,
+"Malaysian" = hd01_vd14,
+"Mongolian" = hd01_vd15,
+"Nepalese" = hd01_vd16,
+"Okinawan" = hd01_vd17,
+"Pakistani" = hd01_vd18,
+"Sri Lankan" = hd01_vd19,
+"Taiwanese" = hd01_vd20,
+"Thai" = hd01_vd21,
+"Vietnamese" = hd01_vd22,
+"Other Asian, specified" = hd01_vd23,
+"Other Asian, not specified" = hd01_vd24,
+"Two or more Asian" = hd01_vd25)
+
+msa_aa_origin_pct <- msa_aa_origin_pct %>% rename(
+  "MSA" = geodisplaylabel,
+  "Total Asian Alone" = hd01_vd01,
+"Asian Indian" = pct_hd01_vd02,
+"Bangladeshi" = pct_hd01_vd03,
+"Bhutanese" = pct_hd01_vd04,
+"Burmese" = pct_hd01_vd05,
+"Cambodian" = pct_hd01_vd06,
+"Chinese" = pct_hd01_vd07,
+"Filipino" = pct_hd01_vd08,
+"Hmong" = pct_hd01_vd09,
+"Indonesian" = pct_hd01_vd10,
+"Japanese" = pct_hd01_vd11,
+"Korean" = pct_hd01_vd12,
+"Laotian" = pct_hd01_vd13,
+"Malaysian" = pct_hd01_vd14,
+"Mongolian" = pct_hd01_vd15,
+"Nepalese" = pct_hd01_vd16,
+"Okinawan" = pct_hd01_vd17,
+"Pakistani" = pct_hd01_vd18,
+"Sri Lankan" = pct_hd01_vd19,
+"Taiwanese" = pct_hd01_vd20,
+"Thai" = pct_hd01_vd21,
+"Vietnamese" = pct_hd01_vd22,
+"Other Asian, specified" = pct_hd01_vd23,
+"Other Asian, not specified" = pct_hd01_vd24,
+"Two or more Asian" = pct_hd01_vd25)
+
+msa_nhpi_origin_counts <- msa_nhpi_origin_counts %>% rename(
+"MSA"= geodisplaylabel,
+"Total NHPI Alone" = hd01_vd01,
+"Native Hawaiian" = hd01_vd03,
+"Samoan" = hd01_vd04,
+"Tongan" = hd01_vd05,
+"Other Polynesian" = hd01_vd06,
+"Guamanian or Chamorro" = hd01_vd08,
+"Marshallese" = hd01_vd09,
+"Other Micronesian" = hd01_vd10,
+"Fijian" = hd01_vd12,
+"Other Melanesian" = hd01_vd13,
+"Other Pacific Islander" = hd01_vd14,
+"Two or more NHPI" = hd01_vd15
+)
+
+msa_nhpi_origin_pct<- msa_nhpi_origin_pct %>% rename(
+"MSA"= geodisplaylabel,
+"Total NHPI Alone" = hd01_vd01,
+"Native Hawaiian" = pct_hd01_vd03,
+"Samoan" = pct_hd01_vd04,
+"Tongan" = pct_hd01_vd05,
+"Other Polynesian" = pct_hd01_vd06,
+"Guamanian or Chamorro" = pct_hd01_vd08,
+"Marshallese" = pct_hd01_vd09,
+"Other Micronesian" = pct_hd01_vd10,
+"Fijian" = pct_hd01_vd12,
+"Other Melanesian" = pct_hd01_vd13,
+"Other Pacific Islander" = pct_hd01_vd14,
+"Two or more NHPI" = pct_hd01_vd15)
+
+msa_pop <- msa_pop %>% rename(
+  MSA = geodisplaylabel,
+  `Total Population`= est_tot_pop,
+  `Asian Alone` = est_aa_alone,
+  `Asian Alone % Total Pop` = pct_aa_alone,
+  `Asian Combo` = est_aa_combo,
+  `Asian Combo % Total Pop` = pct_aa_combo,
+  `NHPI Alone` = est_nhpi_alone,
+  `NHPI Alone % Total Pop` = pct_nhpi_alone,
+  `NHPI Combo` = est_nhpi_combo,
+  `NHPI Combo % Total pop` = pct_nhpi_combo
+)
+
+msa_rawnumbers <- c("MSA", "Total Population", "Asian Alone", "Asian Combo", "NHPI Alone", "NHPI Combo")
+msa_percent <- c("MSA", "Total Population", "Asian Alone % Total Pop", "Asian Combo % Total Pop", "NHPI Alone % Total Pop", "NHPI Combo % Total pop")
+msa_origin_percent <- c()
+
+ msa_display_table <- function(data, which_estimates){
+   data %>%
+     select(which_estimates)%>%
+     arrange(MSA)%>%
+    select(MSA,starts_with("Total population"),everything()) %>%
+      datatable(extensions = 
+                list("Buttons" = NULL, 'FixedColumns'= T, "Scroller"=T),
+              rownames= FALSE, 
+              options = list(
+                dom = 'rtB',
+                buttons = c('copy', 'csv', 'excel'),
+                scrollX = TRUE,
+                fixedColumns = list(leftColumns = 1),
+                lengthMenu = c(25, 50, 100), pageLength = 50))
+ }
+
+
+```
+
+
+
+```{r setup pop, include = FALSE}
+
+
+###Data highlight sentence
+msa_largestAAprop <- msa_pop %>% top_n(1, `Asian Alone % Total Pop`) %>% pull(MSA)
+msa_largestAAprop_number <- msa_pop %>% top_n(1, `Asian Alone % Total Pop`) %>% pull(`Asian Alone % Total Pop`)
+msa_largestAAprop_number<- round(msa_largestAAprop_number*100,0)
+
+
+```
+
+
+
+<div class="jumbotron">
+  <div class="container">
+  <h1>Metro Area Data</h1>
+  <p> About `r msa_largestAAprop_number`% of the population in `r msa_largestAAprop` is Asian American, the highest in the country.</p>
+<div class="btn-group" role="group" aria-label="Basic example">
+  <a href="metro_data.html#percent-aapi-population" type="button" class="btn btn-primary">AAPI Population</a>
+  <a href="metro_data.html#asian-american-detailed-origin" type="button" class="btn btn-primary">Asian Detailed Origin</a>
+  <a href="metro_data.html#nhpi-american-detailed-origin" type="button" class="btn btn-primary">NHPI Detailed Origin</a>
+</div>
+</div>
+</div>
+
+# Population {.tabset .tabset-fade .tabset-pills}
+<a href="#top"><button class="btn btn-outline-primary center-block btn-small"> Back to Top</button></a>
+
+> Attribution sentence here
+
+
+## Percent AAPI Population 
+
+
+```{r pop-pct, echo=FALSE, message=FALSE, warning=FALSE}
+
+  
+ msa_display_table(msa_pop,msa_percent) %>% 
+  formatCurrency(columns = c(2),currency = "", interval = 3, mark = ",", digits=0) %>%
+  formatPercentage(columns = c(3,4,5,6),digits = 2)
+
+
+```
+
+
+## AAPI Population
+
+
+```{r pop-number, echo=FALSE, message=FALSE, warning=FALSE}
+
+  
+msa_display_table(msa_pop,msa_rawnumbers) %>% 
+  formatCurrency(columns = c(2,3,4,5,6),currency = "", interval = 3, mark = ",", digits=0)
+
+
+```
+
+
+# Asian American Detailed Origin {.tabset .tabset-fade .tabset-pills}
+<a href="#top"><button class="btn btn-outline-primary center-block btn-small"> Back to Top</button></a>
+
+> Attribution sentence here
+
+## Percent Asian Detailed Origin
+
+```{r pop-aa-origin-pct, echo=FALSE, message=FALSE, warning=FALSE}
+
+  
+msa_display_table(msa_aa_origin_pct, colnames(msa_aa_origin_pct)) %>% 
+  formatCurrency(columns = c(2),currency = "", interval = 3, mark = ",", digits=0)%>%
+  formatPercentage(columns = c(3:26), digits= 1)
+
+
+```
+
+
+## Asian Detailed Origin
+
+```{r pop-aa-origin-number, echo=FALSE, message=FALSE, warning=FALSE}
+
+  
+msa_display_table(msa_aa_origin_counts, colnames(msa_aa_origin_counts)) %>% 
+  formatCurrency(columns = c(2:26),currency = "", interval = 3, mark = ",", digits=0)
+
+
+```
+
+# NHPI American Detailed Origin {.tabset .tabset-fade .tabset-pills}
+<a href="#top"><button class="btn btn-outline-primary center-block btn-small"> Back to Top</button></a>
+
+## Percent NHPI Detailed Origin
+
+```{r pop-NHPI-origin-pct, echo=FALSE, message=FALSE, warning=FALSE}
+
+  
+msa_display_table(msa_nhpi_origin_pct, colnames(msa_nhpi_origin_pct)) %>% 
+  formatCurrency(columns = c(2),currency = "", interval = 3, mark = ",", digits=0)%>%
+  formatPercentage(columns = c(3:13), digits= 1)
+
+
+```
+
+
+## NHPI Detailed Origin
+
+```{r pop-NHPI-origin-number, echo=FALSE, message=FALSE, warning=FALSE}
+
+  
+msa_display_table(msa_nhpi_origin_counts, colnames(msa_nhpi_origin_counts)) %>% 
+  formatCurrency(columns = c(2:13),currency = "", interval = 3, mark = ",", digits=0)
+
+
+```
