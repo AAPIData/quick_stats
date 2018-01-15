@@ -52,6 +52,19 @@ navbar:
       href: county_data.html#nativity
     - text: Poverty
       href: county_data.html#poverty
+  - text: Congressional District
+    icon: fa-globe
+    menu:
+    - text: CVAP
+      href: county_data.html#citizen-voting-age-population
+    - text: Detailed Origin
+      href: county_data.html#education
+    - text: Education
+      href: county_data.html#education
+    - text: Limited English Proficiency
+      href: county_data.html#limited-english-proficiency
+    - text: Poverty
+      href: county_data.html#poverty      
   - text: Metro Area
     icon: fa-globe
     menu:
