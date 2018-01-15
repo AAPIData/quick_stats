@@ -21,8 +21,8 @@ output:
   <a href="national_data.html" type="button" class="btn btn-default btn-block">National</a>
   <a href="state_data.html" type="button" class="btn btn-default btn-block">State</a>
   <a href="county_data.html" type="button" class="btn btn-default btn-block">County</a>
-  <a  type="button" class="btn btn-default btn-block">Congressional District</a>
-  <a  type="button" class="btn btn-default btn-block">Metropolitan Statistical Area</a>
+  <a href="district_data.html" type="button" class="btn btn-default btn-block">Congressional District</a>
+  <a href="metro_data.html" type="button" class="btn btn-default btn-block">Metropolitan Statistical Area</a>
   </div>
 </div>
 
