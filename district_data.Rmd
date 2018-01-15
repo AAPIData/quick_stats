@@ -200,7 +200,7 @@ district_nhpi_origin_pct<- district_nhpi_origin_pct %>% rename(
 
 ### Renaming Education
 district_edu <- district_edu %>% rename(
-"Total Asian alone" = est_aa_alone,
+"Total Asian alone 25 ys+older" = est_aa_alone,
 "AA less than HS" = est_aa_hsless,
 "% AA less than HS" = pct_aa_hsless,
 "AA HS Diploma or GED" = est_aa_hs_ged,
@@ -209,7 +209,7 @@ district_edu <- district_edu %>% rename(
 "% AA Some College" = pct_aa_some_college,
 "AA BA or higher" = est_aa_ba_higher,
 "% AA BA or higher" = pct_aa_ba_higher,
-"Total NHPI alone" = est_nhpi_alone,
+"Total NHPI alone 25 ys+older" = est_nhpi_alone,
 "NHPI less than HS" = est_nhpi_hsless,
 "% NHPI less than HS" = pct_nhpi_hsless,
 "NHPI HS Diploma or GED" = est_nhpi_hs_ged,
@@ -220,8 +220,8 @@ district_edu <- district_edu %>% rename(
 "% NHPI BA or higher" = pct_nhpi_ba_higher
 )
 
-district_edu_count <- district_edu %>% select(District, State, `Total Asian alone`, starts_with("AA"), `Total NHPI alone`, starts_with("NHPI")) %>% colnames()
-district_edu_percent <- district_edu %>% select(District, State, `Total Asian alone`, starts_with("% AA"), `Total NHPI alone`, starts_with("% NHPI")) %>% colnames()
+district_edu_count <- district_edu %>% select(District, State, `Total Asian alone 25 ys+older`, starts_with("AA"), `Total NHPI alone 25 ys+older`, starts_with("NHPI")) %>% colnames()
+district_edu_percent <- district_edu %>% select(District, State, `Total Asian alone 25 ys+older`, starts_with("% AA"), `Total NHPI alone 25 ys+older`, starts_with("% NHPI")) %>% colnames()
 
 
 ```
