@@ -1,0 +1,428 @@
+---
+title: ''
+output: html_document
+---
+
+```{r setup, include=FALSE}
+
+## Loading Packages
+library(forcats)
+library(DT)
+library(readxl)
+library(tidyverse)
+library(highcharter)
+library(glue)
+library(acs)
+library(stringr)
+
+## Setting Formatting for output
+knitr::knit_hooks$set(inline = function(x) { if(!is.numeric(x)){ x }else{ prettyNum(round(x,2), big.mark=",", digits=6) } })
+## Formatting for Graphics
+hcoptslang <- getOption("highcharter.lang")
+hcoptslang$thousandsSep <- ","
+options(highcharter.lang = hcoptslang)
+
+
+#Read in files
+district_pop <- readxl::read_xlsx("raw_data/district/congressional_pop.xlsx")
+district_pop <- district_pop %>% mutate(geodisplaylabel = 
+                                str_replace(string = geodisplaylabel, pattern = "\\(115th Congress\\)", replacement = ""))
+district_pop <- district_pop %>% separate(geodisplaylabel, into = c("District", "State"), sep = ",")
+
+district_origin_aa <- readxl::read_xlsx("raw_data/district/congressional_detailed_aa.xlsx")
+district_origin_aa <- district_origin_aa %>% mutate(geodisplaylabel = 
+                                str_replace(string = geodisplaylabel, pattern = "\\(115th Congress\\)", replacement = ""))
+district_origin_aa <- district_origin_aa %>% separate(geodisplaylabel, into = c("District", "State"), sep = ",")
+
+district_origin_nhpi <- readxl::read_xlsx("raw_data/district/congressional_detailed_nhpi.xlsx")
+district_origin_nhpi <- district_origin_nhpi %>% mutate(geodisplaylabel = 
+                                str_replace(string = geodisplaylabel, pattern = "\\(115th Congress\\)", replacement = ""))
+district_origin_nhpi <- district_origin_nhpi %>% separate(geodisplaylabel, into = c("District", "State"), sep = ",")
+
+district_edu <- readxl::read_xlsx("raw_data/district/congressional_edu.xlsx")
+district_edu <- district_edu %>% mutate(Geography = 
+                                str_replace(string = Geography, pattern = "\\(115th Congress\\)", replacement = ""))
+district_edu <- district_edu %>% separate(Geography, into = c("District", "State"), sep = ",")
+
+district_lep <- readxl::read_xlsx("raw_data/district/congressional_LEP.xlsx")
+district_lep <- district_lep %>% mutate(geodisplaylabel = 
+                                str_replace(string = geodisplaylabel, pattern = "\\(115th Congress\\)", replacement = ""))
+district_lep <- district_lep %>% separate(geodisplaylabel, into = c("District", "State"), sep = ",")
+
+district_cvap <- readxl::read_xlsx("raw_data/district/congressional_cvap.xlsx")
+district_cvap <- district_cvap %>% mutate(Geography = 
+                                str_replace(string = Geography, pattern = "\\(115th Congress\\)", replacement = ""))
+district_cvap <- district_cvap %>% separate(Geography, into = c("District", "State"), sep = ",")
+
+
+
+
+
+### Renaming Pop
+district_pop <- district_pop %>% rename(
+  `Total Population`= est_tot_pop,
+  `Asian Alone` = est_aa_alone,
+  `Asian Alone % Total Pop` = pct_aa_alone,
+  `Asian Combo` = est_aa_combo,
+  `Asian Combo % Total Pop` = pct_aa_combo,
+  `NHPI Alone` = est_nhpi_alone,
+  `NHPI Alone % Total Pop` = pct_nhpi_alone,
+  `NHPI Combo` = est_nhpi_combo,
+  `NHPI Combo % Total pop` = pct_nhpi_combo
+)
+
+district_rawnumbers <- c("District","State", "Total Population", "Asian Alone", "Asian Combo", "NHPI Alone", "NHPI Combo")
+district_percent <- c("District","State", "Total Population", "Asian Alone % Total Pop", "Asian Combo % Total Pop", "NHPI Alone % Total Pop", "NHPI Combo % Total pop")
+
+ district_display_table <- function(data, whichestimates){
+   data %>%
+    select(whichestimates) %>%
+     arrange(State)%>%
+     select(District, State,starts_with("Total population"),everything()) %>% 
+      datatable(extensions = 
+                list("Buttons" = NULL, 'FixedColumns'= T, "Scroller"=T),
+              rownames= FALSE, 
+              options = list(
+                dom = 'rtB',
+                buttons = c('copy', 'csv', 'excel'),
+                scrollX = TRUE,
+                fixedColumns = list(leftColumns = 2),
+                lengthMenu = c(25, 50, 100), pageLength = 50))
+ }
+ 
+
+ ## Sentence for geo-highlight
+largest_district_aa <- district_pop %>% top_n(1,`Asian Alone % Total Pop`) %>% pull(District)
+largest_district_aa_state <- district_pop %>% top_n(1,`Asian Alone % Total Pop`) %>% pull(State)
+largest_district_aa_pct <- district_pop %>% top_n(1,`Asian Alone % Total Pop`) %>% pull(`Asian Alone % Total Pop`)
+
+largest_district_aa_pct<- round(largest_district_aa_pct*100,0)
+```
+
+```{r setup-detailed origin, include=FALSE}
+
+
+district_aa_origin_counts <- district_origin_aa %>% select(District, State, starts_with("Hd01_"))
+district_aa_origin_pct <- district_origin_aa %>% select(District, State,hd01_vd01, starts_with("pct_"))
+
+district_nhpi_origin_counts <- district_origin_nhpi %>% select(District, State, starts_with("Hd01_"))
+district_nhpi_origin_pct <- district_origin_nhpi %>% select(District, State,hd01_vd01, starts_with("pct_"))
+
+
+district_aa_origin_counts <- district_aa_origin_counts %>% rename(
+"Total Asian Alone" = hd01_vd01,
+"Asian Indian" = hd01_vd02,
+"Bangladeshi" = hd01_vd03,
+"Bhutanese" = hd01_vd04,
+"Burmese" = hd01_vd05,
+"Cambodian" = hd01_vd06,
+"Chinese" = hd01_vd07,
+"Filipino" = hd01_vd08,
+"Hmong" = hd01_vd09,
+"Indonesian" = hd01_vd10,
+"Japanese" = hd01_vd11,
+"Korean" = hd01_vd12,
+"Laotian" = hd01_vd13,
+"Malaysian" = hd01_vd14,
+"Mongolian" = hd01_vd15,
+"Nepalese" = hd01_vd16,
+"Okinawan" = hd01_vd17,
+"Pakistani" = hd01_vd18,
+"Sri Lankan" = hd01_vd19,
+"Taiwanese" = hd01_vd20,
+"Thai" = hd01_vd21,
+"Vietnamese" = hd01_vd22,
+"Other Asian, specified" = hd01_vd23,
+"Other Asian, not specified" = hd01_vd24,
+"Two or more Asian" = hd01_vd25)
+
+district_aa_origin_pct <- district_aa_origin_pct %>% rename(
+  "Total Asian Alone" = hd01_vd01,
+"Asian Indian" = pct_hd01_vd02,
+"Bangladeshi" = pct_hd01_vd03,
+"Bhutanese" = pct_hd01_vd04,
+"Burmese" = pct_hd01_vd05,
+"Cambodian" = pct_hd01_vd06,
+"Chinese, except Taiwanese" = pct_hd01_vd07,
+"Filipino" = pct_hd01_vd08,
+"Hmong" = pct_hd01_vd09,
+"Indonesian" = pct_hd01_vd10,
+"Japanese" = pct_hd01_vd11,
+"Korean" = pct_hd01_vd12,
+"Laotian" = pct_hd01_vd13,
+"Malaysian" = pct_hd01_vd14,
+"Mongolian" = pct_hd01_vd15,
+"Nepalese" = pct_hd01_vd16,
+"Okinawan" = pct_hd01_vd17,
+"Pakistani" = pct_hd01_vd18,
+"Sri Lankan" = pct_hd01_vd19,
+"Taiwanese" = pct_hd01_vd20,
+"Thai" = pct_hd01_vd21,
+"Vietnamese" = pct_hd01_vd22,
+"Other Asian, specified" = pct_hd01_vd23,
+"Other Asian, not specified" = pct_hd01_vd24,
+"Two or more Asian" = pct_hd01_vd25)
+
+district_nhpi_origin_counts <- district_nhpi_origin_counts %>% rename(
+"Total NHPI Alone" = hd01_vd01, 
+"Native Hawaiian" = hd01_vd03, 
+"Samoan" = hd01_vd04, 
+"Tongan" = hd01_vd05, 
+"Other Polynesian" = hd01_vd06, 
+"Guamanian or Chamorro" = hd01_vd08, 
+"Marshallese" = hd01_vd09, 
+"Other Micronesian" = hd01_vd10, 
+"Fijian" = hd01_vd12, 
+"Other Melanesian" = hd01_vd13, 
+"Other Pacific Islander" = hd01_vd14, 
+"Two or More NHPI" = hd01_vd15 
+)
+
+district_nhpi_origin_pct<- district_nhpi_origin_pct %>% rename(
+"Total NHPI Alone" = hd01_vd01, 
+"Native Hawaiian" = pct_hd01_vd03, 
+"Samoan" = pct_hd01_vd04, 
+"Tongan" = pct_hd01_vd05, 
+"Other Polynesian" = pct_hd01_vd06, 
+"Guamanian or Chamorro" = pct_hd01_vd08, 
+"Marshallese" = pct_hd01_vd09, 
+"Other Micronesian" = pct_hd01_vd10, 
+"Fijian" = pct_hd01_vd12, 
+"Other Melanesian" = pct_hd01_vd13, 
+"Other Pacific Islander" = pct_hd01_vd14, 
+"Two or More NHPI" = pct_hd01_vd15 
+)
+
+
+```
+
+```{r setup-education, include=FALSE}
+
+### Renaming Education
+district_edu <- district_edu %>% rename(
+"Total Asian alone 25 ys+older" = est_aa_alone,
+"AA less than HS" = est_aa_hsless,
+"% AA less than HS" = pct_aa_hsless,
+"AA HS Diploma or GED" = est_aa_hs_ged,
+"% AA HS Diploma or GED" = pct_aa_hs_ged,
+"AA Some College" = est_aa_some_college,
+"% AA Some College" = pct_aa_some_college,
+"AA BA or higher" = est_aa_ba_higher,
+"% AA BA or higher" = pct_aa_ba_higher,
+"Total NHPI alone 25 ys+older" = est_nhpi_alone,
+"NHPI less than HS" = est_nhpi_hsless,
+"% NHPI less than HS" = pct_nhpi_hsless,
+"NHPI HS Diploma or GED" = est_nhpi_hs_ged,
+"% NHPI HS Diploma or GED" = pct_nhpi_hs_ged,
+"NHPI Some College" = est_nhpi_some_college,
+"% NHPI Some College" = pct_nhpi_some_collge,
+"NHPI BA or higher" = est_nhpi_ba_higher,
+"% NHPI BA or higher" = pct_nhpi_ba_higher
+)
+
+district_edu_count <- district_edu %>% select(District, State, `Total Asian alone 25 ys+older`, starts_with("AA"), `Total NHPI alone 25 ys+older`, starts_with("NHPI")) %>% colnames()
+district_edu_percent <- district_edu %>% select(District, State, `Total Asian alone 25 ys+older`, starts_with("% AA"), `Total NHPI alone 25 ys+older`, starts_with("% NHPI")) %>% colnames()
+
+
+```
+
+
+```{r setup-lep, include=FALSE}
+
+
+district_lep <- district_lep %>% rename(
+  "Total Asian alone" = est_aa_pop,
+  "Total Asian LEP" = est_aa_lep,
+  "% Asian LEP" = pct_aa_lep,
+  "Total NHPI alone" = est_nhpi_pop,
+  "Total NHPI LEP" = est_nhpi_lep,
+  "% NHPI LEP" = pct_nhpi_lep
+)
+
+district_lep_count <- district_lep %>% select(District, State, `Total Asian alone`,`Total Asian LEP`, `Total NHPI alone`, `Total NHPI LEP`) %>% colnames()
+district_lep_percent <- district_lep %>% select(District, State, `Total Asian alone`, starts_with("% Asian"), `Total NHPI alone`, starts_with("% NHPI")) %>% colnames()
+
+
+```
+
+<div class="jumbotron">
+  <div class="container">
+  <h1>Congressional District Data</h1>
+  <p> About `r largest_district_aa_pct`% of the population in `r largest_district_aa`, `r largest_district_aa_state` is Asian American, the highest in the country.</p>
+<div class="btn-group" role="group" aria-label="Basic example">
+  <a href="district_data.html#percent-aapi-population" type="button" class="btn btn-primary">AAPI Population</a>
+  <a href="district_data.html#asian-american-detailed-origin" type="button" class="btn btn-primary">Asian Origin</a>
+  <a href="district_data.html#nhpi-american-detailed-origin" type="button" class="btn btn-primary">NHPI Origin</a>
+  <a href="district_data.html#educational-attainment" type="button" class="btn btn-primary">Education</a>
+  <a href="district_data.html#limited-english-proficiency" type="button" class="btn btn-primary">LEP</a>
+  <a href="district_data.html#citizen-age-voting-population" type="button" class="btn btn-primary">CVAP</a>
+
+</div>
+</div>
+</div>
+
+# Population {.tabset .tabset-fade .tabset-pills}
+<a href="#top"><button class="btn btn-outline-primary center-block btn-small"> Back to Top</button></a>
+
+> Population data is complied using Tables: [B02001](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B02001), [B02011](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B02011), and [B02012](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B02012) from the 2016 ACS 5-Year estimates.
+
+  
+
+
+## Percent AAPI Population 
+
+
+```{r pop-pct, echo=FALSE, message=FALSE, warning=FALSE}
+
+  
+ district_display_table(district_pop,district_percent) %>% 
+  formatCurrency(columns = c(3),currency = "", interval = 3, mark = ",", digits=0) %>%
+  formatPercentage(columns = c(4,5,6,7),digits = 2)
+
+
+```
+
+
+## AAPI Population
+
+
+```{r pop-number, echo=FALSE, message=FALSE, warning=FALSE}
+
+  
+ district_display_table(district_pop,district_rawnumbers) %>% 
+  formatCurrency(columns = c(3:7),currency = "", interval = 3, mark = ",", digits=0)
+
+
+```
+
+
+# Asian American Detailed Origin {.tabset .tabset-fade .tabset-pills}
+<a href="#top"><button class="btn btn-outline-primary center-block btn-small"> Back to Top</button></a>
+
+> Population data is complied using Tables: [B02015](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B02015) from the 2016 ACS 5-Year estimates.
+
+## Percent Asian Detailed Origin
+
+```{r pop-aa_origin-pct, echo=FALSE, message=FALSE, warning=FALSE}
+
+  
+ district_display_table(district_aa_origin_pct,colnames(district_aa_origin_pct)) %>% 
+  formatCurrency(columns = c(3),currency = "", interval = 3, mark = ",", digits=0) %>%
+  formatPercentage(columns = c(4:27),digits = 1)
+
+```
+
+## Asian Detailed Origin
+
+```{r pop-aa_origin-count, echo=FALSE, message=FALSE, warning=FALSE}
+
+ district_display_table(district_aa_origin_counts,colnames(district_aa_origin_counts)) %>% 
+  formatCurrency(columns = c(3:27),currency = "", interval = 3, mark = ",", digits=0)
+
+```
+
+
+
+
+
+# NHPI American Detailed Origin {.tabset .tabset-fade .tabset-pills}
+<a href="#top"><button class="btn btn-outline-primary center-block btn-small"> Back to Top</button></a>
+
+> Population data is complied using Tables: [B02016](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B02016) from the 2016 ACS 5-Year estimates.
+
+## Percent NHPI Detailed Origin
+
+```{r pop-nhpi-origin-pct, echo=FALSE, message=FALSE, warning=FALSE}
+
+  
+ district_display_table(district_nhpi_origin_pct,colnames(district_nhpi_origin_pct)) %>% 
+  formatCurrency(columns = c(3),currency = "", interval = 3, mark = ",", digits=0) %>%
+  formatPercentage(columns = c(4:14),digits = 1)
+
+```
+
+## Asian NHPI Origin
+
+```{r pop-nhpi-origin-count, echo=FALSE, message=FALSE, warning=FALSE}
+
+  
+ district_display_table(district_nhpi_origin_counts,colnames(district_nhpi_origin_counts)) %>% 
+  formatCurrency(columns = c(3:14),currency = "", interval = 3, mark = ",", digits=0)
+
+```
+
+
+
+
+
+# Educational Attainment {.tabset .tabset-fade .tabset-pills}
+
+
+<a href="#top"><button class="btn btn-outline-primary center-block btn-small"> Back to Top</button></a>
+
+> Population data is complied using Tables: [B15002](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B15002) from the 2016 ACS 5-Year estimates.
+
+## Percent AAPI Educational Attainment
+
+```{r pop-edu-pct, echo=FALSE, message=FALSE, warning=FALSE}
+
+ district_display_table(district_edu,district_edu_percent) %>% 
+  formatCurrency(columns = c(3,8 ),currency = "", interval = 3, mark = ",", digits=0) %>%
+  formatPercentage(columns= c(4,5,6,7,9,10,11,12), digits = 1)
+
+```
+
+
+## AAPI Educational Attainment
+
+```{r pop-edu-count, echo=FALSE, message=FALSE, warning=FALSE}
+
+ district_display_table(district_edu,district_edu_percent) %>% 
+  formatCurrency(columns = c(3,8 ),currency = "", interval = 3, mark = ",", digits=0) %>%
+  formatPercentage(columns= c(4,5,6,7,9,10,11,12), digits = 1)
+
+```
+
+# Limited English Proficiency {.tabset .tabset-fade .tabset-pills}
+
+
+<a href="#top"><button class="btn btn-outline-primary center-block btn-small"> Back to Top</button></a>
+
+> Limited English Proficiency (LEP) refers to the proportion of individuals who speak a language other than english at home & speak english less than "very well".
+Limited English Proficiency data is complied using Table [B16004](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/16_5YR/B16004) from the 2016 ACS 5-Year estimates.
+
+## Percent AAPI LEP
+
+```{r lep-pct, echo=FALSE, message=FALSE, warning=FALSE}
+
+ district_display_table(district_lep,district_lep_percent) %>% 
+  formatCurrency(columns = c(3,5),currency = "", interval = 3, mark = ",", digits=0) %>%
+  formatPercentage(columns= c(4,6), digits = 1)
+
+```
+
+
+## AAPI LEP
+
+```{r lep-count, echo=FALSE, message=FALSE, warning=FALSE}
+
+
+ district_display_table(district_lep,district_lep_count) %>% 
+  formatCurrency(columns = c(3:6),currency = "", interval = 3, mark = ",", digits=0) 
+```
+
+# Citizen Age Voting Population {.tabset .tabset-fade .tabset-pills}
+
+
+<a href="#top"><button class="btn btn-outline-primary center-block btn-small"> Back to Top</button></a>
+
+> CVAP Attribution sentence here
+
+## CVAP 
+
+
+```{r cvap-pct, echo=FALSE, message=FALSE, warning=FALSE}
+
+# CODE FOR CVAP
+```
+
