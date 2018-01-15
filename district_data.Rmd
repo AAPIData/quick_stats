@@ -44,10 +44,16 @@ district_edu <- district_edu %>% mutate(Geography =
                                 str_replace(string = Geography, pattern = "\\(115th Congress\\)", replacement = ""))
 district_edu <- district_edu %>% separate(Geography, into = c("District", "State"), sep = ",")
 
-district_lep <- readxl::read_xlsx("raw_data/district/congressional_edu.xlsx")
-district_edu <- district_edu %>% mutate(Geography = 
+district_lep <- readxl::read_xlsx("raw_data/district/congressional_LEP.xlsx")
+district_lep <- district_lep %>% mutate(geodisplaylabel = 
+                                str_replace(string = geodisplaylabel, pattern = "\\(115th Congress\\)", replacement = ""))
+district_lep <- district_lep %>% separate(geodisplaylabel, into = c("District", "State"), sep = ",")
+
+district_cvap <- readxl::read_xlsx("raw_data/district/congressional_cvap.xlsx")
+district_cvap <- district_cvap %>% mutate(Geography = 
                                 str_replace(string = Geography, pattern = "\\(115th Congress\\)", replacement = ""))
-district_edu <- district_edu %>% separate(Geography, into = c("District", "State"), sep = ",")
+district_cvap <- district_cvap %>% separate(Geography, into = c("District", "State"), sep = ",")
+
 
 
 
@@ -220,6 +226,25 @@ district_edu_percent <- district_edu %>% select(District, State, `Total Asian al
 
 ```
 
+
+```{r setup-lep, include=FALSE}
+
+
+district_lep <- district_lep %>% rename(
+  "Total Asian alone" = est_aa_pop,
+  "Total Asian LEP" = est_aa_lep,
+  "% Asian LEP" = pct_aa_lep,
+  "Total NHPI alone" = est_nhpi_pop,
+  "Total NHPI LEP" = est_nhpi_lep,
+  "% NHPI LEP" = pct_nhpi_lep
+)
+
+district_lep_count <- district_lep %>% select(District, State, `Total Asian alone`,`Total Asian LEP`, `Total NHPI alone`, `Total NHPI LEP`) %>% colnames()
+district_lep_percent <- district_lep %>% select(District, State, `Total Asian alone`, starts_with("% Asian"), `Total NHPI alone`, starts_with("% NHPI")) %>% colnames()
+
+
+```
+
 <div class="jumbotron">
   <div class="container">
   <h1>Congressional District Data</h1>
@@ -229,6 +254,9 @@ district_edu_percent <- district_edu %>% select(District, State, `Total Asian al
   <a href="district_data.html#asian-american-detailed-origin" type="button" class="btn btn-primary">Asian Origin</a>
   <a href="district_data.html#nhpi-american-detailed-origin" type="button" class="btn btn-primary">NHPI Origin</a>
   <a href="district_data.html#educational-attainment" type="button" class="btn btn-primary">Education</a>
+  <a href="district_data.html#limited-english-proficiency" type="button" class="btn btn-primary">LEP</a>
+  <a href="district_data.html#citizen-age-voting-population" type="button" class="btn btn-primary">CVAP</a>
+
 </div>
 </div>
 </div>
@@ -354,3 +382,47 @@ district_edu_percent <- district_edu %>% select(District, State, `Total Asian al
   formatPercentage(columns= c(4,5,6,7,9,10,11,12), digits = 1)
 
 ```
+
+# Limited English Proficiency {.tabset .tabset-fade .tabset-pills}
+
+
+<a href="#top"><button class="btn btn-outline-primary center-block btn-small"> Back to Top</button></a>
+
+> Limited English Proficiency (LEP) refers to the proportion of individuals who speak a language other than english at home & speak english less than "very well".
+Limited English Proficiency data is complied using Table [B16004](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/16_5YR/B16004) from the 2016 ACS 5-Year estimates.
+
+## Percent AAPI LEP
+
+```{r lep-pct, echo=FALSE, message=FALSE, warning=FALSE}
+
+ district_display_table(district_lep,district_lep_percent) %>% 
+  formatCurrency(columns = c(3,5),currency = "", interval = 3, mark = ",", digits=0) %>%
+  formatPercentage(columns= c(4,6), digits = 1)
+
+```
+
+
+## AAPI LEP
+
+```{r lep-count, echo=FALSE, message=FALSE, warning=FALSE}
+
+
+ district_display_table(district_lep,district_lep_count) %>% 
+  formatCurrency(columns = c(3:6),currency = "", interval = 3, mark = ",", digits=0) 
+```
+
+# Citizen Age Voting Population {.tabset .tabset-fade .tabset-pills}
+
+
+<a href="#top"><button class="btn btn-outline-primary center-block btn-small"> Back to Top</button></a>
+
+> CVAP Attribution sentence here
+
+## CVAP 
+
+
+```{r cvap-pct, echo=FALSE, message=FALSE, warning=FALSE}
+
+# CODE FOR CVAP
+```
+
