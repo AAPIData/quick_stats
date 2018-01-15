@@ -153,6 +153,12 @@ avg_aa_pop <- avg_aa_pop*100
 avg_pi_pop <- county_pop %>% filter(Group == "NHPI alone") %>% select(County, `% of the Pop`) %>%  summarize(mean = mean(`% of the Pop`, na.rm=TRUE)) %>% pull() %>% round(.,4)
 avg_pi_pop <- avg_pi_pop*100
 
+### For main topic sentence
+aa_largest_countyname <- county_pop %>% filter(Group == "Asian alone") %>% top_n(1,`% of the Pop`) %>% pull(County)
+aa_largest_county_pct <- county_pop %>% filter(Group == "Asian alone") %>% top_n(1,`% of the Pop`) %>% pull(`% of the Pop`)
+aa_largest_county_pct <- round(aa_largest_county_pct*100,0)
+
+
 ```
 
 
@@ -419,12 +425,24 @@ avg_aapi_cvap <- avg_aapi_cvap*100
 
 
 
+
 <div class="jumbotron">
+  <div class="container">
   <h1>County Data</h1>
-  <p>Use the buttons to select the topic and then the tabs for population groups</p>
+  <p> About `r aa_largest_county_pct`% of the population in `r aa_largest_countyname` is Asian American, the highest in the country.</p>
+<div class="btn-group" role="group" aria-label="Basic example">
+  <a href="county_data.html#citizen-voting-age-population" type="button" class="btn btn-primary">CVAP</a>
+  <a href="county_data.html#education" type="button" class="btn btn-primary">Education</a>
+  <a href="county_data.html#limited-english-proficiency" type="button" class="btn btn-primary">LEP</a>
+  <a href="county_data.html#nativity" type="button" class="btn btn-primary">Nativity</a>
+  <a href="county_data.html#poverty" type="button" class="btn btn-primary">Poverty</a>
+</div>
+</div>
 </div>
 
 # Population {.tabset .tabset-fade .tabset-pills}
+<a href="#top"><button class="btn btn-outline-primary center-block btn-small"> Back to Top</button></a>
+
 
 > Population data is complied using Table [B03001](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B03001) from the 2015 ACS 5-Year estimates.
 
@@ -536,6 +554,7 @@ county_pop %>%
 
 
 # Education {.tabset .tabset-fade .tabset-pills}
+<a href="#top"><button class="btn btn-outline-primary center-block btn-small"> Back to Top</button></a>
 
 > Educational Attainment data is complied using Table [B15002](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B15002) from the 2015 ACS 5-Year estimates.
 
