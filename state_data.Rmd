@@ -175,8 +175,8 @@ state_cvap<- state_cvap %>% rename(`Total Population`= est_state_pop,
          `Total CVAP` = est_state_cvap,
          `AAPI Pop`= est_aapi_pop,
          `AAPI CVAP`= est_aapi_cvap,
-         `% AAPI CVAP` = pct_aapi_cvap,
-         `% AAPI Pop`= pct_aapi_pop,
+         `AAPI Share of CVAP` = pct_aapi_cvap,
+         `AAPI Share of Pop`= pct_aapi_pop,
          `% State CVAP`= pct_state_cvap,
          State = geoname)
 
@@ -185,7 +185,7 @@ state_cvap<- state_cvap %>% rename(`Total Population`= est_state_pop,
 avg_state_cvap <- state_cvap %>% select(State, `% State CVAP`) %>%  summarize(mean = mean(`% State CVAP`, na.rm=TRUE)) %>% pull() %>% round(.,4)
 avg_state_cvap <- avg_state_cvap*100
 
-avg_aapi_cvap <- state_cvap %>% select(State, `% AAPI CVAP`) %>%  summarize(mean = mean(`% AAPI CVAP`, na.rm=TRUE)) %>% pull() %>% round(.,4)
+avg_aapi_cvap <- state_cvap %>% select(State, `AAPI Share of CVAP`) %>%  summarize(mean = mean(`AAPI Share of CVAP`, na.rm=TRUE)) %>% pull() %>% round(.,4)
 avg_aapi_cvap <- avg_aapi_cvap*100
 
 ```
@@ -1041,7 +1041,7 @@ datatable(state_cvap_estimate, extensions = list("Buttons" = NULL, 'FixedColumns
 
 ```{r CVAP-combo-pct, echo=FALSE, message=FALSE, warning=FALSE}
 
-state_cvap_pct <- state_cvap %>% select(State, `% AAPI CVAP`, `% AAPI Pop`) 
+state_cvap_pct <- state_cvap %>% select(State, `AAPI Share of CVAP`, `AAPI Share of Pop`) 
 
 datatable(state_cvap_pct, extensions = list("Buttons" = NULL, 'FixedColumns'= T, "Scroller"=T),
               rownames= FALSE, 
