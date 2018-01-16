@@ -187,17 +187,15 @@ msa_largestAAprop_number<- round(msa_largestAAprop_number*100,0)
   <h1>Metro Area Data</h1>
   <p> About `r msa_largestAAprop_number`% of the population in `r msa_largestAAprop` is Asian American, the highest in the country.</p>
 <div class="btn-group" role="group" aria-label="Basic example">
-  <a href="metro_data.html#percent-aapi-population" type="button" class="btn btn-primary">AAPI Population</a>
-  <a href="metro_data.html#asian-american-detailed-origin" type="button" class="btn btn-primary">Asian Detailed Origin</a>
-  <a href="metro_data.html#nhpi-american-detailed-origin" type="button" class="btn btn-primary">NHPI Detailed Origin</a>
+  <a href="metro_data.html#resident-population" type="button" class="btn btn-primary">Resident Population</a>
 </div>
 </div>
 </div>
 
-# Population {.tabset .tabset-fade .tabset-pills}
+# Resident Population {.tabset .tabset-fade .tabset-pills}
 <a href="#top"><div style="text-align:center">Back to Top</a></div>
 
-> Population data is complied using Tables: [B02001](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B02001), [B02011](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B02011), and [B02012](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B02012) from the 2016 ACS 5-Year estimates.
+> Population data is complied using Tables: [B02001](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B02001), [B02011](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B02011), [B02012](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B02012), [B02015](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B02015),and [B02016](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B02016), from the 2016 ACS 5-Year estimates. from the 2016 ACS 5-Year estimates
 
   
 
@@ -229,12 +227,6 @@ msa_display_table(msa_pop,msa_rawnumbers) %>%
 ```
 
 
-# Asian American Detailed Origin {.tabset .tabset-fade .tabset-pills}
-<a href="#top"><div style="text-align:center">Back to Top</a></div>
-
-> Population data is complied using Tables: [B02015](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B02015) from the 2016 ACS 5-Year estimates.
-
-
 ## Percent Asian Detailed Origin
 
 ```{r pop-aa-origin-pct, echo=FALSE, message=FALSE, warning=FALSE}
@@ -258,11 +250,6 @@ msa_display_table(msa_aa_origin_counts, colnames(msa_aa_origin_counts)) %>%
 
 
 ```
-
-# NHPI American Detailed Origin {.tabset .tabset-fade .tabset-pills}
-<a href="#top"><div style="text-align:center">Back to Top</a></div>
-
-> Population data is complied using Tables: [B02016](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B02016) from the 2016 ACS 5-Year estimates.
 
 
 ## Percent NHPI Detailed Origin

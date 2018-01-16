@@ -270,21 +270,18 @@ district_cvap_percent <- district_cvap %>% select(District, State, `AAPI CVAP`, 
   <h1>Congressional District Data</h1>
   <p> About `r largest_district_aa_pct`% of the population in `r largest_district_aa`, `r largest_district_aa_state` is Asian American, the highest in the country.</p>
 <div class="btn-group" role="group" aria-label="Basic example">
-  <a href="district_data.html#percent-aapi-population" type="button" class="btn btn-primary">AAPI Population</a>
-  <a href="district_data.html#asian-american-detailed-origin" type="button" class="btn btn-primary">Asian Origin</a>
-  <a href="district_data.html#nhpi-american-detailed-origin" type="button" class="btn btn-primary">NHPI Origin</a>
-  <a href="district_data.html#educational-attainment" type="button" class="btn btn-primary">Education</a>
-  <a href="district_data.html#limited-english-proficiency" type="button" class="btn btn-primary">LEP</a>
-  <a href="district_data.html#citizen-age-voting-population" type="button" class="btn btn-primary">CVAP</a>
-
+  <a href="district_data.html#resident-population" type="button" class="btn btn-primary">Resident Population</a>
+  <a href="district_data.html#citizen-voting-age-population" type="button" class="btn btn-primary">Citizen Voting Age Population</a>
+  <a href="district_data.html#education" type="button" class="btn btn-primary">Education</a>
+  <a href="district_data.html#limited-english-proficiency" type="button" class="btn btn-primary">Limited English Proficiency</a>
 </div>
 </div>
 </div>
 
-# Population {.tabset .tabset-fade .tabset-pills}
+# Resident Population {.tabset .tabset-fade .tabset-pills}
 <a href="#top"><div style="text-align:center">Back to Top</a></div>
 
-> Population data is complied using Tables: [B02001](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B02001), [B02011](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B02011), and [B02012](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B02012) from the 2016 ACS 5-Year estimates.
+> Population data is complied using Tables: [B02001](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B02001), [B02011](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B02011), [B02012](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B02012), [B02015](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B02015),and [B02016](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B02016), from the 2016 ACS 5-Year estimates. from the 2016 ACS 5-Year estimates
 
   
 
@@ -316,11 +313,6 @@ district_cvap_percent <- district_cvap %>% select(District, State, `AAPI CVAP`, 
 ```
 
 
-# Asian American Detailed Origin {.tabset .tabset-fade .tabset-pills}
-<a href="#top"><div style="text-align:center">Back to Top</a></div>
-
-> Population data is complied using Tables: [B02015](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B02015) from the 2016 ACS 5-Year estimates.
-
 ## Percent Asian Detailed Origin
 
 ```{r pop-aa_origin-pct, echo=FALSE, message=FALSE, warning=FALSE}
@@ -342,14 +334,6 @@ district_cvap_percent <- district_cvap %>% select(District, State, `AAPI CVAP`, 
 ```
 
 
-
-
-
-# NHPI American Detailed Origin {.tabset .tabset-fade .tabset-pills}
-<a href="#top"><div style="text-align:center">Back to Top</a></div>
-
-> Population data is complied using Tables: [B02016](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B02016) from the 2016 ACS 5-Year estimates.
-
 ## Percent NHPI Detailed Origin
 
 ```{r pop-nhpi-origin-pct, echo=FALSE, message=FALSE, warning=FALSE}
@@ -370,6 +354,42 @@ district_cvap_percent <- district_cvap %>% select(District, State, `AAPI CVAP`, 
   formatCurrency(columns = c(3:14),currency = "", interval = 3, mark = ",", digits=0)
 
 ```
+
+
+
+
+
+# Citizen Age Voting Population {.tabset .tabset-fade .tabset-pills}
+
+
+<a href="#top"><div style="text-align:center">Back to Top</a></div>
+
+> Citizen Voting Age Population (CVAP) refers to the proportion of individuals who are 18 years and older and eligible to vote.
+Citizen Voting Age Population data is complied using [special tabulation](https://www.census.gov/rdo/data/voting_age_population_by_citizenship_and_race_cvap.html) from the 2015 ACS 5-year estimates.
+
+## Percent AAPI CVAP 
+
+
+```{r cvap-pct, echo=FALSE, message=FALSE, warning=FALSE}
+
+
+ district_display_table(district_cvap,district_cvap_percent) %>%
+  formatCurrency(columns = c(3,6),currency = "", interval = 3, mark = ",", digits=0) %>%
+  formatPercentage(columns= c(4,7), digits = 1)
+
+```
+
+
+## AAPI CVAP 
+
+
+```{r cvap-count, echo=FALSE, message=FALSE, warning=FALSE}
+
+
+ district_display_table(district_cvap,district_cvap_count) %>% 
+  formatCurrency(columns = c(3,4,6,7),currency = "", interval = 3, mark = ",", digits=0) 
+```
+
 
 
 
@@ -430,39 +450,4 @@ Limited English Proficiency data is complied using Table [B16004](https://factfi
  district_display_table(district_lep,district_lep_count) %>% 
   formatCurrency(columns = c(3:6),currency = "", interval = 3, mark = ",", digits=0) 
 ```
-
-# Citizen Age Voting Population {.tabset .tabset-fade .tabset-pills}
-
-
-<a href="#top"><div style="text-align:center">Back to Top</a></div>
-
-> Citizen Voting Age Population (CVAP) refers to the proportion of individuals who are 18 years and older and eligible to vote.
-Citizen Voting Age Population data is complied using [special tabulation](https://www.census.gov/rdo/data/voting_age_population_by_citizenship_and_race_cvap.html) from the 2015 ACS 5-year estimates.
-
-## Percent AAPI CVAP 
-
-
-```{r cvap-pct, echo=FALSE, message=FALSE, warning=FALSE}
-
-
- district_display_table(district_cvap,district_cvap_percent) %>%
-  formatCurrency(columns = c(3,6),currency = "", interval = 3, mark = ",", digits=0) %>%
-  formatPercentage(columns= c(4,7), digits = 1)
-
-```
-
-
-## AAPI CVAP 
-
-
-```{r cvap-count, echo=FALSE, message=FALSE, warning=FALSE}
-
-
- district_display_table(district_cvap,district_cvap_count) %>% 
-  formatCurrency(columns = c(3,4,6,7),currency = "", interval = 3, mark = ",", digits=0) 
-```
-
-
-
-
 

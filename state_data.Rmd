@@ -414,9 +414,10 @@ avg_below_pov <- avg_below_pov*100
   <h1>State Data</h1>
   <p> About `r state_largest_aaprop_number`% of the population in `r state_largest_aaprop` is Asian American, the highest in the country.</p>
 <div class="btn-group" role="group" aria-label="Basic example">
-  <a href="state_data.html#citizen-voting-age-population" type="button" class="btn btn-primary">CVAP</a>
+  <a href="state_data.html#resident-population" type="button" class="btn btn-primary">Resident Population</a>
+  <a href="state_data.html#citizen-voting-age-population" type="button" class="btn btn-primary">Citizen Voting Age Population</a>
   <a href="state_data.html#education" type="button" class="btn btn-primary">Education</a>
-  <a href="state_data.html#limited-english-proficiency" type="button" class="btn btn-primary">LEP</a>
+  <a href="state_data.html#limited-english-proficiency" type="button" class="btn btn-primary">Limited English Proficiency</a>
   <a href="state_data.html#nativity" type="button" class="btn btn-primary">Nativity</a>
   <a href="state_data.html#poverty" type="button" class="btn btn-primary">Poverty</a>
 </div>
@@ -564,6 +565,87 @@ highchart() %>%
 
 
 
+
+
+
+
+# Citizen Voting Age Population {.tabset .tabset-fade .tabset-pills}
+<a href="#top"><div style="text-align:center">Back to Top</a></div>
+
+> CVAP data is complied using Table [B05003](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B05003) from the 2015 ACS 5-Year estimates.
+
+Nationally, about **`r avg_state_cvap`**% of Americans are eligible to vote, while the national average number for AAPI is **`r avg_aapi_cvap`**%
+
+## Visualize Data
+
+```{r CVAP visualize, echo=FALSE, message=FALSE, warning=FALSE}
+
+state_cvap_map <- state_cvap_map %>% mutate(
+  pct_state_cvap = round(pct_state_cvap*100,2),
+  pct_aapi_cvap = round(pct_aapi_cvap*100,2))
+
+  
+
+x <- c("{point.name}:", "AAPI Alone:")
+title<-"Percent of CVAP"
+y <- c(" {point.value:.1f}%", " {point.pct_aapi_cvap:.1f}%")
+#style <- "style=font-size:80%"
+
+data(usgeojson)
+highchart() %>%
+  hc_title(text = "CVAP", align = "center") %>%
+  hc_subtitle(text = "Source: 2011-2015 ACS using Asian/NHPI Alone", align = "center") %>%
+  hc_chart(backgroundColor = "transparent") %>%
+  hc_add_series_map(usgeojson, state_cvap_map, name = "CVAP",value = "pct_state_cvap", joinBy = c("name", "geoname"),
+                    borderColor= "transparent") %>%
+  hc_tooltip(pointFormat = tooltip_table(x,y,title), useHTML=T,  headerFormat= "")%>%
+  hc_add_theme(hc_theme_538()) %>%
+  hc_colorAxis(stops = color_stops(5),labels= list(format = "{value}%"),showInLegend=T) %>%
+  hc_legend(title = list(text= "Statewide Percentage", fontStyle ='italic'),align = "center",verticalAlign = "bottom",
+            layout = "horizontal", padding = 5) %>% 
+  #hc_legend(layout = "vertical", align = "right",
+   #         floating = TRUE, valueDecimals = 0, valueSuffix = "%") 
+  hc_exporting(enabled = TRUE)
+
+```
+
+
+
+
+
+## Raw Asian & NHPI Alone
+
+
+```{r cvap-alone-raw, echo=FALSE, message=FALSE, warning=FALSE}
+
+state_cvap_estimate <- state_cvap %>% select(State, `Total CVAP`, `AAPI CVAP`, `Total Population`, `AAPI Pop`) 
+
+datatable(state_cvap_estimate, extensions = list("Buttons" = NULL, 'FixedColumns'= T, "Scroller"=T),
+              rownames= FALSE, 
+              options = list(
+                dom = 'rtB',
+                buttons = c('copy', 'csv', 'excel'),
+                scrollX = TRUE,
+                lengthMenu = c(25, 50, 100), pageLength = 50)) %>% formatCurrency(columns = c(2:5),currency = "", interval = 3, mark = ",", digits=0)
+```
+
+## % Asian & NHPI alone
+
+
+```{r CVAP-combo-pct, echo=FALSE, message=FALSE, warning=FALSE}
+
+state_cvap_pct <- state_cvap %>% select(State, `AAPI Share of CVAP`, `AAPI Share of Pop`) 
+
+datatable(state_cvap_pct, extensions = list("Buttons" = NULL, 'FixedColumns'= T, "Scroller"=T),
+              rownames= FALSE, 
+              options = list(
+                dom = 'rtB',
+                buttons = c('copy', 'csv', 'excel'),
+                scrollX = TRUE,
+                lengthMenu = c(25, 50, 100), pageLength = 50)) %>% formatPercentage(columns = c(2:3), digits = 2)
+
+
+```
 
 
 
@@ -970,86 +1052,6 @@ state_display_table(state_poverty_long, groups_combo,poverty_percent) %>% format
  state_display_table(state_poverty_long, groups_combo,poverty_estimates) %>% 
   formatCurrency(columns = c(2:10),currency = "", interval = 3, mark = ",", digits=0) 
 
-
-
-```
-
-
-
-# Citizen Voting Age Population {.tabset .tabset-fade .tabset-pills}
-<a href="#top"><div style="text-align:center">Back to Top</a></div>
-
-> CVAP data is complied using Table [B05003](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B05003) from the 2015 ACS 5-Year estimates.
-
-Nationally, about **`r avg_state_cvap`**% of Americans are eligible to vote, while the national average number for AAPI is **`r avg_aapi_cvap`**%
-
-## Visualize Data
-
-```{r CVAP visualize, echo=FALSE, message=FALSE, warning=FALSE}
-
-state_cvap_map <- state_cvap_map %>% mutate(
-  pct_state_cvap = round(pct_state_cvap*100,2),
-  pct_aapi_cvap = round(pct_aapi_cvap*100,2))
-
-  
-
-x <- c("{point.name}:", "AAPI Alone:")
-title<-"Percent of CVAP"
-y <- c(" {point.value:.1f}%", " {point.pct_aapi_cvap:.1f}%")
-#style <- "style=font-size:80%"
-
-data(usgeojson)
-highchart() %>%
-  hc_title(text = "CVAP", align = "center") %>%
-  hc_subtitle(text = "Source: 2011-2015 ACS using Asian/NHPI Alone", align = "center") %>%
-  hc_chart(backgroundColor = "transparent") %>%
-  hc_add_series_map(usgeojson, state_cvap_map, name = "CVAP",value = "pct_state_cvap", joinBy = c("name", "geoname"),
-                    borderColor= "transparent") %>%
-  hc_tooltip(pointFormat = tooltip_table(x,y,title), useHTML=T,  headerFormat= "")%>%
-  hc_add_theme(hc_theme_538()) %>%
-  hc_colorAxis(stops = color_stops(5),labels= list(format = "{value}%"),showInLegend=T) %>%
-  hc_legend(title = list(text= "Statewide Percentage", fontStyle ='italic'),align = "center",verticalAlign = "bottom",
-            layout = "horizontal", padding = 5) %>% 
-  #hc_legend(layout = "vertical", align = "right",
-   #         floating = TRUE, valueDecimals = 0, valueSuffix = "%") 
-  hc_exporting(enabled = TRUE)
-
-```
-
-
-
-
-
-## Raw Asian & NHPI Alone
-
-
-```{r cvap-alone-raw, echo=FALSE, message=FALSE, warning=FALSE}
-
-state_cvap_estimate <- state_cvap %>% select(State, `Total CVAP`, `AAPI CVAP`, `Total Population`, `AAPI Pop`) 
-
-datatable(state_cvap_estimate, extensions = list("Buttons" = NULL, 'FixedColumns'= T, "Scroller"=T),
-              rownames= FALSE, 
-              options = list(
-                dom = 'rtB',
-                buttons = c('copy', 'csv', 'excel'),
-                scrollX = TRUE,
-                lengthMenu = c(25, 50, 100), pageLength = 50)) %>% formatCurrency(columns = c(2:5),currency = "", interval = 3, mark = ",", digits=0)
-```
-
-## % Asian & NHPI alone
-
-
-```{r CVAP-combo-pct, echo=FALSE, message=FALSE, warning=FALSE}
-
-state_cvap_pct <- state_cvap %>% select(State, `AAPI Share of CVAP`, `AAPI Share of Pop`) 
-
-datatable(state_cvap_pct, extensions = list("Buttons" = NULL, 'FixedColumns'= T, "Scroller"=T),
-              rownames= FALSE, 
-              options = list(
-                dom = 'rtB',
-                buttons = c('copy', 'csv', 'excel'),
-                scrollX = TRUE,
-                lengthMenu = c(25, 50, 100), pageLength = 50)) %>% formatPercentage(columns = c(2:3), digits = 2)
 
 
 ```

@@ -431,16 +431,18 @@ avg_aapi_cvap <- avg_aapi_cvap*100
   <h1>County Data</h1>
   <p> About `r aa_largest_county_pct`% of the population in `r aa_largest_countyname` is Asian American, the highest in the country.</p>
 <div class="btn-group" role="group" aria-label="Basic example">
-  <a href="county_data.html#citizen-voting-age-population" type="button" class="btn btn-primary">CVAP</a>
+  <a href="county_data.html#resident-population" type="button" class="btn btn-primary">Resident Population</a>
+  <a href="county_data.html#citizen-voting-age-population" type="button" class="btn btn-primary">Citizen Voting Age Population</a>
   <a href="county_data.html#education" type="button" class="btn btn-primary">Education</a>
-  <a href="county_data.html#limited-english-proficiency" type="button" class="btn btn-primary">LEP</a>
+  <a href="county_data.html#limited-english-proficiency" type="button" class="btn btn-primary">Limited English Proficiency</a>
   <a href="county_data.html#nativity" type="button" class="btn btn-primary">Nativity</a>
   <a href="county_data.html#poverty" type="button" class="btn btn-primary">Poverty</a>
 </div>
 </div>
 </div>
 
-# Population {.tabset .tabset-fade .tabset-pills}
+# Resident Population {.tabset .tabset-fade .tabset-pills}
+
 <a href="#top"><div style="text-align:center">Back to Top</a></div>
 
 
@@ -548,6 +550,49 @@ county_pop %>%
                 scrollX = TRUE,
                 lengthMenu = c(25, 50, 100), pageLength = 50)) %>% 
   formatCurrency(columns = c(3:11),currency = "", interval = 3, mark = ",", digits=0) 
+
+```
+
+
+
+# Citizen Voting Age Population {.tabset .tabset-fade .tabset-pills}
+<a href="#top"><div style="text-align:center">Back to Top</a></div>
+
+> CVAP data is complied using Table [B05003](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B05003) from the 2015 ACS 5-Year estimates.
+
+Nationally, about **`r avg_county_cvap`**% of Americans are eligible to vote, while the national average number for AAPI is **`r avg_aapi_cvap`**%
+
+## Raw Asian & NHPI Alone
+
+
+```{r cvap-alone-raw, echo=FALSE, message=FALSE, warning=FALSE}
+
+county_cvap_estimate <- county_cvap %>% select(County, `Total CVAP`, `AAPI CVAP`, `Total Population`, `AAPI Pop`) %>% separate(County, into = c("County","State"), sep = ",")
+
+datatable(county_cvap_estimate, extensions = list("Buttons" = NULL, 'FixedColumns'= T, "Scroller"=T),
+              rownames= FALSE, 
+              options = list(
+                dom = 'rtB',
+                buttons = c('copy', 'csv', 'excel'),
+                scrollX = TRUE,
+                lengthMenu = c(25, 50, 100), pageLength = 50)) %>% formatCurrency(columns = c(3:6),currency = "", interval = 3, mark = ",", digits=0)
+```
+
+## % Asian & NHPI alone
+
+
+```{r CVAP-combo-pct, echo=FALSE, message=FALSE, warning=FALSE}
+
+county_cvap_pct <- county_cvap %>% select(County, `% AAPI CVAP`, `% AAPI Pop`) %>% separate(County, into = c("County","State"), sep = ",")
+
+datatable(county_cvap_pct, extensions = list("Buttons" = NULL, 'FixedColumns'= T, "Scroller"=T),
+              rownames= FALSE, 
+              options = list(
+                dom = 'rtB',
+                buttons = c('copy', 'csv', 'excel'),
+                scrollX = TRUE,
+                lengthMenu = c(25, 50, 100), pageLength = 50)) %>% formatPercentage(columns = c(3:4), digits = 2)
+
 
 ```
 
@@ -733,46 +778,4 @@ county_display_table(county_poverty_long, groups_combo,poverty_percent) %>% form
 
 
 ```
-
-# Citizen Voting Age Population {.tabset .tabset-fade .tabset-pills}
-<a href="#top"><div style="text-align:center">Back to Top</a></div>
-
-> CVAP data is complied using Table [B05003](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B05003) from the 2015 ACS 5-Year estimates.
-
-Nationally, about **`r avg_county_cvap`**% of Americans are eligible to vote, while the national average number for AAPI is **`r avg_aapi_cvap`**%
-
-## Raw Asian & NHPI Alone
-
-
-```{r cvap-alone-raw, echo=FALSE, message=FALSE, warning=FALSE}
-
-county_cvap_estimate <- county_cvap %>% select(County, `Total CVAP`, `AAPI CVAP`, `Total Population`, `AAPI Pop`) %>% separate(County, into = c("County","State"), sep = ",")
-
-datatable(county_cvap_estimate, extensions = list("Buttons" = NULL, 'FixedColumns'= T, "Scroller"=T),
-              rownames= FALSE, 
-              options = list(
-                dom = 'rtB',
-                buttons = c('copy', 'csv', 'excel'),
-                scrollX = TRUE,
-                lengthMenu = c(25, 50, 100), pageLength = 50)) %>% formatCurrency(columns = c(3:6),currency = "", interval = 3, mark = ",", digits=0)
-```
-
-## % Asian & NHPI alone
-
-
-```{r CVAP-combo-pct, echo=FALSE, message=FALSE, warning=FALSE}
-
-county_cvap_pct <- county_cvap %>% select(County, `% AAPI CVAP`, `% AAPI Pop`) %>% separate(County, into = c("County","State"), sep = ",")
-
-datatable(county_cvap_pct, extensions = list("Buttons" = NULL, 'FixedColumns'= T, "Scroller"=T),
-              rownames= FALSE, 
-              options = list(
-                dom = 'rtB',
-                buttons = c('copy', 'csv', 'excel'),
-                scrollX = TRUE,
-                lengthMenu = c(25, 50, 100), pageLength = 50)) %>% formatPercentage(columns = c(3:4), digits = 2)
-
-
-```
-
 
