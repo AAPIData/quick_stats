@@ -1,3 +1,11 @@
+.navbar-brand {
+  font-size: 45px;
+  line-height: 21px;
+  height: 50px;
+  font-weight:500;
+}
+
+
 .highcharts-tooltip{
   font-size: 1vmin;
   color: #E5790D;
