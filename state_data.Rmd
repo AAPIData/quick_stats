@@ -1079,8 +1079,6 @@ Nationally, about **`r avg_below_pov`**% of Americans are living below poverty l
 
 > Greyed out states indicate that the ACS sample is not large enough to provide reliable estimates.
 
-> Greyed out states indicate that the ACS sample is not large enough to provide reliable estimates.
-
 
 ```{r poverty visualize-aa, echo=FALSE, message=FALSE, warning=FALSE}
 
