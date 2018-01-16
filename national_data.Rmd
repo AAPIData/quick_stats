@@ -269,14 +269,90 @@ totpop_aapi_alone <- sum(totpop_asn_alone,totpop_nhpi_alone)
   <h1>National Data</h1>
   <p>There are about `r totpop_aapi_alone` Asian Americans, Native Hawaiians, and Pacific Islanders living in the United States today.</p>
 <div class="btn-group" role="group" aria-label="Basic example">
-  <a href="national_data.html#citizen-voting-age-population" type="button" class="btn btn-primary">CVAP</a>
+  <a href="national_data.html#resident-population" type="button" class="btn btn-primary">Resident Population</a>
+  <a href="national_data.html#citizen-voting-age-population" type="button" class="btn btn-primary">Citizen Voting Age Population</a>
   <a href="national_data.html#education" type="button" class="btn btn-primary">Education</a>
-  <a href="national_data.html#limited-english-proficiency" type="button" class="btn btn-primary">LEP</a>
+  <a href="national_data.html#limited-english-proficiency" type="button" class="btn btn-primary">Limited English Proficiency</a>
   <a href="national_data.html#nativity" type="button" class="btn btn-primary">Nativity</a>
   <a href="national_data.html#poverty" type="button" class="btn btn-primary">Poverty</a>
 </div>
 </div>
 </div>
+
+# Resident Population {.tabset .tabset-fade .tabset-pills}
+<a href="#top"><button class="btn btn-outline-primary center-block btn-small"> Back to Top</button></a>
+
+> Population data is complied using Table [B01003](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B01003) from the 2015 ACS 5-Year estimates.
+
+
+```{r population graph, echo=FALSE, message=FALSE, warning=FALSE}
+
+### Hey Sunny! put the code for the graph here, take a look at lines 218-245 for commented code on how each part works
+### 
+
+```
+
+## Major racial groups
+
+```{r population major groups,echo=FALSE, message=FALSE, warning=FALSE}
+
+national_pop %>%
+  filter(group_id ==  "Major racial groups") %>%
+  select(pop_columns) %>% 
+  mutate(pct_pop = round(`Share of US Pop`*100,2)) %>%
+  arrange(desc(pct_pop)) %>% hchart( "bar", hcaes(x = Group , y = pct_pop)) %>%
+  hc_add_theme(hc_theme_tufte2()) %>%  hc_colors(colors = c("#008fd5")) %>%
+  hc_yAxis(title = list(text = ""),
+         labels= list(style =list(color ="black", fontSize='15px'),
+                      format= "{value}%"), max = 100, opposite=TRUE) %>%
+  hc_xAxis(title = list(text = ""),
+           labels= list(style =list(color ="#E5790D", fontSize='15px')),
+            minorTickLength= 0,tickLength=0) %>%
+  hc_tooltip(useHTML=T,pointFormat = "{point.name} makes up about <span style = 'color:#E26069'>{point.y:.0f}%</span> of US Residents.") %>%
+   hc_title(text = "AAPI Data: Share of US Population",
+           margin = 20, align = "left",
+           style = list(color = "#E5790D"))%>%
+  hc_subtitle(text = "(2011-2015 ACS)",
+            margin = 20, align = "left",
+           style = list(color = "#E5790D"))%>%  hc_exporting(enabled = TRUE)
+
+```
+
+## Asian Detail...
+```{r population asian detail,echo=FALSE, message=FALSE, warning=FALSE}
+
+national_tbl_display(national_pop,"Asian Detail",pop_detail_columns,"Population") %>% 
+  formatPercentage(columns = c("Share of US Pop","Share of Group Pop"), digits = 2) %>% 
+  formatCurrency(columns = c("Population"),currency = "", interval = 3, mark = ",", digits=0)
+
+```
+
+## Asian Detailed Origin Combo
+```{r population asn combo,echo=FALSE, message=FALSE, warning=FALSE}
+
+national_tbl_display(national_pop,"Asian Detail Combo",pop_detail_columns,"Population")%>% 
+formatPercentage(columns = c("Share of US Pop","Share of Group Pop"), digits = 2) %>% 
+  formatCurrency(columns = c("Population"),currency = "", interval = 3, mark = ",", digits=0)
+
+```
+
+## NHPI Detailed Origin
+```{r population nhpi detail,echo=FALSE, message=FALSE, warning=FALSE}
+
+national_tbl_display(national_pop,"NHPI Detail",pop_detail_columns,"Population")%>% 
+ formatPercentage(columns = c("Share of US Pop","Share of Group Pop"), digits = 2) %>% 
+  formatCurrency(columns = c("Population"),currency = "", interval = 3, mark = ",", digits=0)
+```
+
+
+## NHPI Detailed Origin Combo
+```{r population nhpi combo,echo=FALSE, message=FALSE, warning=FALSE}
+
+national_tbl_display(national_pop,"NHPI Detail Combo",pop_detail_columns,"Total Pop")%>% 
+ formatPercentage(columns = c("Share of US Pop","Share of Group Pop"), digits = 2) %>% 
+  formatCurrency(columns = c("Population"),currency = "", interval = 3, mark = ",", digits=0)
+```
+
 
 # Citizen Voting Age Population {.tabset .tabset-fade .tabset-pills}
 
@@ -755,76 +831,3 @@ national_tbl_display(national_poverty,"NHPI Detail Combo",poverty_columns,"Total
 
 
 
-# Resident Population {.tabset .tabset-fade .tabset-pills}
-<a href="#top"><button class="btn btn-outline-primary center-block btn-small"> Back to Top</button></a>
-
-> Population data is complied using Table [B01003](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B01003) from the 2015 ACS 5-Year estimates.
-
-
-```{r population graph, echo=FALSE, message=FALSE, warning=FALSE}
-
-### Hey Sunny! put the code for the graph here, take a look at lines 218-245 for commented code on how each part works
-### 
-
-```
-
-## Major racial groups
-
-```{r population major groups,echo=FALSE, message=FALSE, warning=FALSE}
-
-national_pop %>%
-  filter(group_id ==  "Major racial groups") %>%
-  select(pop_columns) %>% 
-  mutate(pct_pop = round(`Share of US Pop`*100,2)) %>%
-  arrange(desc(pct_pop)) %>% hchart( "bar", hcaes(x = Group , y = pct_pop)) %>%
-  hc_add_theme(hc_theme_tufte2()) %>%  hc_colors(colors = c("#008fd5")) %>%
-  hc_yAxis(title = list(text = ""),
-         labels= list(style =list(color ="black", fontSize='15px'),
-                      format= "{value}%"), max = 100, opposite=TRUE) %>%
-  hc_xAxis(title = list(text = ""),
-           labels= list(style =list(color ="#E5790D", fontSize='15px')),
-            minorTickLength= 0,tickLength=0) %>%
-  hc_tooltip(useHTML=T,pointFormat = "{point.name} makes up about <span style = 'color:#E26069'>{point.y:.0f}%</span> of US Residents.") %>%
-   hc_title(text = "AAPI Data: Share of US Population",
-           margin = 20, align = "left",
-           style = list(color = "#E5790D"))%>%
-  hc_subtitle(text = "(2011-2015 ACS)",
-            margin = 20, align = "left",
-           style = list(color = "#E5790D"))%>%  hc_exporting(enabled = TRUE)
-
-```
-
-## Asian Detail...
-```{r population asian detail,echo=FALSE, message=FALSE, warning=FALSE}
-
-national_tbl_display(national_pop,"Asian Detail",pop_detail_columns,"Population") %>% 
-  formatPercentage(columns = c("Share of US Pop","Share of Group Pop"), digits = 2) %>% 
-  formatCurrency(columns = c("Population"),currency = "", interval = 3, mark = ",", digits=0)
-
-```
-
-## Asian Detailed Origin Combo
-```{r population asn combo,echo=FALSE, message=FALSE, warning=FALSE}
-
-national_tbl_display(national_pop,"Asian Detail Combo",pop_detail_columns,"Population")%>% 
-formatPercentage(columns = c("Share of US Pop","Share of Group Pop"), digits = 2) %>% 
-  formatCurrency(columns = c("Population"),currency = "", interval = 3, mark = ",", digits=0)
-
-```
-
-## NHPI Detailed Origin
-```{r population nhpi detail,echo=FALSE, message=FALSE, warning=FALSE}
-
-national_tbl_display(national_pop,"NHPI Detail",pop_detail_columns,"Population")%>% 
- formatPercentage(columns = c("Share of US Pop","Share of Group Pop"), digits = 2) %>% 
-  formatCurrency(columns = c("Population"),currency = "", interval = 3, mark = ",", digits=0)
-```
-
-
-## NHPI Detailed Origin Combo
-```{r population nhpi combo,echo=FALSE, message=FALSE, warning=FALSE}
-
-national_tbl_display(national_pop,"NHPI Detail Combo",pop_detail_columns,"Total Pop")%>% 
- formatPercentage(columns = c("Share of US Pop","Share of Group Pop"), digits = 2) %>% 
-  formatCurrency(columns = c("Population"),currency = "", interval = 3, mark = ",", digits=0)
-```
