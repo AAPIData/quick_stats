@@ -417,7 +417,6 @@ national_tbl_display(national_cvap,"NHPI Detail Combo",cvap_columns,"CVAP")%>%
 <a href="#top"><div style="text-align:center">Back to Top</a></div>
 
 > Educational Attainment data is complied using Table [B15002](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B15002) from the 2015 ACS 5-Year estimates.
-
 According to the latest national estimates, about **1 in 2** Asian Americans have a Bachelor's Degree or higher compared to about **1 in 3** Americans and **1 in 5** NHPIs.
 
 ```{r edu graph major groups, echo=FALSE, message=FALSE, warning=FALSE}
