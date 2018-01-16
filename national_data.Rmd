@@ -470,7 +470,7 @@ national_tbl_display(national_edu,"Major racial groups",education_columns,"Total
 ```
 
 
-## Asian Detailed Origin
+## Asian Origin
 ```{r edu asian alone, echo=FALSE, message=FALSE, warning=FALSE}
 
 national_tbl_display(national_edu,"Asian Detail",education_columns,"Total") %>% formatCurrency(columns = education_columns[2],currency = "", interval = 3, mark = ",", digits=0) %>% 
@@ -478,7 +478,7 @@ national_tbl_display(national_edu,"Asian Detail",education_columns,"Total") %>% 
 
 ```
 
-## Asian Detailed Origin Combo
+## Asian Origin Combo
 ```{r edu asian combo, echo=FALSE, message=FALSE, warning=FALSE}
 
 national_tbl_display(national_edu,"Asian Detail Combo",education_columns,"Total") %>% formatCurrency(columns = education_columns[2],currency = "", interval = 3, mark = ",", digits=0) %>% 
@@ -487,7 +487,7 @@ national_tbl_display(national_edu,"Asian Detail Combo",education_columns,"Total"
 
 ```
 
-## NHPI Detailed Origin
+## NHPI Origin
 ```{r edu nhpi alone, echo=FALSE, message=FALSE, warning=FALSE}
 
 national_tbl_display(national_edu,"NHPI Detail",education_columns,"Total") %>% formatCurrency(columns = education_columns[2],currency = "", interval = 3, mark = ",", digits=0) %>% 
@@ -497,7 +497,7 @@ national_tbl_display(national_edu,"NHPI Detail",education_columns,"Total") %>% f
 
 ```
 
-## NHPI Detailed Origin Combo
+## NHPI Origin Combo
 ```{r edu nhpi combo,echo=FALSE, message=FALSE, warning=FALSE}
 
 national_tbl_display(national_edu,"NHPI Detail Combo",education_columns,"Total") %>% formatCurrency(columns = education_columns[2],currency = "", interval = 3, mark = ",", digits=0) %>% 
