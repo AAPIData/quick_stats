@@ -103,7 +103,7 @@ county_convert_long <- function(data){
                 dom = 'Brt',
                 buttons = c('copy', 'csv', 'excel'),
                 scrollX = TRUE,
-                fixedColumns = list(leftColumns = 1),
+                fixedColumns = list(leftColumns = 2),
                 lengthMenu = c(25, 50, 100), pageLength = 50))
  }
 
