@@ -72,6 +72,8 @@ navbar:
     menu:
     - text: Resident Population
       href: metro_data.html#resident-population
+  - text: Back to AAPI Data
+    href: http://aapidata.com/
 output:
   html_document:
     theme: yeti
