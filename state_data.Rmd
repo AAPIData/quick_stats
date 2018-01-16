@@ -425,7 +425,7 @@ avg_below_pov <- avg_below_pov*100
 
 
 # Resident Population {.tabset .tabset-fade .tabset-pills}
-<a href="#top"><button class="btn btn-outline-primary center-block btn-small"> Back to Top</button></a>
+<a href="#top"><div style="text-align:center">Back to Top</a></div>
 
 > Detailed Origin data is complied using Table [B01003](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B01003) from the 2015 ACS 5-Year estimates.
 
@@ -569,7 +569,7 @@ highchart() %>%
 
 
 # Education {.tabset .tabset-fade .tabset-pills}
-<a href="#top"><button class="btn btn-outline-primary center-block btn-small"> Back to Top</button></a>
+<a href="#top"><div style="text-align:center">Back to Top</a></div>
 
 
 > Educational Attainment data is complied using Table [B15002](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B15002) from the 2015 ACS 5-Year estimates.
@@ -654,7 +654,7 @@ state_display_table(state_edu_long, groups_combo,education_percent) %>% formatPe
 
 
 # Limited English Proficiency {.tabset .tabset-fade .tabset-pills}
-<a href="#top"><button class="btn btn-outline-primary center-block btn-small"> Back to Top</button></a>
+<a href="#top"><div style="text-align:center">Back to Top</a></div>
 
 > Limited English Proficiency (LEP) refers to the proportion of individuals who speak a language other than english at home & speak english less than "very well".
 Limited English Proficiency data is complied using Table [B16004](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B16004) from the 2015 ACS 5-Year estimates.
@@ -762,7 +762,7 @@ state_display_table(state_LEP_long, groups_combo,LEP_percent) %>% formatPercenta
 
 
 # Nativity {.tabset .tabset-fade .tabset-pills}
-<a href="#top"><button class="btn btn-outline-primary center-block btn-small"> Back to Top</button></a>
+<a href="#top"><div style="text-align:center">Back to Top</a></div>
 
 > Nativity data is complied using Table [B05012](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B05012) from the 2015 ACS 5-Year estimates.
 
@@ -870,7 +870,7 @@ state_display_table(state_nativity_long, groups_combo,nativity_percent) %>% form
 
 
 # Poverty {.tabset .tabset-fade .tabset-pills}
-<a href="#top"><button class="btn btn-outline-primary center-block btn-small"> Back to Top</button></a>
+<a href="#top"><div style="text-align:center">Back to Top</a></div>
 
 > Poverty data is complied using Table [B17001](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B17001) from the 2015 ACS 5-Year estimates.
 
@@ -977,7 +977,7 @@ state_display_table(state_poverty_long, groups_combo,poverty_percent) %>% format
 
 
 # Citizen Voting Age Population {.tabset .tabset-fade .tabset-pills}
-<a href="#top"><button class="btn btn-outline-primary center-block btn-small"> Back to Top</button></a>
+<a href="#top"><div style="text-align:center">Back to Top</a></div>
 
 > CVAP data is complied using Table [B05003](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B05003) from the 2015 ACS 5-Year estimates.
 
