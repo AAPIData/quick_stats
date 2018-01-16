@@ -1,10 +1,14 @@
 .navbar-brand {
-  font-size: 45px;
+  font-size: 35px;
   line-height: 21px;
   height: 50px;
   font-weight:500;
 }
 
+.navbar-default .navbar-nav>li>a{
+  font-size: 120%;
+  font-weight:bold;
+}
 
 .highcharts-tooltip{
   font-size: 1vmin;

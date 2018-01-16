@@ -282,6 +282,8 @@ totpop_aapi_alone <- sum(totpop_asn_alone,totpop_nhpi_alone)
 # Resident Population {.tabset .tabset-fade .tabset-pills}
 <a href="#top"><button class="btn btn-outline-primary center-block btn-small"> Back to Top</button></a>
 
+<a href="#top"><div style="text-align:center">Back to Top</a></div>
+
 > Population data is complied using Table [B01003](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B01003) from the 2015 ACS 5-Year estimates.
 
 
