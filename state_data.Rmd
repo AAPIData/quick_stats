@@ -468,7 +468,7 @@ y <- c(" {point.value:.2f} Million", " {point.asian_pop:,.0f}",
 
 data(usgeojson)
 highchart() %>%
-  hc_title(text = "State Population", align = "center") %>%
+  hc_title(text = "AAPI Data: State Population", align = "center") %>%
   hc_subtitle(text = "Source: 2011-2015 ACS using Asian/NHPI Alone", align = "center") %>%
   hc_chart(backgroundColor = "transparent") %>%
   hc_add_series_map(usgeojson, state_pop_map, name = "State Population", value = "state_pop_mill", joinBy = c("name", "geodisplaylabel"),
@@ -593,7 +593,7 @@ y <- c(" {point.value:.1f}%", " {point.pct_aapi_cvap:.1f}%")
 
 data(usgeojson)
 highchart() %>%
-  hc_title(text = "CVAP", align = "center") %>%
+  hc_title(text = "AAPI Data: Citizen Voting Age Population", align = "center") %>%
   hc_subtitle(text = "Source: 2011-2015 ACS using Asian/NHPI Alone", align = "center") %>%
   hc_chart(backgroundColor = "transparent") %>%
   hc_add_series_map(usgeojson, state_cvap_map, name = "CVAP",value = "pct_state_cvap", joinBy = c("name", "geoname"),
@@ -695,7 +695,7 @@ y <- c(" {point.value:.1f}%", " {point.pct_asian_bahigher:.1f}%",
 
 data(usgeojson)
 highchart() %>%
-  hc_title(text = "Bachelors Degree or Higher", align = "center") %>%
+  hc_title(text = "AAPI Data: Bachelors Degree or Higher", align = "center") %>%
   hc_subtitle(text = "Source: 2011-2015 ACS using Asian/NHPI Alone", align = "center") %>%
   hc_chart(backgroundColor = "transparent") %>%
   hc_add_series_map(usgeojson, state_edu_map, name = "Education",value = "pct_state_bahigher", joinBy = c("name", "geodisplaylabel"),
@@ -780,7 +780,7 @@ y <- c(" {point.value:.1f}%", " {point.pct_asian_lep:.1f}%",
 
 data(usgeojson)
 highchart() %>%
-  hc_title(text = "Limited English Proficiency", align = "center") %>%
+  hc_title(text = "AAPI Data: Limited English Proficiency", align = "center") %>%
   hc_subtitle(text = "Source: 2011-2015 ACS using Asian/NHPI Alone", align = "center") %>%
   hc_chart(backgroundColor = "transparent") %>%
   hc_add_series_map(usgeojson, state_LEP_map, name = "Limited English Proficiency",value = "pct_state_lep", joinBy = c("name", "geodisplaylabel"),
@@ -887,7 +887,7 @@ y <- c(" {point.value:.1f}%", " {point.pct_asian_foreign_born:.1f}%",
 
 data(usgeojson)
 highchart() %>%
-  hc_title(text = "Foreign Born Population", align = "center") %>%
+  hc_title(text = "AAPI Data: Foreign Born Population", align = "center") %>%
   hc_subtitle(text = "Source: 2011-2015 ACS using Asian/NHPI Alone", align = "center") %>%
   hc_chart(backgroundColor = "transparent") %>%
   hc_add_series_map(usgeojson, state_nativity_map, name = "Nativity",value = "pct_state_foreign_born", joinBy = c("name", "geodisplaylabel"),
@@ -995,7 +995,7 @@ y <- c(" {point.value:.1f}%", " {point.pct_asian_below_pov:.1f}%",
 
 data(usgeojson)
 highchart() %>%
-  hc_title(text = "Poverty", align = "center") %>%
+  hc_title(text = "AAPI Data: Poverty", align = "center") %>%
   hc_subtitle(text = "Source: 2011-2015 ACS using Asian/NHPI Alone", align = "center") %>%
   hc_chart(backgroundColor = "transparent") %>%
   hc_add_series_map(usgeojson, state_poverty_map, name = "Below Poverty",value = "pct_state_below_pov", joinBy = c("name", "geodisplaylabel"),
