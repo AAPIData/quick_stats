@@ -472,12 +472,12 @@ highchart() %>%
   hc_subtitle(text = "Source: 2011-2015 ACS using Asian Alone or Alone", align = "center") %>%
   hc_chart(backgroundColor = "#f0f0f0") %>%
   hc_add_series_map(usgeojson, state_pop_map, name = "State Population", value = "asian_pct_totpop", joinBy = c("name", "geodisplaylabel"),
-                    borderColor= "transparent",nullColor = "#424242") %>%
+                    borderColor= "transparent",nullColor = "#bfbfbf") %>%
    hc_tooltip(useHTML=T,pointFormat = "In {point.name}, <span style = 'color:#E26069'>{point.asian_pop:,.0f}</span> Asian Americans <br> make up about <span style = 'color:#E26069'>{point.asian_pct_totpop:.0f}%</span> of the state's <span style = 'color:#E26069'>{point.state_pop_mill:.1f}</span> million residents.") %>%
   hc_add_theme(hc_theme_538()) %>%
   # hc_colorAxis(stops = color_stops(5),labels= list(format = "{value}%"),showInLegend=T) %>%
   hc_colorAxis(stops= color_stops(n=9, colors =c("#ffffcc","#ffeda0", "#fed976","#feb24c", "#fd8d3c","#fc4e2a","#e31a1c", "#bd0026", "#800026")),labels= list(format = "{value}%"),showInLegend=T) %>%
-  hc_legend(title = list(text= "Asian American share of state population", fontStyle ='italic'),align = "center",verticalAlign = "bottom",
+  hc_legend(title = list(text= "Asian American Share of State Population", fontStyle ='italic'),align = "center",verticalAlign = "bottom",
             layout = "horizontal", padding = 5) %>% 
   #hc_legend(layout = "vertical", align = "right",
    #         floating = TRUE, valueDecimals = 0, valueSuffix = " thousand") 
@@ -502,12 +502,12 @@ highchart() %>%
   hc_subtitle(text = "Source: 2011-2015 ACS using NHPI Alone or Alone", align = "center") %>%
   hc_chart(backgroundColor = "#f0f0f0") %>%
   hc_add_series_map(usgeojson, state_pop_map, name = "State Population", value = "nhpi_pct_totpop", joinBy = c("name", "geodisplaylabel"),
-                    borderColor= "transparent",nullColor = "#424242") %>%
+                    borderColor= "transparent",nullColor = "#bfbfbf") %>%
    hc_tooltip(useHTML=T,pointFormat = "In {point.name}, <span style = 'color:#E26069'>{point.asian_pop:,.0f}</span> NHPIs <br> make up about <span style = 'color:#E26069'>{point.nhpi_pct_totpop:.0f}%</span> of the state's <span style = 'color:#E26069'>{point.state_pop_mill:.1f}</span> million residents.") %>%
   hc_add_theme(hc_theme_538()) %>%
   # hc_colorAxis(stops = color_stops(5),labels= list(format = "{value}%"),showInLegend=T) %>%
   hc_colorAxis(stops= color_stops(n=9, colors =c("#ffffcc","#ffeda0", "#fed976","#feb24c", "#fd8d3c","#fc4e2a","#e31a1c", "#bd0026", "#800026")),labels= list(format = "{value}%"),showInLegend=T) %>%
-  hc_legend(title = list(text= "NHPI share of state population", fontStyle ='italic'),align = "center",verticalAlign = "bottom",
+  hc_legend(title = list(text= "NHPI Share of State Population", fontStyle ='italic'),align = "center",verticalAlign = "bottom",
             layout = "horizontal", padding = 5) %>% 
   #hc_legend(layout = "vertical", align = "right",
    #         floating = TRUE, valueDecimals = 0, valueSuffix = " thousand") 
@@ -629,7 +629,7 @@ highchart() %>%
   hc_subtitle(text = "Source: 2011-2015 ACS using Asian/NHPI Alone", align = "center") %>%
   hc_chart(backgroundColor = "#f0f0f0") %>%
   hc_add_series_map(usgeojson, state_cvap_map, name = "Citizen Voting Age Population",value = "pct_aapi_cvap", joinBy = c("name", "geoname"),
-                    borderColor= "transparent",nullColor = "#424242") %>%
+                    borderColor= "transparent",nullColor = "#bfbfbf") %>%
   hc_tooltip(useHTML=T,pointFormat = "AAPIs make up about <span style = 'color:#E26069'>{point.value:.0f}%</span> of {point.name}'s <br> Citizen Voting Age Population  & <span style = 'color:#E26069'>{point.pct_aapi_statepop:.0f}%</span> of it's resident population.") %>%
   hc_add_theme(hc_theme_538()) %>%
   hc_colorAxis(stops= color_stops(n=9, colors =c("#ffffcc","#ffeda0", "#fed976","#feb24c", "#fd8d3c","#fc4e2a","#e31a1c", "#bd0026", "#800026")),labels= list(format = "{value}%"),showInLegend=T) %>%
@@ -738,12 +738,12 @@ highchart() %>%
   hc_subtitle(text = "Source: 2011-2015 ACS using Asian Alone or Combo", align = "center") %>%
   hc_chart(backgroundColor = "#f0f0f0") %>%
   hc_add_series_map(usgeojson, state_edu_map, name = "Education",value = "pct_asian_bahigher", joinBy = c("name", "geodisplaylabel"),
-                    borderColor= "transparent",nullColor = "#424242") %>%
+                    borderColor= "transparent",nullColor = "#bfbfbf") %>%
    hc_tooltip(useHTML=T,pointFormat = "In {point.name}, about <span style = 'color:#E26069'>{point.value:.0f}%</span> of Asian Americans <br> have a BA or higher, compared to the state average of <span style = 'color:#E26069'>{point.pct_state_bahigher:.0f}%</span>.") %>%
   hc_add_theme(hc_theme_538()) %>%
   # hc_colorAxis(stops = color_stops(5),labels= list(format = "{value}%"),showInLegend=T) %>%
   hc_colorAxis(stops= color_stops(n=9, colors =c("#ffffcc","#ffeda0", "#fed976","#feb24c", "#fd8d3c","#fc4e2a","#e31a1c", "#bd0026", "#800026")),labels= list(format = "{value}%"),showInLegend=T) %>%
-  hc_legend(title = list(text= "Asian Alone Percentage", fontStyle ='italic'),align = "center",verticalAlign = "bottom",
+  hc_legend(title = list(text= "Asian % BA or Higher by State", fontStyle ='italic'),align = "center",verticalAlign = "bottom",
             layout = "horizontal", padding = 5) %>% 
   #hc_legend(layout = "vertical", align = "right",
    #         floating = TRUE, valueDecimals = 0, valueSuffix = "%") 
@@ -762,11 +762,11 @@ highchart() %>%
   hc_subtitle(text = "Source: 2011-2015 ACS using NHPI Alone or Combo", align = "center") %>%
   hc_chart(backgroundColor = "#f0f0f0") %>%
   hc_add_series_map(usgeojson, state_edu_map, name = "Education",value = "pct_nhpi_bahigher", joinBy = c("name", "geodisplaylabel"),
-                    borderColor= "transparent",nullColor = "#424242") %>%
+                    borderColor= "transparent",nullColor = "#bfbfbf") %>%
    hc_tooltip(useHTML=T,pointFormat = "In {point.name}, about <span style = 'color:#E26069'>{point.value:.0f}%</span> of NHPIs <br> have a BA or higher, compared to the state average of <span style = 'color:#E26069'>{point.pct_state_bahigher:.0f}%</span>.") %>%
   hc_add_theme(hc_theme_538()) %>%
   hc_colorAxis(stops= color_stops(n=9, colors =c("#ffffcc","#ffeda0", "#fed976","#feb24c", "#fd8d3c","#fc4e2a","#e31a1c", "#bd0026", "#800026")),labels= list(format = "{value}%"),showInLegend=T) %>%
-  hc_legend(title = list(text= "Asian Alone Percentage", fontStyle ='italic'),align = "center",verticalAlign = "bottom",
+  hc_legend(title = list(text= "NHPI % BA or Higher by State", fontStyle ='italic'),align = "center",verticalAlign = "bottom",
             layout = "horizontal", padding = 5) %>% 
   #hc_legend(layout = "vertical", align = "right",
    #         floating = TRUE, valueDecimals = 0, valueSuffix = "%") 
@@ -844,11 +844,11 @@ highchart() %>%
   hc_subtitle(text = "Source: 2011-2015 ACS using Asian Alone or combo", align = "center") %>%
   hc_chart(backgroundColor = "#f0f0f0") %>%
   hc_add_series_map(usgeojson, state_LEP_map, name = "Limited English Proficiency",value = "pct_asian_lep", joinBy = c("name", "geodisplaylabel"),
-                    borderColor= "transparent",nullColor = "#424242") %>%
+                    borderColor= "transparent",nullColor = "#bfbfbf") %>%
   hc_tooltip(useHTML=T,pointFormat = "In {point.name}, about <span style = 'color:#E26069'>{point.value:.0f}%</span> of Asian Americans <br> are LEP, compared to the state average of <span style = 'color:#E26069'>{point.pct_state_lep:.0f}%</span>.") %>%
   hc_add_theme(hc_theme_538()) %>%
   hc_colorAxis(stops= color_stops(n=9, colors =c("#ffffcc","#ffeda0", "#fed976","#feb24c", "#fd8d3c","#fc4e2a","#e31a1c", "#bd0026", "#800026")),labels= list(format = "{value}%"),showInLegend=T) %>%
-  hc_legend(title = list(text= "Statewide Percentage", fontStyle ='italic'),align = "center",verticalAlign = "bottom",
+  hc_legend(title = list(text= "Asian % LEP by State", fontStyle ='italic'),align = "center",verticalAlign = "bottom",
             layout = "horizontal", padding = 5) %>% 
   #hc_legend(layout = "vertical", align = "right",
    #         floating = TRUE, valueDecimals = 0, valueSuffix = "%") 
@@ -870,11 +870,11 @@ highchart() %>%
   hc_subtitle(text = "Source: 2011-2015 ACS using NHPI Alone or combo", align = "center") %>%
   hc_chart(backgroundColor = "#f0f0f0") %>%
   hc_add_series_map(usgeojson, state_LEP_map, name = "Limited English Proficiency",value = "pct_nhpi_lep", joinBy = c("name", "geodisplaylabel"),
-                    borderColor= "transparent",nullColor = "#424242") %>%
+                    borderColor= "transparent",nullColor = "#bfbfbf") %>%
   hc_tooltip(useHTML=T,pointFormat = "In {point.name}, about <span style = 'color:#E26069'>{point.value:.0f}%</span> of NHPIs <br> are LEP, compared to the state average of <span style = 'color:#E26069'>{point.pct_state_lep:.0f}%</span>.") %>%
   hc_add_theme(hc_theme_538()) %>%
   hc_colorAxis(stops= color_stops(n=9, colors =c("#ffffcc","#ffeda0", "#fed976","#feb24c", "#fd8d3c","#fc4e2a","#e31a1c", "#bd0026", "#800026")),labels= list(format = "{value}%"),showInLegend=T) %>%
-  hc_legend(title = list(text= "Statewide Percentage", fontStyle ='italic'),align = "center",verticalAlign = "bottom",
+  hc_legend(title = list(text= "NHPI % LEP by State", fontStyle ='italic'),align = "center",verticalAlign = "bottom",
             layout = "horizontal", padding = 5) %>% 
   #hc_legend(layout = "vertical", align = "right",
    #         floating = TRUE, valueDecimals = 0, valueSuffix = "%") 
@@ -976,11 +976,11 @@ highchart() %>%
   hc_subtitle(text = "Source: 2011-2015 ACS using Asian Alone or Combo", align = "center") %>%
   hc_chart(backgroundColor = "#f0f0f0") %>%
   hc_add_series_map(usgeojson, state_nativity_map, name = "Nativity",value = "pct_asian_foreign_born", joinBy = c("name", "geodisplaylabel"),
-                    borderColor= "transparent",nullColor = "#424242") %>%
+                    borderColor= "transparent",nullColor = "#bfbfbf") %>%
   hc_tooltip(useHTML=T,pointFormat = "In {point.name}, about <span style = 'color:#E26069'>{point.value:.0f}%</span> of Asian Americans <br> are Foreign Born, compared to the state average of <span style = 'color:#E26069'>{point.pct_state_foreign_born:.0f}%</span>.") %>%
   hc_add_theme(hc_theme_538()) %>%
   hc_colorAxis(stops= color_stops(n=9, colors =c("#ffffcc","#ffeda0", "#fed976","#feb24c", "#fd8d3c","#fc4e2a","#e31a1c", "#bd0026", "#800026")),labels= list(format = "{value}%"),showInLegend=T) %>%
-  hc_legend(title = list(text= "Asian American Percent Foreign Born", fontStyle ='italic'),align = "center",verticalAlign = "bottom",
+  hc_legend(title = list(text= "Asian % Foreign Born by State", fontStyle ='italic'),align = "center",verticalAlign = "bottom",
             layout = "horizontal", padding = 5) %>% 
   #hc_legend(layout = "vertical", align = "right",
    #         floating = TRUE, valueDecimals = 0, valueSuffix = "%") 
@@ -1007,11 +1007,11 @@ highchart() %>%
   hc_subtitle(text = "Source: 2011-2015 ACS using NHPI Alone or Combo", align = "center") %>%
   hc_chart(backgroundColor = "#f0f0f0") %>%
   hc_add_series_map(usgeojson, state_nativity_map, name = "Nativity",value = "pct_nhpi_foreign_born", joinBy = c("name", "geodisplaylabel"),
-                    borderColor= "transparent",nullColor = "#424242") %>%
+                    borderColor= "transparent",nullColor = "#bfbfbf") %>%
   hc_tooltip(useHTML=T,pointFormat = "In {point.name}, about <span style = 'color:#E26069'>{point.value:.0f}%</span> of NHPIs <br> are Foreign Born, compared to the state average of <span style = 'color:#E26069'>{point.pct_state_foreign_born:.0f}%</span>.") %>%
   hc_add_theme(hc_theme_538()) %>%
   hc_colorAxis(stops= color_stops(n=9, colors =c("#ffffcc","#ffeda0", "#fed976","#feb24c", "#fd8d3c","#fc4e2a","#e31a1c", "#bd0026", "#800026")),labels= list(format = "{value}%"),showInLegend=T) %>%
-  hc_legend(title = list(text= "NHPI Percent Foreign Born", fontStyle ='italic'),align = "center",verticalAlign = "bottom",
+  hc_legend(title = list(text= "NHPI % Foreign Born by State", fontStyle ='italic'),align = "center",verticalAlign = "bottom",
             layout = "horizontal", padding = 5) %>% 
   #hc_legend(layout = "vertical", align = "right",
    #         floating = TRUE, valueDecimals = 0, valueSuffix = "%") 
@@ -1115,11 +1115,11 @@ highchart() %>%
   hc_subtitle(text = "Source: 2011-2015 ACS using Asian/NHPI Alone", align = "center") %>%
   hc_chart(backgroundColor = "#f0f0f0") %>%
   hc_add_series_map(usgeojson, state_poverty_map, name = "Below Poverty",value = "pct_asian_below_pov", joinBy = c("name", "geodisplaylabel"),
-                    borderColor= "transparent",nullColor = "#424242") %>%
+                    borderColor= "transparent",nullColor = "#bfbfbf") %>%
   hc_tooltip(useHTML=T,pointFormat = "In {point.name}, about <span style = 'color:#E26069'>{point.value:.0f}%</span> of Asian Americans live below the poverty line <br> compared to the state average of <span style = 'color:#E26069'>{point.pct_state_below_pov:.0f}%</span>.") %>%
   hc_add_theme(hc_theme_538()) %>%
   hc_colorAxis(stops= color_stops(n=9, colors =c("#ffffcc","#ffeda0", "#fed976","#feb24c", "#fd8d3c","#fc4e2a","#e31a1c", "#bd0026", "#800026")),labels= list(format = "{value}%"),showInLegend=T) %>%
-  hc_legend(title = list(text= "Asian American Percent Below Poverty", fontStyle ='italic'),align = "center",verticalAlign = "bottom",
+  hc_legend(title = list(text= "Asian % Below Poverty by State", fontStyle ='italic'),align = "center",verticalAlign = "bottom",
             layout = "horizontal", padding = 5) %>% 
   #hc_legend(layout = "vertical", align = "right",
    #         floating = TRUE, valueDecimals = 0, valueSuffix = "%") 
@@ -1142,11 +1142,11 @@ highchart() %>%
   hc_subtitle(text = "Source: 2011-2015 ACS using Asian/NHPI Alone", align = "center") %>%
   hc_chart(backgroundColor = "#f0f0f0") %>%
   hc_add_series_map(usgeojson, state_poverty_map, name = "Below Poverty",value = "pct_nhpi_below_pov", joinBy = c("name", "geodisplaylabel"),
-                    borderColor= "transparent",nullColor = "#424242") %>%
+                    borderColor= "transparent",nullColor = "#bfbfbf") %>%
   hc_tooltip(useHTML=T,pointFormat = "In {point.name}, about <span style = 'color:#E26069'>{point.value:.0f}%</span> of NHPIs live below the poverty line <br> compared to the state average of <span style = 'color:#E26069'>{point.pct_state_below_pov:.0f}%</span>.") %>%
   hc_add_theme(hc_theme_538()) %>%
   hc_colorAxis(stops= color_stops(n=9, colors =c("#ffffcc","#ffeda0", "#fed976","#feb24c", "#fd8d3c","#fc4e2a","#e31a1c", "#bd0026", "#800026")),labels= list(format = "{value}%"),showInLegend=T) %>%
-  hc_legend(title = list(text= "NHPI Percent Below Poverty", fontStyle ='italic'),align = "center",verticalAlign = "bottom",
+  hc_legend(title = list(text= "Asian % Below Poverty by State", fontStyle ='italic'),align = "center",verticalAlign = "bottom",
             layout = "horizontal", padding = 5) %>% 
   #hc_legend(layout = "vertical", align = "right",
    #         floating = TRUE, valueDecimals = 0, valueSuffix = "%") 

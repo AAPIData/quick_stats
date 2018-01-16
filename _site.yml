@@ -63,10 +63,6 @@ navbar:
       href: district_data.html#educational-attainment
     - text: Limited English Proficiency
       href: district_data.html#limited-english-proficiency
-    - text: Nativity
-      href: district_data.html#nativity
-    - text: Poverty
-      href: district_data.html#poverty
   - text: Metro Area
     icon: fa-globe
     menu:
