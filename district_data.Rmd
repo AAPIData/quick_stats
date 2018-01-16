@@ -245,6 +245,26 @@ district_lep_percent <- district_lep %>% select(District, State, `Total Asian al
 
 ```
 
+```{r setup-CVAP, include=FALSE}
+
+
+district_cvap <- district_cvap %>% rename(
+  "Total CVAP" = est_tot_cvap,
+  "AAPI CVAP" = est_aapi_cvap,
+  "% AAPI CVAP" = pct_aapi_cvap,
+  "CVAP Data Available" = estimate_cvap,
+  "Total Pop" = est_tot_pop,
+  "AAPI Pop" = est_aapi_pop,
+  "% AAPI Pop" = pct_aapi_pop,
+  "Pop Data Available" = estimate_pop)
+
+district_cvap_count <- district_cvap %>% select(District, State, `Total CVAP`, `AAPI CVAP`, `CVAP Data Available`, `Total Pop`, `AAPI Pop`, `Pop Data Available`) %>% colnames()
+district_cvap_percent <- district_cvap %>% select(District, State, `AAPI CVAP`, `% AAPI CVAP`, `CVAP Data Available`, `AAPI Pop`, `% AAPI Pop`, `Pop Data Available`) %>% colnames()
+
+
+```
+
+
 <div class="jumbotron">
   <div class="container">
   <h1>Congressional District Data</h1>
@@ -416,13 +436,33 @@ Limited English Proficiency data is complied using Table [B16004](https://factfi
 
 <a href="#top"><button class="btn btn-outline-primary center-block btn-small"> Back to Top</button></a>
 
-> CVAP Attribution sentence here
+> Citizen Voting Age Population (CVAP) refers to the proportion of individuals who are 18 years and older and eligible to vote.
+Citizen Voting Age Population data is complied using Table ( https://www.census.gov/rdo/data/voting_age_population_by_citizenship_and_race_cvap.html) from the 2015 ACS Special Tabulation 5-year estimates.
 
-## CVAP 
+## Percent AAPI CVAP 
 
 
 ```{r cvap-pct, echo=FALSE, message=FALSE, warning=FALSE}
 
-# CODE FOR CVAP
+
+ district_display_table(district_cvap,district_cvap_percent) %>%
+  formatCurrency(columns = c(3,6),currency = "", interval = 3, mark = ",", digits=0) %>%
+  formatPercentage(columns= c(4,7), digits = 1)
+
 ```
+
+
+## AAPI CVAP 
+
+
+```{r cvap-count, echo=FALSE, message=FALSE, warning=FALSE}
+
+
+ district_display_table(district_cvap,district_cvap_count) %>% 
+  formatCurrency(columns = c(3,4,6,7),currency = "", interval = 3, mark = ",", digits=0) 
+```
+
+
+
+
 
