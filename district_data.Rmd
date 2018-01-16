@@ -437,7 +437,7 @@ Limited English Proficiency data is complied using Table [B16004](https://factfi
 <a href="#top"><button class="btn btn-outline-primary center-block btn-small"> Back to Top</button></a>
 
 > Citizen Voting Age Population (CVAP) refers to the proportion of individuals who are 18 years and older and eligible to vote.
-Citizen Voting Age Population data is complied using Table ( https://www.census.gov/rdo/data/voting_age_population_by_citizenship_and_race_cvap.html) from the 2015 ACS Special Tabulation 5-year estimates.
+Citizen Voting Age Population data is complied using [special tabulation](https://www.census.gov/rdo/data/voting_age_population_by_citizenship_and_race_cvap.html) from the 2015 ACS 5-year estimates.
 
 ## Percent AAPI CVAP 
 
