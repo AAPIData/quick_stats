@@ -496,7 +496,7 @@ highchart() %>%
 
 ```
 
-## Raw Asian Alone
+## Asian Alone
 
 
 ```{r pop-asian-alone, echo=FALSE, message=FALSE, warning=FALSE}
@@ -517,7 +517,7 @@ highchart() %>%
 
 ```
 
-## Raw NHPI Alone
+## NHPI Alone
 
 
 ```{r pop-nhpi-alone, echo=FALSE, message=FALSE, warning=FALSE}
@@ -528,7 +528,7 @@ highchart() %>%
 
 ```
 
-## Raw Asian Combo
+## Asian Combo
 
 
 ```{r pop-asian-combo, echo=FALSE, message=FALSE, warning=FALSE}
@@ -550,7 +550,7 @@ highchart() %>%
 
 ```
 
-## Raw NHPI Combo
+## NHPI Combo
 
 
 ```{r pop-nhpi-combo, echo=FALSE, message=FALSE, warning=FALSE}
