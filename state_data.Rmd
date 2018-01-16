@@ -424,7 +424,7 @@ avg_below_pov <- avg_below_pov*100
 </div>
 
 
-# Detailed Origin {.tabset .tabset-fade .tabset-pills}
+# Resident Population {.tabset .tabset-fade .tabset-pills}
 <a href="#top"><button class="btn btn-outline-primary center-block btn-small"> Back to Top</button></a>
 
 > Detailed Origin data is complied using Table [B01003](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B01003) from the 2015 ACS 5-Year estimates.
