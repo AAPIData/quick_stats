@@ -658,9 +658,11 @@ datatable(state_cvap_pct, extensions = list("Buttons" = NULL, 'FixedColumns'= T,
 
 Nationally, about **`r avg_hs_less`**% of Americans have less than a High School diploma and about **`r avg_ba_higher`**% have a Bachelor's Degree or higher.
 
-## Visualize Data
+## Map Asian American
 
-```{r edu visualize, echo=FALSE, message=FALSE, warning=FALSE}
+> Greyed out states indicate that the ACS sample is not large enough to provide reliable estimate
+
+```{r edu visualize-aa, echo=FALSE, message=FALSE, warning=FALSE}
 
 
  state_edu_map <- state_edu_map %>%
@@ -673,7 +675,7 @@ Nationally, about **`r avg_hs_less`**% of Americans have less than a High School
 
 
  state_edu_map <- state_edu_map %>%
-     filter(group_name %in% groups_alone) %>%
+     filter(group_name %in% groups_combo) %>%
      filter(str_detect(estimate_type, "pct_")) %>%
      select(-group_id) %>%
      mutate(long_key=paste(group_name, estimate_type, sep="_")) %>% #Combining Pop_ID and Estimate type
@@ -683,27 +685,33 @@ Nationally, about **`r avg_hs_less`**% of Americans have less than a High School
 
 state_edu_map <- state_edu_map %>% mutate(
   pct_state_bahigher = round(`Total population_pct_bahigher`*100,2),
-  pct_asian_bahigher = round(`Asian alone_pct_bahigher`*100,2),
-  pct_nhpi_bahigher = round(`NHPI alone_pct_bahigher`*100,2)
+  pct_asian_bahigher = round(`Asian alone or combo_pct_bahigher`*100,2),
+  pct_nhpi_bahigher = round(`NHPI alone or combo_pct_bahigher`*100,2)
 )
 
-x <- c("{point.name}:", "Asian Alone:","NHPI Alone:")
-title<-"Percent BA or Higher"
-y <- c(" {point.value:.1f}%", " {point.pct_asian_bahigher:.1f}%",
-" {point.pct_nhpi_bahigher:.1f}%")
-#style <- "style=font-size:80%"
+#fee5d9
+
+
+
+
+
+#color_stops(n=5, colors =c("#fee5d9","#fcae91", "#fb6a4a","#de2d26","#a50f15"))
+#color_stops(n=5, colors =c("#ffffb2","#fecc5c", "#fd8d3c","#f03b20","#bd0026"))
+#color_stops(n=4, colors =c("#ffffb2","#fecc5c", "#fd8d3c","#e31a1c"))
+#color_stops(n=9, colors =c("#ffffcc","#ffeda0", "#fed976","#feb24c", "#fd8d3c","#fc4e2a","#e31a1c", "#bd0026", "#800026"))
 
 data(usgeojson)
 highchart() %>%
   hc_title(text = "AAPI Data: Bachelors Degree or Higher", align = "center") %>%
-  hc_subtitle(text = "Source: 2011-2015 ACS using Asian/NHPI Alone", align = "center") %>%
-  hc_chart(backgroundColor = "transparent") %>%
-  hc_add_series_map(usgeojson, state_edu_map, name = "Education",value = "pct_state_bahigher", joinBy = c("name", "geodisplaylabel"),
-                    borderColor= "transparent") %>%
-  hc_tooltip(pointFormat = tooltip_table(x,y,title), useHTML=T,  headerFormat= "")%>%
+  hc_subtitle(text = "Source: 2011-2015 ACS using Asian Alone or Combo", align = "center") %>%
+  hc_chart(backgroundColor = "#f0f0f0") %>%
+  hc_add_series_map(usgeojson, state_edu_map, name = "Education",value = "pct_asian_bahigher", joinBy = c("name", "geodisplaylabel"),
+                    borderColor= "transparent",nullColor = "#424242") %>%
+   hc_tooltip(useHTML=T,pointFormat = "In {point.name}, about <span style = 'color:#E26069'>{point.value:.0f}%</span> of Asian Americans <br> have a BA or higher, compared to the state average of <span style = 'color:#E26069'>{point.pct_state_bahigher:.0f}%</span>.") %>%
   hc_add_theme(hc_theme_538()) %>%
-  hc_colorAxis(stops = color_stops(5),labels= list(format = "{value}%"),showInLegend=T) %>%
-  hc_legend(title = list(text= "Statewide Percentage", fontStyle ='italic'),align = "center",verticalAlign = "bottom",
+  # hc_colorAxis(stops = color_stops(5),labels= list(format = "{value}%"),showInLegend=T) %>%
+  hc_colorAxis(stops= color_stops(n=9, colors =c("#ffffcc","#ffeda0", "#fed976","#feb24c", "#fd8d3c","#fc4e2a","#e31a1c", "#bd0026", "#800026")),labels= list(format = "{value}%"),showInLegend=T) %>%
+  hc_legend(title = list(text= "Asian Alone Percentage", fontStyle ='italic'),align = "center",verticalAlign = "bottom",
             layout = "horizontal", padding = 5) %>% 
   #hc_legend(layout = "vertical", align = "right",
    #         floating = TRUE, valueDecimals = 0, valueSuffix = "%") 
@@ -711,6 +719,28 @@ highchart() %>%
 
 ```
 
+## Map Native Hawaiian & Pacific Islander
+
+> Greyed out states indicate that the ACS sample is not large enough to provide reliable estimate
+
+```{r edu visualize-nhpi, echo=FALSE, message=FALSE, warning=FALSE}
+
+highchart() %>%
+  hc_title(text = "AAPI Data: Bachelors Degree or Higher", align = "center") %>%
+  hc_subtitle(text = "Source: 2011-2015 ACS using NHPI Alone or Combo", align = "center") %>%
+  hc_chart(backgroundColor = "#f0f0f0") %>%
+  hc_add_series_map(usgeojson, state_edu_map, name = "Education",value = "pct_nhpi_bahigher", joinBy = c("name", "geodisplaylabel"),
+                    borderColor= "transparent",nullColor = "#424242") %>%
+   hc_tooltip(useHTML=T,pointFormat = "In {point.name}, about <span style = 'color:#E26069'>{point.value:.0f}%</span> of Asian Americans <br> have a BA or higher, compared to the state average of <span style = 'color:#E26069'>{point.pct_state_bahigher:.0f}%</span>.") %>%
+  hc_add_theme(hc_theme_538()) %>%
+  hc_colorAxis(stops= color_stops(n=9, colors =c("#ffffcc","#ffeda0", "#fed976","#feb24c", "#fd8d3c","#fc4e2a","#e31a1c", "#bd0026", "#800026")),labels= list(format = "{value}%"),showInLegend=T) %>%
+  hc_legend(title = list(text= "Asian Alone Percentage", fontStyle ='italic'),align = "center",verticalAlign = "bottom",
+            layout = "horizontal", padding = 5) %>% 
+  #hc_legend(layout = "vertical", align = "right",
+   #         floating = TRUE, valueDecimals = 0, valueSuffix = "%") 
+  hc_exporting(enabled = TRUE)
+
+```
 
 ## % Asian & NHPI Alone
 
