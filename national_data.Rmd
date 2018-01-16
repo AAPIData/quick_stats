@@ -344,7 +344,7 @@ hc_add_theme(hc_theme_tufte2()) %>%  hc_colors(colors = c("#E26069","#008fd5")) 
            labels= list(style =list(color ="#E5790D", fontSize='15px')),
             minorTickLength= 0,tickLength=0) %>%
    hc_tooltip(pointFormat = "{series.name}: {point.y}%") %>% # create tool tip and then,
- hc_title(text = "Educational Attainment",
+ hc_title(text = "AAPI Data: Educational Attainment",
            margin = 20, align = "left",
            style = list(color = "#E5790D"))%>% # Create title and then,
   hc_subtitle(text = "(2011-2015 ACS)",
@@ -431,7 +431,7 @@ national_insurance %>%
            labels= list(style =list(color ="#E5790D", fontSize='15px')),
             minorTickLength= 0,tickLength=0) %>%
   hc_tooltip(useHTML=T,pointFormat = "About <span style = 'color:#E26069'>{point.y:.0f}%</span> have no health insurance.") %>%
-   hc_title(text = "Percent of No Insurance",
+   hc_title(text = "AAPI Data: Percent Without Insurance",
            margin = 20, align = "left",
            style = list(color = "#E5790D"))%>%
   hc_subtitle(text = "(2011-2015 ACS)",
@@ -508,7 +508,7 @@ national_lep %>%
            labels= list(style =list(color ="#E5790D", fontSize='15px')),
             minorTickLength= 0,tickLength=0) %>%
   hc_tooltip(useHTML=T,pointFormat = "About <span style = 'color:#E26069'>{point.y:.0f}%</span> speak a language other than english at home <br> and of those, <span style = 'color:#E26069'>{point.pct_lep:.0f}%</span> are LEP.") %>%
-   hc_title(text = "Speak a language other than english",
+   hc_title(text = "AAPI Data: Speak A Language Other Than English",
            margin = 20, align = "left",
            style = list(color = "#E5790D"))%>%
   hc_subtitle(text = "(2011-2015 ACS)",
@@ -589,7 +589,7 @@ national_nativity %>%
            labels= list(style =list(color ="#E5790D", fontSize='15px')),
             minorTickLength= 0,tickLength=0) %>%
   hc_tooltip(useHTML=T,pointFormat = "About <span style = 'color:#E26069'>{point.y:.0f}%</span> are foreign born.") %>%
-   hc_title(text = "Percent Foreign Born",
+   hc_title(text = "AAPI Data: Percent Foreign Born",
            margin = 20, align = "left",
            style = list(color = "#E5790D"))%>%
   hc_subtitle(text = "(2011-2015 ACS)",
@@ -671,7 +671,7 @@ national_poverty %>%
            labels= list(style =list(color ="#E5790D", fontSize='15px')),
             minorTickLength= 0,tickLength=0) %>%
   hc_tooltip(useHTML=T,pointFormat = "About <span style = 'color:#E26069'>{point.y:.0f}%</span> Americans are living below the poverty line") %>%
-   hc_title(text = "Living Below the Poverty Line",
+   hc_title(text = "AAPI Data: Living Below the Poverty Line",
            margin = 20, align = "left",
            style = list(color = "#E5790D"))%>%
   hc_subtitle(text = "(2011-2015 ACS)",
@@ -763,7 +763,7 @@ national_pop %>%
            labels= list(style =list(color ="#E5790D", fontSize='15px')),
             minorTickLength= 0,tickLength=0) %>%
   hc_tooltip(useHTML=T,pointFormat = "About <span style = 'color:#E26069'>{point.y:.0f}%</span> are foreign born.") %>%
-   hc_title(text = "Percent Total Pop",
+   hc_title(text = "AAPI Data: Share of US Population",
            margin = 20, align = "left",
            style = list(color = "#E5790D"))%>%
   hc_subtitle(text = "(2011-2015 ACS)",
