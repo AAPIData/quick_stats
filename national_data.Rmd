@@ -30,7 +30,7 @@ national_lep<- readxl::read_xlsx("raw_data/national/national_dta.xlsx", sheet = 
 national_nativity<- readxl::read_xlsx("raw_data/national/national_dta.xlsx", sheet = "nativity")
 national_pop<- readxl::read_xlsx("raw_data/national/national_dta.xlsx", sheet = "pop")
 national_insurance<- readxl::read_xlsx("raw_data/national/national_insurance.xlsx")
-  
+national_poverty<- readxl::read_xlsx("raw_data/national/national_poverty.xlsx")
 
 ## Using the lookup table to merge in Group Names and the proper population ID names
 national_edu<-national_edu %>% left_join(pop_id_lookup) %>% select(-geoid, - geodisplaylabel)
@@ -38,6 +38,7 @@ national_lep<-national_lep %>% left_join(pop_id_lookup) %>% select(-geoid, - geo
 national_nativity<-national_nativity %>% left_join(pop_id_lookup) %>% select(-geoid, - geodisplaylabel)
 national_pop<-national_pop %>% left_join(pop_id_lookup) %>% select(-geoid, - geodisplaylabel)
 national_insurance<-national_insurance %>% left_join(pop_id_lookup) %>% select(-geoid, - geodisplaylabel)
+national_poverty<-national_poverty %>% left_join(pop_id_lookup) %>% select(- geodisplaylabel)
 
 
 ## Specifying Column Group names, to be used later
@@ -47,6 +48,7 @@ education_columns <- c("Group", "Total 25yrs+ old", "Less than HS", "HS or GED",
 lep_columns <- c("Group", "Total Pop", "Speak Other Language","LEP", "Total LEP")
 pop_columns <- c("Group", "Population", "Percent Total Pop")
 insurance_columns <- c("Group", "Total Pop", "No Insurance", "Percent of No Insurance")
+poverty_columns <- c("Group", "Total Pop", "Below Poverty", "Above Poverty", "% Below Poverty", "% Above Poverty")
 
 ## Renaming CVAP
 national_cvap <-national_cvap %>% rename(Total = total_pop)
@@ -181,6 +183,41 @@ national_nativity<- national_nativity %>% rename(Group = group_name,
 
 ```
 
+
+```{r setup-1-poverty, include=FALSE}
+
+## This is the setupt for the poverty data
+### Getting Rid of Estimates where the "CHECK" variable is flagging uncertainty
+national_poverty <- national_poverty %>% 
+  mutate(est_tot_pop = 
+            case_when( checking_tot_pop == 1 ~  NA_real_ ,TRUE ~ est_tot_pop),
+         est_above_pov  =
+          case_when( checking_above_pov == 1 ~  NA_real_ ,TRUE ~ est_above_pov),
+          est_below_pov  =
+          case_when( checking_below_pov == 1 ~  NA_real_ ,TRUE ~ est_below_pov),
+          )
+      
+national_poverty <- national_poverty %>% select(-checking_tot_pop,
+                                  -checking_above_pov,
+                                  -checking_below_pov)
+
+# Creating Columns for percentages 
+national_poverty <- national_poverty %>% mutate(
+  pct_above_pov = est_above_pov / est_tot_pop,
+  pct_below_pov = est_below_pov / est_tot_pop)
+
+# Renaming columns
+national_poverty<- national_poverty %>% rename(`Total Pop`= est_tot_pop,
+  `Below Poverty` = est_below_pov,
+  `Above Poverty` = est_above_pov,
+  `% Below Poverty` = pct_below_pov,
+  `% Above Poverty` = pct_above_pov,
+         Group = group_name)
+
+
+
+
+```
 
 ```{r setup-1-population, include=FALSE}
 ## this is for national estimate by detailed pop
@@ -611,6 +648,88 @@ national_tbl_display(national_nativity,"NHPI Detail Combo",nativity_columns,"Tot
   formatCurrency(columns = c("Total Pop", "Total Foreign Born"),currency = "", interval = 3, mark = ",", digits=0)
 
 ```
+
+
+# Poverty {.tabset .tabset-fade .tabset-pills}
+<a href="#top"><button class="btn btn-outline-primary center-block btn-small"> Back to Top</button></a>
+
+
+>Poverty data is complied using Table [B17001](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B17001) from the 2015 ACS 5-Year estimates.
+
+
+```{r poverty_graph, echo=FALSE, message=FALSE, warning=FALSE}
+national_poverty %>%
+  filter(group_id ==  "Major racial groups") %>%
+  select(poverty_columns) %>% 
+  mutate(pct_below_pov = round(`% Below Poverty`*100,2)) %>%
+  arrange(desc(pct_below_pov)) %>% hchart( "bar", hcaes(x = Group , y = pct_below_pov)) %>%
+  hc_add_theme(hc_theme_tufte2()) %>%  hc_colors(colors = c("#008fd5")) %>%
+  hc_yAxis(title = list(text = ""),
+         labels= list(style =list(color ="black", fontSize='15px'),
+                      format= "{value}%"), max = 100, opposite=TRUE) %>%
+  hc_xAxis(title = list(text = ""),
+           labels= list(style =list(color ="#E5790D", fontSize='15px')),
+            minorTickLength= 0,tickLength=0) %>%
+  hc_tooltip(useHTML=T,pointFormat = "About <span style = 'color:#E26069'>{point.y:.0f}%</span> Americans are living below the poverty line") %>%
+   hc_title(text = "Living Below the Poverty Line",
+           margin = 20, align = "left",
+           style = list(color = "#E5790D"))%>%
+  hc_subtitle(text = "(2011-2015 ACS)",
+            margin = 20, align = "left",
+           style = list(color = "#E5790D"))
+
+```
+
+
+
+## Major racial groups
+```{r poverty major groups,echo=FALSE, message=FALSE, warning=FALSE}
+
+national_tbl_display(national_poverty,"Major racial groups",poverty_columns,"Total Pop")%>% 
+  formatPercentage(columns = c("% Below Poverty","% Above Poverty"), digits = 2) %>% 
+  formatCurrency(columns = c("Above Poverty", "Below Poverty", "Total Pop"),currency = "", interval = 3, mark = ",", digits=0)
+
+```
+
+
+## Asian Detailed Origin
+```{r poverty asian detail,echo=FALSE, message=FALSE, warning=FALSE}
+
+national_tbl_display(national_poverty,"Asian Detail",poverty_columns,"Total Pop")%>% 
+  formatPercentage(columns = c("% Below Poverty","% Above Poverty"), digits = 2) %>% 
+  formatCurrency(columns = c("Below Poverty", "Above Poverty", "Total Pop"),currency = "", interval = 3, mark = ",", digits=0)
+```
+
+
+## Asian Detailed Origin Combo
+```{r poverty asn combo,echo=FALSE, message=FALSE, warning=FALSE}
+
+national_tbl_display(national_poverty,"Asian Detail Combo",poverty_columns,"Total Pop")%>% 
+  formatPercentage(columns =c("% Below Poverty","% Above Poverty"), digits = 2) %>% 
+  formatCurrency(columns = c("Below Poverty", "Above Poverty", "Total Pop"),currency = "", interval = 3, mark = ",", digits=0)
+
+```
+
+## NHPI Detailed Origin
+```{r poverty nhpi detail,echo=FALSE, message=FALSE, warning=FALSE}
+
+national_tbl_display(national_poverty,"NHPI Detail",poverty_columns,"Total Pop")%>% 
+  formatPercentage(columns = c("% Below Poverty","% Above Poverty"), digits = 2) %>% 
+  formatCurrency(columns = c("Below Poverty", "Above Poverty", "Total Pop"),currency = "", interval = 3, mark = ",", digits=0)
+
+```
+
+
+## NHPI Detailed Origin Combo
+```{r poverty nhpi combo,echo=FALSE, message=FALSE, warning=FALSE}
+
+national_tbl_display(national_poverty,"NHPI Detail Combo",poverty_columns,"Total Pop")%>% 
+  formatPercentage(columns = c("% Below Poverty","% Above Poverty"), digits = 2) %>% 
+  formatCurrency(columns = c("Below Poverty", "Above Poverty", "Total Pop"),currency = "", interval = 3, mark = ",", digits=0)
+
+```
+
+
 
 
 
