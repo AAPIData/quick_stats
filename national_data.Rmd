@@ -46,7 +46,8 @@ nativity_columns <- c("Group", "Total Pop", "Foreign Born","Total Foreign Born")
 cvap_columns <- c("Group", "CVAP", "Total")
 education_columns <- c("Group", "Total 25yrs+ old", "Less than HS", "HS or GED", "Some College or AA", "BA or higher")
 lep_columns <- c("Group", "Total Pop", "Speak Other Language","LEP", "Total LEP")
-pop_columns <- c("Group", "Population", "Percent Total Pop")
+pop_columns <- c("Group", "Population", "Share of US Pop")
+pop_detail_columns <- c("Group", "Population", "Share of US Pop", "Share of Group Pop")
 insurance_columns <- c("Group", "Total Pop", "No Insurance", "Percent of No Insurance")
 poverty_columns <- c("Group", "Total Pop", "Below Poverty", "Above Poverty", "% Below Poverty", "% Above Poverty")
 
@@ -232,9 +233,30 @@ national_pop <- national_pop %>%
 national_pop <- national_pop %>% 
   mutate(pct_pop = est_tot_pop / est_national_pop)  
 
+
 national_pop<- national_pop %>% rename(Group = group_name,
                                        `Population` = est_tot_pop,
-                                       `Percent Total Pop` = pct_pop)
+                                       `Share of US Pop` = pct_pop)
+
+# Need to grab Group denominators so we can divide by them to get "Share of Asian Alone pop" or "Share of NHPI Alone pop" for detailed origin stuff
+asian_alone_total <- national_pop %>% filter(Group == "Asian alone")%>% select(Population) %>% pull() 
+nhpi_alone_total <- national_pop %>% filter(Group == "NHPI alone")%>% select(Population) %>% pull() 
+asian_combo_total <- national_pop %>% filter(Group == "Asian alone or combo")%>% select(Population) %>% pull() 
+nhpi_combo_total <- national_pop %>% filter(Group == "NHPI alone or combo")%>% select(Population) %>% pull() 
+
+# Computing the variables.
+national_pop <- national_pop %>% 
+  mutate(pct_pop_totorigin = 
+            case_when( group_id == "Asian Detail"  ~ Population/asian_alone_total,
+                       group_id == "NHPI Detail"  ~ Population/nhpi_alone_total,
+                       group_id == "Asian Detail Combo"  ~ Population/asian_combo_total,
+                       group_id == "NHPI Detail Combo"  ~ Population/nhpi_combo_total))
+        
+## Recoding national_pop$Group
+national_pop$Group[national_pop$Group == "Total population"] <- "US Population"
+
+## Renaming pct_pop_totorigin
+national_pop<- national_pop %>% rename(`Share of Group Pop` = pct_pop_totorigin)   
   
 totpop_asn_alone <- national_pop %>% filter(Group == "Asian alone") %>% select(Population) %>% pull()
 totpop_nhpi_alone <- national_pop %>% filter(Group == "NHPI alone") %>% select(Population) %>% pull()
@@ -733,7 +755,7 @@ national_tbl_display(national_poverty,"NHPI Detail Combo",poverty_columns,"Total
 
 
 
-# Population {.tabset .tabset-fade .tabset-pills}
+# Resident Population {.tabset .tabset-fade .tabset-pills}
 <a href="#top"><button class="btn btn-outline-primary center-block btn-small"> Back to Top</button></a>
 
 > Population data is complied using Table [B01003](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B01003) from the 2015 ACS 5-Year estimates.
@@ -753,7 +775,7 @@ national_tbl_display(national_poverty,"NHPI Detail Combo",poverty_columns,"Total
 national_pop %>%
   filter(group_id ==  "Major racial groups") %>%
   select(pop_columns) %>% 
-  mutate(pct_pop = round(`Percent Total Pop`*100,2)) %>%
+  mutate(pct_pop = round(`Share of US Pop`*100,2)) %>%
   arrange(desc(pct_pop)) %>% hchart( "bar", hcaes(x = Group , y = pct_pop)) %>%
   hc_add_theme(hc_theme_tufte2()) %>%  hc_colors(colors = c("#008fd5")) %>%
   hc_yAxis(title = list(text = ""),
@@ -762,7 +784,7 @@ national_pop %>%
   hc_xAxis(title = list(text = ""),
            labels= list(style =list(color ="#E5790D", fontSize='15px')),
             minorTickLength= 0,tickLength=0) %>%
-  hc_tooltip(useHTML=T,pointFormat = "About <span style = 'color:#E26069'>{point.y:.0f}%</span> are foreign born.") %>%
+  hc_tooltip(useHTML=T,pointFormat = "{point.name} makes up about <span style = 'color:#E26069'>{point.y:.0f}%</span> of US Residents.") %>%
    hc_title(text = "AAPI Data: Share of US Population",
            margin = 20, align = "left",
            style = list(color = "#E5790D"))%>%
@@ -775,37 +797,34 @@ national_pop %>%
 ## Asian Detail...
 ```{r population asian detail,echo=FALSE, message=FALSE, warning=FALSE}
 
-national_tbl_display(national_pop,"Asian Detail",pop_columns,"Population")%>% 
-  formatPercentage(columns = c("Percent Total Pop"), digits = 2) %>% 
-  formatCurrency(columns = c("Population", "Percent Total Pop"),currency = "", interval = 3, mark = ",", digits=0)
+national_tbl_display(national_pop,"Asian Detail",pop_detail_columns,"Population") %>% 
+  formatPercentage(columns = c("Share of US Pop","Share of Group Pop"), digits = 2) %>% 
+  formatCurrency(columns = c("Population"),currency = "", interval = 3, mark = ",", digits=0)
 
 ```
 
 ## Asian Detailed Origin Combo
 ```{r population asn combo,echo=FALSE, message=FALSE, warning=FALSE}
 
-national_tbl_display(national_pop,"Asian Detail Combo",pop_columns,"Population")%>% 
-  formatPercentage(columns = c("Percent Total Pop"), digits = 2) %>% 
-  formatCurrency(columns = c("Population", "Percent Total Pop"),currency = "", interval = 3, mark = ",", digits=0)
-
+national_tbl_display(national_pop,"Asian Detail Combo",pop_detail_columns,"Population")%>% 
+formatPercentage(columns = c("Share of US Pop","Share of Group Pop"), digits = 2) %>% 
+  formatCurrency(columns = c("Population"),currency = "", interval = 3, mark = ",", digits=0)
 
 ```
 
 ## NHPI Detailed Origin
 ```{r population nhpi detail,echo=FALSE, message=FALSE, warning=FALSE}
 
-national_tbl_display(national_pop,"NHPI Detail",pop_columns,"Population")%>% 
-  formatPercentage(columns = c("Percent Total Pop"), digits = 2) %>% 
-  formatCurrency(columns = c("Population", "Percent Total Pop"),currency = "", interval = 3, mark = ",", digits=0)
-
+national_tbl_display(national_pop,"NHPI Detail",pop_detail_columns,"Population")%>% 
+ formatPercentage(columns = c("Share of US Pop","Share of Group Pop"), digits = 2) %>% 
+  formatCurrency(columns = c("Population"),currency = "", interval = 3, mark = ",", digits=0)
 ```
 
 
 ## NHPI Detailed Origin Combo
 ```{r population nhpi combo,echo=FALSE, message=FALSE, warning=FALSE}
 
-national_tbl_display(national_pop,"NHPI Detail Combo",pop_columns,"Total Pop")%>% 
-  formatPercentage(columns = c("Percent Total Pop"), digits = 2) %>% 
-  formatCurrency(columns = c("Population", "Percent Total Pop"),currency = "", interval = 3, mark = ",", digits=0)
-
+national_tbl_display(national_pop,"NHPI Detail Combo",pop_detail_columns,"Total Pop")%>% 
+ formatPercentage(columns = c("Share of US Pop","Share of Group Pop"), digits = 2) %>% 
+  formatCurrency(columns = c("Population"),currency = "", interval = 3, mark = ",", digits=0)
 ```
