@@ -85,7 +85,7 @@ state_convert_long <- function(data){
                 list("Buttons" = NULL, 'FixedColumns'= T, "Scroller"=T),
               rownames= FALSE, 
               options = list(
-                dom = 'rtB',
+                dom = 'Brt',
                 buttons = c('copy', 'csv', 'excel'),
                 scrollX = TRUE,
                 fixedColumns = list(leftColumns = 1),
