@@ -349,7 +349,7 @@ hc_add_theme(hc_theme_tufte2()) %>%  hc_colors(colors = c("#E26069","#008fd5")) 
            style = list(color = "#E5790D"))%>% # Create title and then,
   hc_subtitle(text = "(2011-2015 ACS)",
             margin = 20, align = "left",
-           style = list(color = "#E5790D")) # Add subtitle
+           style = list(color = "#E5790D")) %>%  hc_exporting(enabled = TRUE) # Add subtitle
 ```
 
 ```{r setup-2-education, include=FALSE}
@@ -436,7 +436,7 @@ national_insurance %>%
            style = list(color = "#E5790D"))%>%
   hc_subtitle(text = "(2011-2015 ACS)",
             margin = 20, align = "left",
-           style = list(color = "#E5790D"))
+           style = list(color = "#E5790D"))%>%  hc_exporting(enabled = TRUE)
 
 ```
 
@@ -513,7 +513,7 @@ national_lep %>%
            style = list(color = "#E5790D"))%>%
   hc_subtitle(text = "(2011-2015 ACS)",
             margin = 20, align = "left",
-           style = list(color = "#E5790D"))
+           style = list(color = "#E5790D"))%>%  hc_exporting(enabled = TRUE)
 
 ```
 
@@ -594,7 +594,7 @@ national_nativity %>%
            style = list(color = "#E5790D"))%>%
   hc_subtitle(text = "(2011-2015 ACS)",
             margin = 20, align = "left",
-           style = list(color = "#E5790D"))
+           style = list(color = "#E5790D"))%>%  hc_exporting(enabled = TRUE)
 
 ```
 
@@ -676,7 +676,7 @@ national_poverty %>%
            style = list(color = "#E5790D"))%>%
   hc_subtitle(text = "(2011-2015 ACS)",
             margin = 20, align = "left",
-           style = list(color = "#E5790D"))
+           style = list(color = "#E5790D"))%>%  hc_exporting(enabled = TRUE)
 
 ```
 
@@ -768,7 +768,7 @@ national_pop %>%
            style = list(color = "#E5790D"))%>%
   hc_subtitle(text = "(2011-2015 ACS)",
             margin = 20, align = "left",
-           style = list(color = "#E5790D"))
+           style = list(color = "#E5790D"))%>%  hc_exporting(enabled = TRUE)
 
 ```
 
