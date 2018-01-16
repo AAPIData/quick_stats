@@ -465,7 +465,6 @@ state_pop_map <- state_pop_map %>% mutate(
   asian_pct_totpop = round(asian_pop/state_pop*100,1),
   nhpi_pct_totpop = round(nhpi_pop/state_pop*100,1))
 
-
 data(usgeojson)
 highchart() %>%
   hc_title(text = "AAPI Data: State Population", align = "center") %>%
@@ -476,7 +475,7 @@ highchart() %>%
    hc_tooltip(useHTML=T,pointFormat = "In {point.name}, <span style = 'color:#E26069'>{point.asian_pop:,.0f}</span> Asian Americans <br> make up about <span style = 'color:#E26069'>{point.asian_pct_totpop:.0f}%</span> of the state's <span style = 'color:#E26069'>{point.state_pop_mill:.1f}</span> million residents.") %>%
   hc_add_theme(hc_theme_538()) %>%
   # hc_colorAxis(stops = color_stops(5),labels= list(format = "{value}%"),showInLegend=T) %>%
-  hc_colorAxis(stops= color_stops(n=9, colors =c("#ffffcc","#ffeda0", "#fed976","#feb24c", "#fd8d3c","#fc4e2a","#e31a1c", "#bd0026", "#800026")),labels= list(format = "{value}%"),showInLegend=T) %>%
+  hc_colorAxis(stops= color_stops(n=3, colors =c("#feb24c", "#fd8d3c","#fc4e2a","#e31a1c", "#bd0026", "#800026")),labels= list(format = "{value}%"),showInLegend=T) %>%
   hc_legend(title = list(text= "Asian American Share of State Population", fontStyle ='italic'),align = "center",verticalAlign = "bottom",
             layout = "horizontal", padding = 5) %>% 
   #hc_legend(layout = "vertical", align = "right",
@@ -503,10 +502,10 @@ highchart() %>%
   hc_chart(backgroundColor = "#f0f0f0") %>%
   hc_add_series_map(usgeojson, state_pop_map, name = "State Population", value = "nhpi_pct_totpop", joinBy = c("name", "geodisplaylabel"),
                     borderColor= "transparent",nullColor = "#bfbfbf") %>%
-   hc_tooltip(useHTML=T,pointFormat = "In {point.name}, <span style = 'color:#E26069'>{point.asian_pop:,.0f}</span> NHPIs <br> make up about <span style = 'color:#E26069'>{point.nhpi_pct_totpop:.0f}%</span> of the state's <span style = 'color:#E26069'>{point.state_pop_mill:.1f}</span> million residents.") %>%
+   hc_tooltip(useHTML=T,pointFormat = "In {point.name}, <span style = 'color:#E26069'>{point.asian_pop:,.0f}</span> NHPIs <br> make up about <span style = 'color:#E26069'>{point.nhpi_pct_totpop:.2f}%</span> of the state's <span style = 'color:#E26069'>{point.state_pop_mill:.1f}</span> million residents.") %>%
   hc_add_theme(hc_theme_538()) %>%
   # hc_colorAxis(stops = color_stops(5),labels= list(format = "{value}%"),showInLegend=T) %>%
-  hc_colorAxis(stops= color_stops(n=9, colors =c("#ffffcc","#ffeda0", "#fed976","#feb24c", "#fd8d3c","#fc4e2a","#e31a1c", "#bd0026", "#800026")),labels= list(format = "{value}%"),showInLegend=T) %>%
+  hc_colorAxis(stops= color_stops(n=3, colors =c("#feb24c", "#fd8d3c","#fc4e2a","#e31a1c", "#bd0026", "#800026")),labels= list(format = "{value}%"),showInLegend=T) %>%
   hc_legend(title = list(text= "NHPI Share of State Population", fontStyle ='italic'),align = "center",verticalAlign = "bottom",
             layout = "horizontal", padding = 5) %>% 
   #hc_legend(layout = "vertical", align = "right",
