@@ -1,4 +1,4 @@
-name: AAPI Data 2017 Ethnic Group Profiles
+name: AAPIData
 output_dir: .
 navbar:
   title: QuickStats
@@ -7,32 +7,30 @@ navbar:
   - text: Home
     icon: fa-home
     href: index.html
-  - text: About
-    href: about.html
   - text: National
     icon: fa-globe
     menu:
-    - text: CVAP
+    - text: Resident Population
+      href: national_data.html#resident-population
+    - text: Citizen Voting Age Population
       href: national_data.html#citizen-voting-age-population
     - text: Education
       href: national_data.html#educational-attainment
     - text: Limited English Proficiency
       href: national_data.html#limited-english-proficiency
-    - text: Asian Origin
-      href: national_data.html#asian-american-detailed-origin
-    - text: NHPI Origin
-      href: national_data.html#nhpi-american-detailed-origin
+    - text: Nativity
+      href: national_data.html#nativity
     - text: Poverty
       href: national_data.html#poverty
   - text: State
     icon: fa-globe
     menu:
-    - text: CVAP
+    - text: Resident Population
+      href: state_data.html#resident-population
+    - text: Citizen Voting Age Population
       href: state_data.html#citizen-voting-age-population
-    - text: Detailed Origin
-      href: state_data.html#education
     - text: Education
-      href: state_data.html#education
+      href: state_data.html#educational-attainment
     - text: Limited English Proficiency
       href: state_data.html#limited-english-proficiency
     - text: Nativity
@@ -42,12 +40,12 @@ navbar:
   - text: County
     icon: fa-globe
     menu:
-    - text: CVAP
+    - text: Resident Population
+      href: county_data.html#resident-population
+    - text: Citizen Voting Age Population
       href: county_data.html#citizen-voting-age-population
-    - text: Detailed Origin
-      href: county_data.html#education
     - text: Education
-      href: county_data.html#education
+      href: county_data.html#educational-attainment
     - text: Limited English Proficiency
       href: county_data.html#limited-english-proficiency
     - text: Nativity
@@ -57,31 +55,23 @@ navbar:
   - text: Congressional District
     icon: fa-globe
     menu:
-    - text: CVAP
+    - text: Resident Population
+      href: district_data.html#resident-population
+    - text: Citizen Voting Age Population
       href: district_data.html#citizen-voting-age-population
-    - text: Detailed Origin
-      href: district_data.html#education
     - text: Education
-      href: district_data.html#education
+      href: district_data.html#educational-attainment
     - text: Limited English Proficiency
       href: district_data.html#limited-english-proficiency
+    - text: Nativity
+      href: district_data.html#nativity
     - text: Poverty
-      href: district_data.html#poverty      
+      href: district_data.html#poverty
   - text: Metro Area
     icon: fa-globe
     menu:
-    - text: CVAP
-      href: metro_data.html#citizen-voting-age-population
-    - text: Detailed Origin
-      href: metro_data.html#education
-    - text: Education
-      href: metro_data.html#education
-    - text: Limited English Proficiency
-      href: metro_data.html#limited-english-proficiency
-    - text: Nativity
-      href: metro_data.html#nativity
-    - text: Poverty
-      href: metro_data.html#poverty           
+    - text: Resident Population
+      href: metro_data.html#resident-population
 output:
   html_document:
     theme: yeti
