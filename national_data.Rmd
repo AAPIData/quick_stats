@@ -217,7 +217,6 @@ national_poverty<- national_poverty %>% rename(`US Population`= est_tot_pop,
 
 
 
-
 ```
 
 ```{r setup-1-population, include=FALSE}
