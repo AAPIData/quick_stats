@@ -294,7 +294,7 @@ district_cvap_percent <- district_cvap %>% select(District, State, `AAPI CVAP`, 
   
  district_display_table(district_pop,district_percent) %>% 
   formatCurrency(columns = c(3),currency = "", interval = 3, mark = ",", digits=0) %>%
-  formatPercentage(columns = c(4,5,6,7),digits = 2)
+  formatPercentage(columns = c(4,5,6,7),digits = 1)
 
 
 ```

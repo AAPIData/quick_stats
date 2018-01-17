@@ -591,7 +591,7 @@ datatable(county_cvap_pct, extensions = list("Buttons" = NULL, 'FixedColumns'= T
                 dom = 'rtB',
                 buttons = c('copy', 'csv', 'excel'),
                 scrollX = TRUE,
-                lengthMenu = c(25, 50, 100), pageLength = 50)) %>% formatPercentage(columns = c(3:4), digits = 2)
+                lengthMenu = c(25, 50, 100), pageLength = 50)) %>% formatPercentage(columns = c(3:4), digits = 1)
 
 
 ```
@@ -610,7 +610,7 @@ Nationally, about **`r avg_hs_less`**% of Americans have less than a High School
 
 ```{r EDU-alone-pct, echo=FALSE, message=FALSE, warning=FALSE}
 
-county_display_table(county_edu_long, groups_alone,education_percent) %>% formatPercentage(columns = c(3,4,5,6,8,9,10,11), digits = 2) %>% formatCurrency(columns = c(7,12),currency = "", interval = 3, mark = ",", digits=0)
+county_display_table(county_edu_long, groups_alone,education_percent) %>% formatPercentage(columns = c(3,4,5,6,8,9,10,11), digits = 1) %>% formatCurrency(columns = c(7,12),currency = "", interval = 3, mark = ",", digits=0)
 
 
 ```
@@ -620,7 +620,7 @@ county_display_table(county_edu_long, groups_alone,education_percent) %>% format
 
 ```{r EDU-combo-pct, echo=FALSE, message=FALSE, warning=FALSE}
 
-county_display_table(county_edu_long, groups_combo,education_percent) %>% formatPercentage(columns = c(3:6, 8:11, 13:16), digits = 2) %>% formatCurrency(columns = c(7,12,17),currency = "", interval = 3, mark = ",", digits=0)
+county_display_table(county_edu_long, groups_combo,education_percent) %>% formatPercentage(columns = c(3:6, 8:11, 13:16), digits = 1) %>% formatCurrency(columns = c(7,12,17),currency = "", interval = 3, mark = ",", digits=0)
 
 ```
 
@@ -638,7 +638,7 @@ Nationally Among Americans who speak a language other than english at home, abou
 
 ```{r LEP-alone-pct, echo=FALSE, message=FALSE, warning=FALSE}
 
-county_display_table(county_LEP_long, groups_alone,LEP_percent) %>% formatPercentage(columns = c(3:5), digits = 2)
+county_display_table(county_LEP_long, groups_alone,LEP_percent) %>% formatPercentage(columns = c(3:5), digits = 1)
 
 
 ```
@@ -648,7 +648,7 @@ county_display_table(county_LEP_long, groups_alone,LEP_percent) %>% formatPercen
 
 ```{r LEP-combo-pct, echo=FALSE, message=FALSE, warning=FALSE}
 
-county_display_table(county_LEP_long, groups_combo,LEP_percent) %>% formatPercentage(columns = c(3:5), digits = 2)
+county_display_table(county_LEP_long, groups_combo,LEP_percent) %>% formatPercentage(columns = c(3:5), digits = 1)
 
 
 ```
@@ -689,7 +689,7 @@ Nationally, about **`r avg_foreign_born`**% of Americans are foreign born.
 
 ```{r nativity-alone-pct, echo=FALSE, message=FALSE, warning=FALSE}
 
-county_display_table(county_nativity_long, groups_alone,nativity_percent) %>% formatPercentage(columns = c(3:5), digits = 2)
+county_display_table(county_nativity_long, groups_alone,nativity_percent) %>% formatPercentage(columns = c(3:5), digits = 1)
 
 
 ```
@@ -700,7 +700,7 @@ county_display_table(county_nativity_long, groups_alone,nativity_percent) %>% fo
 
 ```{r nativity-combo-pct, echo=FALSE, message=FALSE, warning=FALSE}
 
-county_display_table(county_nativity_long, groups_combo,nativity_percent) %>% formatPercentage(columns = c(3:5), digits = 2)
+county_display_table(county_nativity_long, groups_combo,nativity_percent) %>% formatPercentage(columns = c(3:5), digits = 1)
 
 
 ```
@@ -741,7 +741,7 @@ Nationally, about **`r avg_below_pov`**% of Americans are living below poverty l
 
 ```{r poverty-alone-pct, echo=FALSE, message=FALSE, warning=FALSE}
 
-county_display_table(county_poverty_long, groups_alone,poverty_percent) %>% formatPercentage(columns = c(3:5), digits = 2)
+county_display_table(county_poverty_long, groups_alone,poverty_percent) %>% formatPercentage(columns = c(3:5), digits = 1)
 
 ```
 
@@ -750,7 +750,7 @@ county_display_table(county_poverty_long, groups_alone,poverty_percent) %>% form
 
 ```{r poverty-combo-pct, echo=FALSE, message=FALSE, warning=FALSE}
 
-county_display_table(county_poverty_long, groups_combo,poverty_percent) %>% formatPercentage(columns = c(3:5), digits = 2)
+county_display_table(county_poverty_long, groups_combo,poverty_percent) %>% formatPercentage(columns = c(3:5), digits = 1)
 
 
 ```

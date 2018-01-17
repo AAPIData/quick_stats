@@ -208,7 +208,7 @@ msa_largestAAprop_number<- round(msa_largestAAprop_number*100,0)
   
  msa_display_table(msa_pop,msa_percent) %>% 
   formatCurrency(columns = c(2),currency = "", interval = 3, mark = ",", digits=0) %>%
-  formatPercentage(columns = c(3,4,5,6),digits = 2)
+  formatPercentage(columns = c(3,4,5,6),digits = 1)
 
 
 ```

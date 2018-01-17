@@ -300,7 +300,7 @@ totpop_aapi_alone <- sum(totpop_asn_alone,totpop_nhpi_alone)
 national_pop %>%
   filter(group_id ==  "Major racial groups") %>%
   select(pop_columns) %>% 
-  mutate(pct_pop = round(`Share of US Pop`*100,2)) %>%
+  mutate(pct_pop = round(`Share of US Pop`*100,1)) %>%
   arrange(desc(pct_pop)) %>% hchart( "bar", hcaes(x = Group , y = pct_pop)) %>%
   hc_add_theme(hc_theme_tufte2()) %>%  hc_colors(colors = c("#008fd5")) %>%
   hc_yAxis(title = list(text = ""),
@@ -323,7 +323,7 @@ national_pop %>%
 ```{r population asian detail,echo=FALSE, message=FALSE, warning=FALSE}
 
 national_tbl_display(national_pop,"Asian Detail",pop_detail_columns,"Population") %>% 
-  formatPercentage(columns = c("Share of US Pop","Share of Group Pop"), digits = 2) %>% 
+  formatPercentage(columns = c("Share of US Pop","Share of Group Pop"), digits = 1) %>% 
   formatCurrency(columns = c("Population"),currency = "", interval = 3, mark = ",", digits=0)
 
 ```
@@ -332,7 +332,7 @@ national_tbl_display(national_pop,"Asian Detail",pop_detail_columns,"Population"
 ```{r population asn combo,echo=FALSE, message=FALSE, warning=FALSE}
 
 national_tbl_display(national_pop,"Asian Detail Combo",pop_detail_columns,"Population")%>% 
-formatPercentage(columns = c("Share of US Pop","Share of Group Pop"), digits = 2) %>% 
+formatPercentage(columns = c("Share of US Pop","Share of Group Pop"), digits = 1) %>% 
   formatCurrency(columns = c("Population"),currency = "", interval = 3, mark = ",", digits=0)
 
 ```
@@ -341,7 +341,7 @@ formatPercentage(columns = c("Share of US Pop","Share of Group Pop"), digits = 2
 ```{r population nhpi detail,echo=FALSE, message=FALSE, warning=FALSE}
 
 national_tbl_display(national_pop,"NHPI Detail",pop_detail_columns,"Population")%>% 
- formatPercentage(columns = c("Share of US Pop","Share of Group Pop"), digits = 2) %>% 
+ formatPercentage(columns = c("Share of US Pop","Share of Group Pop"), digits = 1) %>% 
   formatCurrency(columns = c("Population"),currency = "", interval = 3, mark = ",", digits=0)
 ```
 
@@ -350,7 +350,7 @@ national_tbl_display(national_pop,"NHPI Detail",pop_detail_columns,"Population")
 ```{r population nhpi combo,echo=FALSE, message=FALSE, warning=FALSE}
 
 national_tbl_display(national_pop,"NHPI Detail Combo",pop_detail_columns,"Total Pop")%>% 
- formatPercentage(columns = c("Share of US Pop","Share of Group Pop"), digits = 2) %>% 
+ formatPercentage(columns = c("Share of US Pop","Share of Group Pop"), digits = 1) %>% 
   formatCurrency(columns = c("Population"),currency = "", interval = 3, mark = ",", digits=0)
 ```
 
@@ -427,8 +427,8 @@ national_edu %>% # Take education data and then,
   filter(group_id ==  "Major racial groups") %>% # filter it so we only get rows belonging to "major racial groups" and then,
   select(group_name, pct_hsless, pct_bahigher) %>% # Select the columns named: Group, pct_hsless, pct_bahigher and then, 
   arrange(desc(pct_bahigher)) %>% # Sort the columns according to: pct_bahigher and then,
-  mutate(`BA or Higher` = round((pct_bahigher*100),2), 
-         `Less than HS` = round((pct_hsless*100),2))  %>% # Create new columns, just taking pcts and multiplying by 100 for display and then,
+  mutate(`BA or Higher` = round((pct_bahigher*100),1), 
+         `Less than HS` = round((pct_hsless*100),1))  %>% # Create new columns, just taking pcts and multiplying by 100 for display and then,
    select(-pct_hsless, -pct_bahigher) %>% # Drop those old columns and then,
   gather(estimate_type,estimate, -group_name) %>% # gather the columns (i.e pivot) and then,
 hchart( "bar", hcaes(x = group_name , y = estimate, group = estimate_type)) %>% # Create a bar chart with X = Group, Y = estimate, and Group = Estimate_type and then,
@@ -464,7 +464,7 @@ national_edu<- national_edu %>% rename(`Total 25yrs+ old` = est_totpop,
 ```{r edu major groups, echo=FALSE, message=FALSE, warning=FALSE}
 
 national_tbl_display(national_edu,"Major racial groups",education_columns,"Total 25yrs+ old") %>% formatCurrency(columns = education_columns[2],currency = "", interval = 3, mark = ",", digits=0) %>% 
-  formatPercentage(columns = education_columns[3:6], digits = 2)
+  formatPercentage(columns = education_columns[3:6], digits = 1)
 
 ```
 
@@ -473,7 +473,7 @@ national_tbl_display(national_edu,"Major racial groups",education_columns,"Total
 ```{r edu asian alone, echo=FALSE, message=FALSE, warning=FALSE}
 
 national_tbl_display(national_edu,"Asian Detail",education_columns,"Total") %>% formatCurrency(columns = education_columns[2],currency = "", interval = 3, mark = ",", digits=0) %>% 
-  formatPercentage(columns = education_columns[3:6], digits = 2)
+  formatPercentage(columns = education_columns[3:6], digits = 1)
 
 ```
 
@@ -481,7 +481,7 @@ national_tbl_display(national_edu,"Asian Detail",education_columns,"Total") %>% 
 ```{r edu asian combo, echo=FALSE, message=FALSE, warning=FALSE}
 
 national_tbl_display(national_edu,"Asian Detail Combo",education_columns,"Total") %>% formatCurrency(columns = education_columns[2],currency = "", interval = 3, mark = ",", digits=0) %>% 
-  formatPercentage(columns = education_columns[3:6], digits = 2)
+  formatPercentage(columns = education_columns[3:6], digits = 1)
 
 
 ```
@@ -490,7 +490,7 @@ national_tbl_display(national_edu,"Asian Detail Combo",education_columns,"Total"
 ```{r edu nhpi alone, echo=FALSE, message=FALSE, warning=FALSE}
 
 national_tbl_display(national_edu,"NHPI Detail",education_columns,"Total") %>% formatCurrency(columns = education_columns[2],currency = "", interval = 3, mark = ",", digits=0) %>% 
-  formatPercentage(columns = education_columns[3:6], digits = 2)
+  formatPercentage(columns = education_columns[3:6], digits = 1)
 
 
 
@@ -500,7 +500,7 @@ national_tbl_display(national_edu,"NHPI Detail",education_columns,"Total") %>% f
 ```{r edu nhpi combo,echo=FALSE, message=FALSE, warning=FALSE}
 
 national_tbl_display(national_edu,"NHPI Detail Combo",education_columns,"Total") %>% formatCurrency(columns = education_columns[2],currency = "", interval = 3, mark = ",", digits=0) %>% 
-  formatPercentage(columns = education_columns[3:6], digits = 2)
+  formatPercentage(columns = education_columns[3:6], digits = 1)
 
 
 ```
@@ -517,7 +517,7 @@ from the 2015 ACS 5-Year estimates.
 national_insurance %>%
   filter(group_id ==  "Major racial groups") %>%
   select(insurance_columns) %>% 
-  mutate(pct_no_insurance = round(`Percent of No Insurance`*100,2)) %>%
+  mutate(pct_no_insurance = round(`Percent of No Insurance`*100,1)) %>%
   arrange(desc(pct_no_insurance)) %>% hchart( "bar", hcaes(x = Group , y = pct_no_insurance)) %>%
   hc_add_theme(hc_theme_tufte2()) %>%  hc_colors(colors = c("#008fd5")) %>%
   hc_yAxis(title = list(text = ""),
@@ -540,7 +540,7 @@ national_insurance %>%
 ```{r insurance major groups,echo=FALSE, message=FALSE, warning=FALSE}
 
 national_tbl_display(national_insurance,"Major racial groups",insurance_columns,"Total Pop")%>% 
-  formatPercentage(columns = c("Percent of No Insurance"), digits = 2) %>% 
+  formatPercentage(columns = c("Percent of No Insurance"), digits = 1) %>% 
   formatCurrency(columns = c("Total Pop", "No Insurance"),currency = "", interval = 3, mark = ",", digits=0)
 
 ```
@@ -549,7 +549,7 @@ national_tbl_display(national_insurance,"Major racial groups",insurance_columns,
 ```{r insurance asian detail,echo=FALSE, message=FALSE, warning=FALSE}
 
 national_tbl_display(national_insurance,"Asian Detail",insurance_columns,"Total Pop")%>% 
-  formatPercentage(columns = c("Percent of No Insurance"), digits = 2) %>% 
+  formatPercentage(columns = c("Percent of No Insurance"), digits = 1) %>% 
   formatCurrency(columns = c("Total Pop", "No Insurance"),currency = "", interval = 3, mark = ",", digits=0)
 
 ```
@@ -557,7 +557,7 @@ national_tbl_display(national_insurance,"Asian Detail",insurance_columns,"Total 
 ```{r insurance asn combo,echo=FALSE, message=FALSE, warning=FALSE}
 
 national_tbl_display(national_insurance,"Asian Detail Combo",insurance_columns,"Total Pop")%>% 
-  formatPercentage(columns = c("Percent of No Insurance"), digits = 2) %>% 
+  formatPercentage(columns = c("Percent of No Insurance"), digits = 1) %>% 
   formatCurrency(columns = c("Total Pop", "No Insurance"),currency = "", interval = 3, mark = ",", digits=0)
 
 
@@ -567,7 +567,7 @@ national_tbl_display(national_insurance,"Asian Detail Combo",insurance_columns,"
 ```{r insurance nhpi detail,echo=FALSE, message=FALSE, warning=FALSE}
 
 national_tbl_display(national_insurance,"NHPI Detail",insurance_columns,"Total Pop")%>% 
-  formatPercentage(columns = c("Percent of No Insurance"), digits = 2) %>% 
+  formatPercentage(columns = c("Percent of No Insurance"), digits = 1) %>% 
   formatCurrency(columns = c("Total Pop", "No Insurance"),currency = "", interval = 3, mark = ",", digits=0)
 
 ```
@@ -576,7 +576,7 @@ national_tbl_display(national_insurance,"NHPI Detail",insurance_columns,"Total P
 ```{r insurance nhpi combo,echo=FALSE, message=FALSE, warning=FALSE}
 
 national_tbl_display(national_insurance,"NHPI Detail Combo",insurance_columns,"Total Pop")%>% 
-  formatPercentage(columns = c("Percent of No Insurance"), digits = 2) %>% 
+  formatPercentage(columns = c("Percent of No Insurance"), digits = 1) %>% 
   formatCurrency(columns = c("Total Pop", "No Insurance"),currency = "", interval = 3, mark = ",", digits=0)
 
 ```
@@ -592,8 +592,8 @@ Limited English Proficiency data is complied using Table [B16004](https://factfi
 national_lep %>%
   filter(group_id ==  "Major racial groups") %>%
   select(lep_columns) %>% 
-  mutate(pct_other = round(`Speak Other Language`*100,2),
-                                 pct_lep = round(LEP *100,2)) %>%
+  mutate(pct_other = round(`Speak Other Language`*100,1),
+                                 pct_lep = round(LEP *100,1)) %>%
   arrange(desc(pct_other)) %>% hchart( "bar", hcaes(x = Group , y = pct_other)) %>%
   hc_add_theme(hc_theme_tufte2()) %>%  hc_colors(colors = c("#008fd5")) %>%
   hc_yAxis(title = list(text = ""),
@@ -618,7 +618,7 @@ national_lep %>%
 ```{r lep major groups,echo=FALSE, message=FALSE, warning=FALSE}
 
 national_tbl_display(national_lep,"Major racial groups",lep_columns,"Total Lep")%>% 
-  formatPercentage(columns = c("LEP","Speak Other Language"), digits = 2) %>% 
+  formatPercentage(columns = c("LEP","Speak Other Language"), digits = 1) %>% 
   formatCurrency(columns = c("Total LEP", "Total Pop"),currency = "", interval = 3, mark = ",", digits=0)
 
 ```
@@ -628,7 +628,7 @@ national_tbl_display(national_lep,"Major racial groups",lep_columns,"Total Lep")
 ```{r lep asian detail,echo=FALSE, message=FALSE, warning=FALSE}
 
 national_tbl_display(national_lep,"Asian Detail",lep_columns,"Total Lep")%>% 
-  formatPercentage(columns = c("LEP","Speak Other Language"), digits = 2) %>% 
+  formatPercentage(columns = c("LEP","Speak Other Language"), digits = 1) %>% 
   formatCurrency(columns = c("Total LEP", "Speak Other Language", "Total Pop"),currency = "", interval = 3, mark = ",", digits=0)
 ```
 
@@ -637,7 +637,7 @@ national_tbl_display(national_lep,"Asian Detail",lep_columns,"Total Lep")%>%
 ```{r lep asn combo,echo=FALSE, message=FALSE, warning=FALSE}
 
 national_tbl_display(national_lep,"Asian Detail Combo",lep_columns,"Total Lep")%>% 
-  formatPercentage(columns =c("LEP","Speak Other Language"), digits = 2) %>% 
+  formatPercentage(columns =c("LEP","Speak Other Language"), digits = 1) %>% 
   formatCurrency(columns = c("Total LEP", "Speak Other Language", "Total Pop"),currency = "", interval = 3, mark = ",", digits=0)
 
 ```
@@ -646,7 +646,7 @@ national_tbl_display(national_lep,"Asian Detail Combo",lep_columns,"Total Lep")%
 ```{r lep nhpi detail,echo=FALSE, message=FALSE, warning=FALSE}
 
 national_tbl_display(national_lep,"NHPI Detail",lep_columns,"Total Lep")%>% 
-  formatPercentage(columns = c("LEP","Speak Other Language"), digits = 2) %>% 
+  formatPercentage(columns = c("LEP","Speak Other Language"), digits = 1) %>% 
   formatCurrency(columns = c("Total LEP", "Speak Other Language", "Total Pop"),currency = "", interval = 3, mark = ",", digits=0)
 
 ```
@@ -656,7 +656,7 @@ national_tbl_display(national_lep,"NHPI Detail",lep_columns,"Total Lep")%>%
 ```{r lep nhpi combo,echo=FALSE, message=FALSE, warning=FALSE}
 
 national_tbl_display(national_lep,"NHPI Detail Combo",lep_columns,"Total Lep")%>% 
-  formatPercentage(columns = c("LEP","Speak Other Language"), digits = 2) %>% 
+  formatPercentage(columns = c("LEP","Speak Other Language"), digits = 1) %>% 
   formatCurrency(columns = c("Total LEP", "Speak Other Language", "Total Pop"),currency = "", interval = 3, mark = ",", digits=0)
 
 ```
@@ -673,7 +673,7 @@ national_tbl_display(national_lep,"NHPI Detail Combo",lep_columns,"Total Lep")%>
 national_nativity %>%
   filter(group_id ==  "Major racial groups") %>%
   select(nativity_columns) %>% 
-  mutate(pct_foreign = round(`Foreign Born`*100,2)) %>%
+  mutate(pct_foreign = round(`Foreign Born`*100,1)) %>%
   arrange(desc(pct_foreign)) %>% hchart( "bar", hcaes(x = Group , y = pct_foreign)) %>%
   hc_add_theme(hc_theme_tufte2()) %>%  hc_colors(colors = c("#008fd5")) %>%
   hc_yAxis(title = list(text = ""),
@@ -698,7 +698,7 @@ national_nativity %>%
 ```{r nativity major groups,echo=FALSE, message=FALSE, warning=FALSE}
 
 national_tbl_display(national_nativity,"Major racial groups",nativity_columns,"Total Pop")%>% 
-  formatPercentage(columns = c("Foreign Born"), digits = 2) %>% 
+  formatPercentage(columns = c("Foreign Born"), digits = 1) %>% 
   formatCurrency(columns = c("Total Pop", "Total Foreign Born"),currency = "", interval = 3, mark = ",", digits=0)
 
 ```
@@ -708,7 +708,7 @@ national_tbl_display(national_nativity,"Major racial groups",nativity_columns,"T
 ```{r nativity asian detail,echo=FALSE, message=FALSE, warning=FALSE}
 
 national_tbl_display(national_nativity,"Asian Detail",nativity_columns,"Total Pop")%>% 
-  formatPercentage(columns = c("Foreign Born"), digits = 2) %>% 
+  formatPercentage(columns = c("Foreign Born"), digits = 1) %>% 
   formatCurrency(columns = c("Total Pop", "Total Foreign Born"),currency = "", interval = 3, mark = ",", digits=0)
 
 ```
@@ -728,7 +728,7 @@ national_tbl_display(national_nativity,"Asian Detail Combo",nativity_columns,"To
 ```{r nativity nhpi detail,echo=FALSE, message=FALSE, warning=FALSE}
 
 national_tbl_display(national_nativity,"NHPI Detail",nativity_columns,"Total Pop")%>% 
-  formatPercentage(columns = c("Foreign Born"), digits = 2) %>% 
+  formatPercentage(columns = c("Foreign Born"), digits = 1) %>% 
   formatCurrency(columns = c("Total Pop", "Total Foreign Born"),currency = "", interval = 3, mark = ",", digits=0)
 
 ```
@@ -738,7 +738,7 @@ national_tbl_display(national_nativity,"NHPI Detail",nativity_columns,"Total Pop
 ```{r nativity nhpi combo,echo=FALSE, message=FALSE, warning=FALSE}
 
 national_tbl_display(national_nativity,"NHPI Detail Combo",nativity_columns,"Total Pop")%>% 
-  formatPercentage(columns = c("Foreign Born"), digits = 2) %>% 
+  formatPercentage(columns = c("Foreign Born"), digits = 1) %>% 
   formatCurrency(columns = c("Total Pop", "Total Foreign Born"),currency = "", interval = 3, mark = ",", digits=0)
 
 ```
@@ -754,7 +754,7 @@ national_tbl_display(national_nativity,"NHPI Detail Combo",nativity_columns,"Tot
 national_poverty %>%
   filter(group_id ==  "Major racial groups") %>%
   select(poverty_columns) %>% 
-  mutate(pct_below_pov = round(`% Below Poverty`*100,2)) %>%
+  mutate(pct_below_pov = round(`% Below Poverty`*100,1)) %>%
   arrange(desc(pct_below_pov)) %>% hchart( "bar", hcaes(x = Group , y = pct_below_pov)) %>%
   hc_add_theme(hc_theme_tufte2()) %>%  hc_colors(colors = c("#008fd5")) %>%
   hc_yAxis(title = list(text = ""),
@@ -779,7 +779,7 @@ national_poverty %>%
 ```{r poverty major groups,echo=FALSE, message=FALSE, warning=FALSE}
 
 national_tbl_display(national_poverty,"Major racial groups",poverty_columns,"Total Pop")%>% 
-  formatPercentage(columns = c("% Below Poverty","% Above Poverty"), digits = 2) %>% 
+  formatPercentage(columns = c("% Below Poverty","% Above Poverty"), digits = 1) %>% 
   formatCurrency(columns = c("Above Poverty", "Below Poverty", "Total Pop"),currency = "", interval = 3, mark = ",", digits=0)
 
 ```
@@ -789,7 +789,7 @@ national_tbl_display(national_poverty,"Major racial groups",poverty_columns,"Tot
 ```{r poverty asian detail,echo=FALSE, message=FALSE, warning=FALSE}
 
 national_tbl_display(national_poverty,"Asian Detail",poverty_columns,"Total Pop")%>% 
-  formatPercentage(columns = c("% Below Poverty","% Above Poverty"), digits = 2) %>% 
+  formatPercentage(columns = c("% Below Poverty","% Above Poverty"), digits = 1) %>% 
   formatCurrency(columns = c("Below Poverty", "Above Poverty", "Total Pop"),currency = "", interval = 3, mark = ",", digits=0)
 ```
 
@@ -798,7 +798,7 @@ national_tbl_display(national_poverty,"Asian Detail",poverty_columns,"Total Pop"
 ```{r poverty asn combo,echo=FALSE, message=FALSE, warning=FALSE}
 
 national_tbl_display(national_poverty,"Asian Detail Combo",poverty_columns,"Total Pop")%>% 
-  formatPercentage(columns =c("% Below Poverty","% Above Poverty"), digits = 2) %>% 
+  formatPercentage(columns =c("% Below Poverty","% Above Poverty"), digits = 1) %>% 
   formatCurrency(columns = c("Below Poverty", "Above Poverty", "Total Pop"),currency = "", interval = 3, mark = ",", digits=0)
 
 ```
@@ -807,7 +807,7 @@ national_tbl_display(national_poverty,"Asian Detail Combo",poverty_columns,"Tota
 ```{r poverty nhpi detail,echo=FALSE, message=FALSE, warning=FALSE}
 
 national_tbl_display(national_poverty,"NHPI Detail",poverty_columns,"Total Pop")%>% 
-  formatPercentage(columns = c("% Below Poverty","% Above Poverty"), digits = 2) %>% 
+  formatPercentage(columns = c("% Below Poverty","% Above Poverty"), digits = 1) %>% 
   formatCurrency(columns = c("Below Poverty", "Above Poverty", "Total Pop"),currency = "", interval = 3, mark = ",", digits=0)
 
 ```
@@ -817,7 +817,7 @@ national_tbl_display(national_poverty,"NHPI Detail",poverty_columns,"Total Pop")
 ```{r poverty nhpi combo,echo=FALSE, message=FALSE, warning=FALSE}
 
 national_tbl_display(national_poverty,"NHPI Detail Combo",poverty_columns,"Total Pop")%>% 
-  formatPercentage(columns = c("% Below Poverty","% Above Poverty"), digits = 2) %>% 
+  formatPercentage(columns = c("% Below Poverty","% Above Poverty"), digits = 1) %>% 
   formatCurrency(columns = c("Below Poverty", "Above Poverty", "Total Pop"),currency = "", interval = 3, mark = ",", digits=0)
 
 ```
