@@ -429,7 +429,6 @@ avg_below_pov <- avg_below_pov*100
 <a href="#top"><div style="text-align:center">Back to Top</a></div>
 
 > Detailed Origin data is complied using Table [B01003](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B01003) from the 2015 ACS 5-Year estimates.
-
 Nationally, about **`r avg_aa_pop`**% of the population is Asian American, and **`r avg_pi_pop`**% of the population is NHPI.
 
 
@@ -465,7 +464,6 @@ state_pop_map <- state_pop_map %>% mutate(
   asian_pct_totpop = round(asian_pop/state_pop*100,1),
   nhpi_pct_totpop = round(nhpi_pop/state_pop*100,1))
 
-
 data(usgeojson)
 highchart() %>%
   hc_title(text = "AAPI Data: State Population", align = "center") %>%
@@ -476,7 +474,7 @@ highchart() %>%
    hc_tooltip(useHTML=T,pointFormat = "In {point.name}, <span style = 'color:#E26069'>{point.asian_pop:,.0f}</span> Asian Americans <br> make up about <span style = 'color:#E26069'>{point.asian_pct_totpop:.1f}%</span> of the state's <span style = 'color:#E26069'>{point.state_pop_mill:.1f}</span> million residents.") %>%
   hc_add_theme(hc_theme_538()) %>%
   # hc_colorAxis(stops = color_stops(5),labels= list(format = "{value}%"),showInLegend=T) %>%
-  hc_colorAxis(stops= color_stops(n=9, colors =c("#ffffcc","#ffeda0", "#fed976","#feb24c", "#fd8d3c","#fc4e2a","#e31a1c", "#bd0026", "#800026")),labels= list(format = "{value}%"),showInLegend=T) %>%
+  hc_colorAxis(stops= color_stops(n=3, colors =c("#feb24c", "#fd8d3c","#fc4e2a","#e31a1c", "#bd0026", "#800026")),labels= list(format = "{value}%"),showInLegend=T) %>%
   hc_legend(title = list(text= "Asian American Share of State Population", fontStyle ='italic'),align = "center",verticalAlign = "bottom",
             layout = "horizontal", padding = 5) %>% 
   #hc_legend(layout = "vertical", align = "right",
@@ -503,10 +501,14 @@ highchart() %>%
   hc_chart(backgroundColor = "#f0f0f0") %>%
   hc_add_series_map(usgeojson, state_pop_map, name = "State Population", value = "nhpi_pct_totpop", joinBy = c("name", "geodisplaylabel"),
                     borderColor= "transparent",nullColor = "#bfbfbf") %>%
+<<<<<<< HEAD
    hc_tooltip(useHTML=T,pointFormat = "In {point.name}, <span style = 'color:#E26069'>{point.asian_pop:,.0f}</span> NHPIs <br> make up about <span style = 'color:#E26069'>{point.nhpi_pct_totpop:.1f}%</span> of the state's <span style = 'color:#E26069'>{point.state_pop_mill:.0f}</span> million residents.") %>%
+=======
+   hc_tooltip(useHTML=T,pointFormat = "In {point.name}, <span style = 'color:#E26069'>{point.asian_pop:,.0f}</span> NHPIs <br> make up about <span style = 'color:#E26069'>{point.nhpi_pct_totpop:.2f}%</span> of the state's <span style = 'color:#E26069'>{point.state_pop_mill:.1f}</span> million residents.") %>%
+>>>>>>> 76078eecfe5f4bad132ac7f6707488b7ad3b5b42
   hc_add_theme(hc_theme_538()) %>%
   # hc_colorAxis(stops = color_stops(5),labels= list(format = "{value}%"),showInLegend=T) %>%
-  hc_colorAxis(stops= color_stops(n=9, colors =c("#ffffcc","#ffeda0", "#fed976","#feb24c", "#fd8d3c","#fc4e2a","#e31a1c", "#bd0026", "#800026")),labels= list(format = "{value}%"),showInLegend=T) %>%
+  hc_colorAxis(stops= color_stops(n=3, colors =c("#feb24c", "#fd8d3c","#fc4e2a","#e31a1c", "#bd0026", "#800026")),labels= list(format = "{value}%"),showInLegend=T) %>%
   hc_legend(title = list(text= "NHPI Share of State Population", fontStyle ='italic'),align = "center",verticalAlign = "bottom",
             layout = "horizontal", padding = 5) %>% 
   #hc_legend(layout = "vertical", align = "right",
@@ -604,7 +606,6 @@ highchart() %>%
 <a href="#top"><div style="text-align:center">Back to Top</a></div>
 
 > CVAP data is complied using Table [B05003](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B05003) from the 2015 ACS 5-Year estimates.
-
 Nationally, about **`r avg_state_cvap`**% of Americans are eligible to vote, while the national average number for AAPI is **`r avg_aapi_cvap`**%
 
 ## Visualize Data
@@ -687,7 +688,6 @@ datatable(state_cvap_estimate, extensions = list("Buttons" = NULL, 'FixedColumns
 
 
 > Educational Attainment data is complied using Table [B15002](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B15002) from the 2015 ACS 5-Year estimates.
-
 Nationally, about **`r avg_hs_less`**% of Americans have less than a High School diploma and about **`r avg_ba_higher`**% have a Bachelor's Degree or higher.
 
 ## Map Asian Americans
@@ -802,7 +802,6 @@ state_display_table(state_edu_long, groups_combo,education_percent) %>% formatPe
 
 > Limited English Proficiency (LEP) refers to the proportion of individuals who speak a language other than english at home & speak english less than "very well".
 Limited English Proficiency data is complied using Table [B16004](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B16004) from the 2015 ACS 5-Year estimates.
-
 Nationally Among Americans who speak a language other than english at home, about **`r avg_lep`**% of them speak English less than "very well".
 
 ## Map Asian Americans
@@ -933,7 +932,6 @@ state_display_table(state_LEP_long, groups_combo,LEP_percent) %>% formatPercenta
 <a href="#top"><div style="text-align:center">Back to Top</a></div>
 
 > Nativity data is complied using Table [B05012](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B05012) from the 2015 ACS 5-Year estimates.
-
 Nationally, about **`r avg_foreign_born`**% of Americans are foreign born.
 
 ## Map Asian Americans
@@ -1072,7 +1070,6 @@ state_display_table(state_nativity_long, groups_combo,nativity_percent) %>% form
 <a href="#top"><div style="text-align:center">Back to Top</a></div>
 
 > Poverty data is complied using Table [B17001](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B17001) from the 2015 ACS 5-Year estimates.
-
 Nationally, about **`r avg_below_pov`**% of Americans are living below poverty line.
 
 ## Map Asian Americans

@@ -431,7 +431,7 @@ national_edu %>% # Take education data and then,
    select(-pct_hsless, -pct_bahigher) %>% # Drop those old columns and then,
   gather(estimate_type,estimate, -group_name) %>% # gather the columns (i.e pivot) and then,
 hchart( "bar", hcaes(x = group_name , y = estimate, group = estimate_type)) %>% # Create a bar chart with X = Group, Y = estimate, and Group = Estimate_type and then,
-hc_add_theme(hc_theme_tufte2()) %>%  hc_colors(colors = c("#E26069","#008fd5")) %>% # add a theme and choose colors and then,
+hc_add_theme(hc_theme_gridlight()) %>%  hc_colors(colors = c("#E26069","#008fd5")) %>% # add a theme and choose colors and then,
   hc_yAxis(title = list(text = ""),
          labels= list(style =list(color ="black", fontSize='15px'),
                       format= "{value}%"), max = 100, opposite=TRUE) %>% # Alter titling and then,
@@ -518,7 +518,7 @@ national_insurance %>%
   select(insurance_columns) %>% 
   mutate(pct_no_insurance = round(`Percent of No Insurance`*100,1)) %>%
   arrange(desc(pct_no_insurance)) %>% hchart( "bar", hcaes(x = Group , y = pct_no_insurance)) %>%
-  hc_add_theme(hc_theme_tufte2()) %>%  hc_colors(colors = c("#008fd5")) %>%
+  hc_add_theme(hc_theme_gridlight()) %>%  hc_colors(colors = c("#008fd5")) %>%
   hc_yAxis(title = list(text = ""),
          labels= list(style =list(color ="black", fontSize='15px'),
                       format= "{value}%"), max = 100, opposite=TRUE) %>%
@@ -594,7 +594,7 @@ national_lep %>%
   mutate(pct_other = round(`Speak Other Language`*100,1),
                                  pct_lep = round(LEP *100,1)) %>%
   arrange(desc(pct_other)) %>% hchart( "bar", hcaes(x = Group , y = pct_other)) %>%
-  hc_add_theme(hc_theme_tufte2()) %>%  hc_colors(colors = c("#008fd5")) %>%
+  hc_add_theme(hc_theme_gridlight()) %>%  hc_colors(colors = c("#008fd5")) %>%
   hc_yAxis(title = list(text = ""),
          labels= list(style =list(color ="black", fontSize='15px'),
                       format= "{value}%"), max = 100, opposite=TRUE) %>%
@@ -674,7 +674,7 @@ national_nativity %>%
   select(nativity_columns) %>% 
   mutate(pct_foreign = round(`Foreign Born`*100,1)) %>%
   arrange(desc(pct_foreign)) %>% hchart( "bar", hcaes(x = Group , y = pct_foreign)) %>%
-  hc_add_theme(hc_theme_tufte2()) %>%  hc_colors(colors = c("#008fd5")) %>%
+  hc_add_theme(hc_theme_gridlight()) %>%  hc_colors(colors = c("#008fd5")) %>%
   hc_yAxis(title = list(text = ""),
          labels= list(style =list(color ="black", fontSize='15px'),
                       format= "{value}%"), max = 100, opposite=TRUE) %>%
@@ -755,7 +755,7 @@ national_poverty %>%
   select(poverty_columns) %>% 
   mutate(pct_below_pov = round(`% Below Poverty`*100,1)) %>%
   arrange(desc(pct_below_pov)) %>% hchart( "bar", hcaes(x = Group , y = pct_below_pov)) %>%
-  hc_add_theme(hc_theme_tufte2()) %>%  hc_colors(colors = c("#008fd5")) %>%
+  hc_add_theme(hc_theme_gridlight()) %>%  hc_colors(colors = c("#008fd5")) %>%
   hc_yAxis(title = list(text = ""),
          labels= list(style =list(color ="black", fontSize='15px'),
                       format= "{value}%"), max = 100, opposite=TRUE) %>%
