@@ -557,7 +557,7 @@ county_pop %>%
 # Citizen Voting Age Population {.tabset .tabset-fade .tabset-pills}
 <a href="#top"><div style="text-align:center">Back to Top</a></div>
 
-> CVAP data is complied using Table [B05003](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B05003) from the 2015 ACS 5-Year estimates.
+> Citizen Voting Age Population (CVAP) data is complied using Table [B05003](https://factfinder.census.gov/bkmk/table/1.0/en/ACS/15_5YR/B05003) from the 2015 ACS 5-Year estimates.
 Nationally, about **`r avg_county_cvap`**% of Americans are eligible to vote, while the national average number for AAPI is **`r avg_aapi_cvap`**%
 
 ## Raw Asian & NHPI Alone

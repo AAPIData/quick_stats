@@ -24,8 +24,8 @@ options(highcharter.lang = hcoptslang)
 
 # Read in data from excel file
 pop_id_lookup <- read_csv("raw_data/pop_id_lookup.csv") #Look-up table
-national_cvap<- readxl::read_xlsx("raw_data/national/national_dta.xlsx", sheet = "cvap")
-national_edu<- readxl::read_xlsx("raw_data/national/national_dta.xlsx", sheet = "edu")
+national_cvap<- readxl::read_xlsx("raw_data/national/national_cvap.xlsx")
+national_edu<- readxl::read_xlsx("raw_data/national/national_edu.xlsx")
 national_lep<- readxl::read_xlsx("raw_data/national/national_dta.xlsx", sheet = "lep")
 national_nativity<- readxl::read_xlsx("raw_data/national/national_dta.xlsx", sheet = "nativity")
 national_pop<- readxl::read_xlsx("raw_data/national/national_dta.xlsx", sheet = "pop")
@@ -39,7 +39,7 @@ national_nativity<-national_nativity %>% left_join(pop_id_lookup) %>% select(-ge
 national_pop<-national_pop %>% left_join(pop_id_lookup) %>% select(-geoid, - geodisplaylabel)
 national_insurance<-national_insurance %>% left_join(pop_id_lookup) %>% select(-geoid, - geodisplaylabel)
 national_poverty<-national_poverty %>% left_join(pop_id_lookup) %>% select(- geodisplaylabel)
-
+national_cvap<-national_cvap %>% left_join(pop_id_lookup) %>% select(- geodisplaylabel)
 
 ## Specifying Column Group names, to be used later
 nativity_columns <- c("Group", "US Population", "Foreign Born","Total Foreign Born")
@@ -80,7 +80,9 @@ national_tbl_display <- function(data,group,column_names,orderby){
 ## This is the setupt for the education data
 ### Getting Rid of Estimates where the "CHECK" variable is flagging uncertainty
 national_edu <- national_edu %>% 
-  mutate(est_hsless = 
+  mutate(est_tot_pop = 
+            case_when( check_tot_pop == 1 ~  NA_real_ ,TRUE ~ est_tot_pop),
+         est_hsless = 
             case_when( check_hsless == 1 ~  NA_real_ ,TRUE ~ est_hsless),
          est_hsged  =
           case_when( check_hsged == 1 ~  NA_real_ ,TRUE ~ est_hsged),
@@ -89,17 +91,34 @@ national_edu <- national_edu %>%
          est_bahigher  =
           case_when( check_bahigher == 1 ~  NA_real_ ,TRUE ~ est_bahigher))
       
-national_edu <- national_edu %>% select(-check_hsless,
+national_edu <- national_edu %>% select(-check_tot_pop,
+                                        -check_hsless,
                                   -check_hsged,
                                   -check_somecollegeaa,
                                   -check_bahigher)
 
 # Creating Columns for percentages 
 national_edu <- national_edu %>% mutate(
-  pct_hsless   = est_hsless/est_totpop,
-  pct_bahigher = est_bahigher/ est_totpop,
-  pct_hsged = est_hsged / est_totpop,
-  pct_somecollegeaa = est_somecollegeaa / est_totpop)
+  pct_hsless   = est_hsless/est_tot_pop,
+  pct_bahigher = est_bahigher/ est_tot_pop,
+  pct_hsged = est_hsged / est_tot_pop,
+  pct_somecollegeaa = est_somecollegeaa / est_tot_pop)
+
+
+
+```
+
+```{r setup-1-cvap, include=FALSE}
+
+
+      
+national_cvap <- national_cvap %>% select(-checking_tot_pop,
+                                  -checking_cvap)
+
+
+# Renaming columns
+national_cvap<- national_cvap %>% rename(
+         Group = group_name)
 
 
 
@@ -449,7 +468,7 @@ hc_add_theme(hc_theme_gridlight()) %>%  hc_colors(colors = c("#E26069","#008fd5"
 
 ```{r setup-2-education, include=FALSE}
 # Renaming columns
-national_edu<- national_edu %>% rename(`Total 25yrs+ old` = est_totpop,
+national_edu<- national_edu %>% rename(`Total 25yrs+ old` = est_tot_pop,
          `Less than HS` = pct_hsless,
          `HS or GED` = pct_hsged,
          `Some College or AA` = pct_somecollegeaa,
