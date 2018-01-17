@@ -135,17 +135,17 @@ msa_pop <- msa_pop %>% rename(
   MSA = geodisplaylabel,
   `Total Population`= est_tot_pop,
   `Asian Alone` = est_aa_alone,
-  `Asian Alone % Total Pop` = pct_aa_alone,
+  `Asian Alone Share of MSA Pop` = pct_aa_alone,
   `Asian Combo` = est_aa_combo,
-  `Asian Combo % Total Pop` = pct_aa_combo,
+  `Asian Combo Share of MSA Pop` = pct_aa_combo,
   `NHPI Alone` = est_nhpi_alone,
-  `NHPI Alone % Total Pop` = pct_nhpi_alone,
+  `NHPI Alone Share of MSA Pop` = pct_nhpi_alone,
   `NHPI Combo` = est_nhpi_combo,
-  `NHPI Combo % Total pop` = pct_nhpi_combo
+  `NHPI Combo Share of MSA Pop` = pct_nhpi_combo
 )
 
 msa_rawnumbers <- c("MSA", "Total Population", "Asian Alone", "Asian Combo", "NHPI Alone", "NHPI Combo")
-msa_percent <- c("MSA", "Total Population", "Asian Alone % Total Pop", "Asian Combo % Total Pop", "NHPI Alone % Total Pop", "NHPI Combo % Total pop")
+msa_percent <- c("MSA", "Total Population", "Asian Alone Share of MSA Pop", "Asian Combo Share of MSA Pop", "NHPI Alone Share of MSA Pop", "NHPI Combo Share of MSA Pop")
 msa_origin_percent <- c()
 
  msa_display_table <- function(data, which_estimates){
@@ -173,8 +173,8 @@ msa_origin_percent <- c()
 
 
 ###Data highlight sentence
-msa_largestAAprop <- msa_pop %>% top_n(1, `Asian Alone % Total Pop`) %>% pull(MSA)
-msa_largestAAprop_number <- msa_pop %>% top_n(1, `Asian Alone % Total Pop`) %>% pull(`Asian Alone % Total Pop`)
+msa_largestAAprop <- msa_pop %>% top_n(1, `Asian Alone Share of MSA Pop`) %>% pull(MSA)
+msa_largestAAprop_number <- msa_pop %>% top_n(1, `Asian Alone Share of MSA Pop`) %>% pull(`Asian Alone Share of MSA Pop`)
 msa_largestAAprop_number<- round(msa_largestAAprop_number*100,0)
 
 
