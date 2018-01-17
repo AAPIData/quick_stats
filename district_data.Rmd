@@ -62,17 +62,17 @@ district_cvap <- district_cvap %>% separate(Geography, into = c("District", "Sta
 district_pop <- district_pop %>% rename(
   `Total Population`= est_tot_pop,
   `Asian Alone` = est_aa_alone,
-  `Asian Alone % Total Pop` = pct_aa_alone,
+  `Asian Alone Share of District Pop` = pct_aa_alone,
   `Asian Combo` = est_aa_combo,
-  `Asian Combo % Total Pop` = pct_aa_combo,
+  `Asian Combo Share of District Pop` = pct_aa_combo,
   `NHPI Alone` = est_nhpi_alone,
-  `NHPI Alone % Total Pop` = pct_nhpi_alone,
+  `NHPI Alone Share of District Pop` = pct_nhpi_alone,
   `NHPI Combo` = est_nhpi_combo,
-  `NHPI Combo % Total pop` = pct_nhpi_combo
+  `NHPI Combo Share of District Pop` = pct_nhpi_combo
 )
 
 district_rawnumbers <- c("District","State", "Total Population", "Asian Alone", "Asian Combo", "NHPI Alone", "NHPI Combo")
-district_percent <- c("District","State", "Total Population", "Asian Alone % Total Pop", "Asian Combo % Total Pop", "NHPI Alone % Total Pop", "NHPI Combo % Total pop")
+district_percent <- c("District","State", "Total Population", "Asian Alone Share of District Pop", "Asian Combo Share of District Pop", "NHPI Alone Share of District Pop", "NHPI Combo Share of District Pop")
 
  district_display_table <- function(data, whichestimates){
    data %>%
@@ -92,9 +92,9 @@ district_percent <- c("District","State", "Total Population", "Asian Alone % Tot
  
 
  ## Sentence for geo-highlight
-largest_district_aa <- district_pop %>% top_n(1,`Asian Alone % Total Pop`) %>% pull(District)
-largest_district_aa_state <- district_pop %>% top_n(1,`Asian Alone % Total Pop`) %>% pull(State)
-largest_district_aa_pct <- district_pop %>% top_n(1,`Asian Alone % Total Pop`) %>% pull(`Asian Alone % Total Pop`)
+largest_district_aa <- district_pop %>% top_n(1,`Asian Alone Share of District Pop`) %>% pull(District)
+largest_district_aa_state <- district_pop %>% top_n(1,`Asian Alone Share of District Pop`) %>% pull(State)
+largest_district_aa_pct <- district_pop %>% top_n(1,`Asian Alone Share of District Pop`) %>% pull(`Asian Alone Share of District Pop`)
 
 largest_district_aa_pct<- round(largest_district_aa_pct*100,0)
 ```
@@ -251,15 +251,15 @@ district_lep_percent <- district_lep %>% select(District, State, `Total Asian al
 district_cvap <- district_cvap %>% rename(
   "Total CVAP" = est_tot_cvap,
   "AAPI CVAP" = est_aapi_cvap,
-  "% AAPI CVAP" = pct_aapi_cvap,
+  "AAPI Share of CVAP" = pct_aapi_cvap,
   "CVAP Data Available" = estimate_cvap,
   "Total Pop" = est_tot_pop,
   "AAPI Pop" = est_aapi_pop,
-  "% AAPI Pop" = pct_aapi_pop,
+  "AAPI Share of District Pop" = pct_aapi_pop,
   "Pop Data Available" = estimate_pop)
 
 district_cvap_count <- district_cvap %>% select(District, State, `Total CVAP`, `AAPI CVAP`, `CVAP Data Available`, `Total Pop`, `AAPI Pop`, `Pop Data Available`) %>% colnames()
-district_cvap_percent <- district_cvap %>% select(District, State, `AAPI CVAP`, `% AAPI CVAP`, `CVAP Data Available`, `AAPI Pop`, `% AAPI Pop`, `Pop Data Available`) %>% colnames()
+district_cvap_percent <- district_cvap %>% select(District, State, `AAPI CVAP`, `AAPI Share of CVAP`, `CVAP Data Available`, `AAPI Pop`, `AAPI Share of District Pop`, `Pop Data Available`) %>% colnames()
 
 
 ```
