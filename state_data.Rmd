@@ -116,7 +116,7 @@ state_pop_map <- state_pop
 state_pop<- state_pop %>% rename(Total = est_tot_pop,
          `Population` = est_state_pop,
          Group = group_name,
-         `% of the Pop`= pct_pop,
+         `Share of the State Pop`= pct_pop,
          State = geodisplaylabel)
 
 
@@ -128,20 +128,20 @@ state_pop_long <- state_convert_long(state_pop)
 
 ## Column Specification
 pop_estimates <- c("Total")
-pop_percent <- c("% of the Pop")
+pop_percent <- c("Share of the State Pop")
 
 
 
 
 ### Calculating Average for the sentence
-avg_aa_pop <- state_pop %>% filter(Group == "Asian alone") %>% select(State, `% of the Pop`) %>%  summarize(mean = mean(`% of the Pop`, na.rm=TRUE)) %>% pull() %>% round(.,4)
+avg_aa_pop <- state_pop %>% filter(Group == "Asian alone") %>% select(State, `Share of the State Pop`) %>%  summarize(mean = mean(`Share of the State Pop`, na.rm=TRUE)) %>% pull() %>% round(.,4)
 avg_aa_pop <- avg_aa_pop*100
  
-avg_pi_pop <- state_pop %>% filter(Group == "NHPI alone") %>% select(State, `% of the Pop`) %>%  summarize(mean = mean(`% of the Pop`, na.rm=TRUE)) %>% pull() %>% round(.,4)
+avg_pi_pop <- state_pop %>% filter(Group == "NHPI alone") %>% select(State, `Share of the State Pop`) %>%  summarize(mean = mean(`Share of the State Pop`, na.rm=TRUE)) %>% pull() %>% round(.,4)
 avg_pi_pop <- avg_pi_pop*100
 
-state_largest_aaprop <- state_pop %>% filter(Group == "Asian alone") %>% select(State, `% of the Pop`) %>%  top_n(1,`% of the Pop` )%>% pull(1) 
-state_largest_aaprop_number <- state_pop %>% filter(Group == "Asian alone") %>% select(State, `% of the Pop`) %>%  top_n(1,`% of the Pop` )%>% pull(2)  %>% round(.,4) 
+state_largest_aaprop <- state_pop %>% filter(Group == "Asian alone") %>% select(State, `Share of the State Pop`) %>%  top_n(1,`Share of the State Pop` )%>% pull(1) 
+state_largest_aaprop_number <- state_pop %>% filter(Group == "Asian alone") %>% select(State, `Share of the State Pop`) %>%  top_n(1,`Share of the State Pop` )%>% pull(2)  %>% round(.,4) 
 state_largest_aaprop_number<- state_largest_aaprop_number*100
 
 
@@ -176,13 +176,13 @@ state_cvap<- state_cvap %>% rename(`Total Population`= est_state_pop,
          `AAPI Pop`= est_aapi_pop,
          `AAPI CVAP`= est_aapi_cvap,
          `AAPI Share of CVAP` = pct_aapi_cvap,
-         `AAPI Share of Pop`= pct_aapi_pop,
-         `% State CVAP`= pct_state_cvap,
+         `AAPI Share of State Pop`= pct_aapi_pop,
+         `CVAP Share of State Pop`= pct_state_cvap,
          State = geoname)
 
 
 ### Calculating Average for the sentence
-avg_state_cvap <- state_cvap %>% select(State, `% State CVAP`) %>%  summarize(mean = mean(`% State CVAP`, na.rm=TRUE)) %>% pull() %>% round(.,4)
+avg_state_cvap <- state_cvap %>% select(State, `CVAP Share of State Pop`) %>%  summarize(mean = mean(`CVAP Share of State Pop`, na.rm=TRUE)) %>% pull() %>% round(.,4)
 avg_state_cvap <- avg_state_cvap*100
 
 avg_aapi_cvap <- state_cvap %>% select(State, `AAPI Share of CVAP`) %>%  summarize(mean = mean(`AAPI Share of CVAP`, na.rm=TRUE)) %>% pull() %>% round(.,4)
@@ -501,11 +501,8 @@ highchart() %>%
   hc_chart(backgroundColor = "#f0f0f0") %>%
   hc_add_series_map(usgeojson, state_pop_map, name = "State Population", value = "nhpi_pct_totpop", joinBy = c("name", "geodisplaylabel"),
                     borderColor= "transparent",nullColor = "#bfbfbf") %>%
-<<<<<<< HEAD
    hc_tooltip(useHTML=T,pointFormat = "In {point.name}, <span style = 'color:#E26069'>{point.asian_pop:,.0f}</span> NHPIs <br> make up about <span style = 'color:#E26069'>{point.nhpi_pct_totpop:.1f}%</span> of the state's <span style = 'color:#E26069'>{point.state_pop_mill:.0f}</span> million residents.") %>%
-=======
    hc_tooltip(useHTML=T,pointFormat = "In {point.name}, <span style = 'color:#E26069'>{point.asian_pop:,.0f}</span> NHPIs <br> make up about <span style = 'color:#E26069'>{point.nhpi_pct_totpop:.2f}%</span> of the state's <span style = 'color:#E26069'>{point.state_pop_mill:.1f}</span> million residents.") %>%
->>>>>>> 76078eecfe5f4bad132ac7f6707488b7ad3b5b42
   hc_add_theme(hc_theme_538()) %>%
   # hc_colorAxis(stops = color_stops(5),labels= list(format = "{value}%"),showInLegend=T) %>%
   hc_colorAxis(stops= color_stops(n=3, colors =c("#feb24c", "#fd8d3c","#fc4e2a","#e31a1c", "#bd0026", "#800026")),labels= list(format = "{value}%"),showInLegend=T) %>%
@@ -537,7 +534,7 @@ highchart() %>%
 
   state_pop %>%
     filter(group_id %in% "Asian Detail") %>%
-    select(-group_id, - `% of the Pop`,-`Population`) %>%
+    select(-group_id, -`Share of the State Pop`, -`Population`) %>%
     spread(Group,Total,fill = NA) %>%
     datatable(extensions = 
                 list("Buttons" = NULL, 'FixedColumns'= T, "Scroller"=T),
@@ -570,7 +567,7 @@ highchart() %>%
   
   state_pop %>%
     filter(group_id %in% "Asian Detail Combo") %>%
-    select(-group_id, - `% of the Pop`,-`Population`) %>%
+    select(-group_id, -`Share of the State Pop`, -`Population`) %>%
     spread(Group,Total,fill = NA) %>%
     datatable(extensions = 
                 list("Buttons" = NULL, 'FixedColumns'= T, "Scroller"=T),
@@ -650,7 +647,7 @@ highchart() %>%
 
 ```{r CVAP-combo-pct, echo=FALSE, message=FALSE, warning=FALSE}
 
-state_cvap_pct <- state_cvap %>% select(State, `AAPI Share of CVAP`, `AAPI Share of Pop`) 
+state_cvap_pct <- state_cvap %>% select(State, `AAPI Share of CVAP`, `AAPI Share of State Pop`) 
 
 datatable(state_cvap_pct, extensions = list("Buttons" = NULL, 'FixedColumns'= T, "Scroller"=T),
               rownames= FALSE, 
