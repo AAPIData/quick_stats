@@ -48,7 +48,7 @@ education_columns <- c("Group", "Total 25yrs+ old", "Less than HS", "HS or GED",
 lep_columns <- c("Group", "US Population", "Speak Other Language","LEP", "Total LEP")
 pop_columns <- c("Group", "US Population", "Share of US Pop")
 pop_detail_columns <- c("Group", "US Population", "Share of US Pop", "Share of Group Pop")
-insurance_columns <- c("Group", "US Population", "No Insurance", "Percent of No Insurance")
+insurance_columns <- c("Group", "US Population", "No Insurance", "% Without Insurance")
 poverty_columns <- c("Group", "US Population", "Below Poverty", "Above Poverty", "% Below Poverty", "% Above Poverty")
 
 ## Renaming CVAP
@@ -127,7 +127,7 @@ national_insurance <- national_insurance %>% mutate(
 # Renaming columns
 national_insurance<- national_insurance %>% rename(`US Population`= est_tot_pop,
          `No Insurance` = est_no_insurance,
-         `Percent of No Insurance` = pct_no_insurance,
+         `% Without Insurance` = pct_no_insurance,
          Group = group_name)
 
 
@@ -516,7 +516,7 @@ from the 2015 ACS 5-Year estimates.
 national_insurance %>%
   filter(group_id ==  "Major racial groups") %>%
   select(insurance_columns) %>% 
-  mutate(pct_no_insurance = round(`Percent of No Insurance`*100,1)) %>%
+  mutate(pct_no_insurance = round(`% Without Insurance`*100,1)) %>%
   arrange(desc(pct_no_insurance)) %>% hchart( "bar", hcaes(x = Group , y = pct_no_insurance)) %>%
   hc_add_theme(hc_theme_gridlight()) %>%  hc_colors(colors = c("#008fd5")) %>%
   hc_yAxis(title = list(text = ""),
@@ -539,7 +539,7 @@ national_insurance %>%
 ```{r insurance major groups,echo=FALSE, message=FALSE, warning=FALSE}
 
 national_tbl_display(national_insurance,"Major racial groups",insurance_columns,"US Population")%>% 
-  formatPercentage(columns = c("Percent of No Insurance"), digits = 1) %>% 
+  formatPercentage(columns = c("% Without Insurance"), digits = 1) %>% 
   formatCurrency(columns = c("US Population", "No Insurance"),currency = "", interval = 3, mark = ",", digits=0)
 
 ```
@@ -548,7 +548,7 @@ national_tbl_display(national_insurance,"Major racial groups",insurance_columns,
 ```{r insurance asian detail,echo=FALSE, message=FALSE, warning=FALSE}
 
 national_tbl_display(national_insurance,"Asian Detail",insurance_columns,"US Population")%>% 
-  formatPercentage(columns = c("Percent of No Insurance"), digits = 1) %>% 
+  formatPercentage(columns = c("% Without Insurance"), digits = 1) %>% 
   formatCurrency(columns = c("US Population", "No Insurance"),currency = "", interval = 3, mark = ",", digits=0)
 
 ```
@@ -556,7 +556,7 @@ national_tbl_display(national_insurance,"Asian Detail",insurance_columns,"US Pop
 ```{r insurance asn combo,echo=FALSE, message=FALSE, warning=FALSE}
 
 national_tbl_display(national_insurance,"Asian Detail Combo",insurance_columns,"US Population")%>% 
-  formatPercentage(columns = c("Percent of No Insurance"), digits = 1) %>% 
+  formatPercentage(columns = c("% Without Insurance"), digits = 1) %>% 
   formatCurrency(columns = c("US Population", "No Insurance"),currency = "", interval = 3, mark = ",", digits=0)
 
 
@@ -566,7 +566,7 @@ national_tbl_display(national_insurance,"Asian Detail Combo",insurance_columns,"
 ```{r insurance nhpi detail,echo=FALSE, message=FALSE, warning=FALSE}
 
 national_tbl_display(national_insurance,"NHPI Detail",insurance_columns,"US Population")%>% 
-  formatPercentage(columns = c("Percent of No Insurance"), digits = 1) %>% 
+  formatPercentage(columns = c("% Without Insurance"), digits = 1) %>% 
   formatCurrency(columns = c("US Population", "No Insurance"),currency = "", interval = 3, mark = ",", digits=0)
 
 ```
@@ -575,7 +575,7 @@ national_tbl_display(national_insurance,"NHPI Detail",insurance_columns,"US Popu
 ```{r insurance nhpi combo,echo=FALSE, message=FALSE, warning=FALSE}
 
 national_tbl_display(national_insurance,"NHPI Detail Combo",insurance_columns,"US Population")%>% 
-  formatPercentage(columns = c("Percent of No Insurance"), digits = 1) %>% 
+  formatPercentage(columns = c("% Without Insurance"), digits = 1) %>% 
   formatCurrency(columns = c("US Population", "No Insurance"),currency = "", interval = 3, mark = ",", digits=0)
 
 ```
