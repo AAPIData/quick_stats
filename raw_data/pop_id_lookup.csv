@@ -39,22 +39,16 @@ pop_id,group_name,group_id
 47,Thai alone or combo ,Asian Detail Combo
 48,Vietnamese alone or combo ,Asian Detail Combo
 50,NHPI alone,Major racial groups
-51,Polynesian alone ,NHPI Detail
 52,Native Hawaiian alone ,NHPI Detail
 53,Samoan alone ,NHPI Detail
 54,Tongan alone ,NHPI Detail
-55,Micronesian alone ,NHPI Detail
 56,Guamanian or Chamorro alone ,NHPI Detail
-57,Melanesian alone ,NHPI Detail
 58,Fijian alone ,NHPI Detail
 60,NHPI alone or combo,Major racial groups
-61,Polynesian alone or combo ,NHPI Detail Combo
 62,Native Hawaiian alone or combo ,NHPI Detail Combo
 63,Samoan alone or combo ,NHPI Detail Combo
 64,Tongan alone or combo ,NHPI Detail Combo
-65,Micronesian alone or combo ,NHPI Detail Combo
 66,Guamanian or Chamorro alone or combo ,NHPI Detail Combo
-67,Melanesian alone or combo ,NHPI Detail Combo
 68,Fijian alone or combo ,NHPI Detail Combo
 72,Bhutanese alone ,Asian Detail
 73,Burmese alone ,Asian Detail
