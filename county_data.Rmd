@@ -134,7 +134,7 @@ county_pop_map <- county_pop
 county_pop<- county_pop %>% rename(Total = est_tot_pop,
          `Population` = est_county_pop,
          Group = group_name,
-         `% of the Pop`= pct_pop,
+         `Share of the County Pop`= pct_pop,
          County = geodisplaylabel)
 
 
@@ -144,18 +144,18 @@ county_pop_long <- county_convert_long(county_pop)
 
 ## Column Specification
 pop_estimates <- c("Total")
-pop_percent <- c("% of the Pop")
+pop_percent <- c("Share of the County Pop")
 
 ### Calculating Average for the sentence
-avg_aa_pop <- county_pop %>% filter(Group == "Asian alone") %>% select(County, `% of the Pop`) %>%  summarize(mean = mean(`% of the Pop`, na.rm=TRUE)) %>% pull() %>% round(.,4)
+avg_aa_pop <- county_pop %>% filter(Group == "Asian alone") %>% select(County, `Share of the County Pop`) %>%  summarize(mean = mean(`Share of the County Pop`, na.rm=TRUE)) %>% pull() %>% round(.,4)
 avg_aa_pop <- avg_aa_pop*100
  
-avg_pi_pop <- county_pop %>% filter(Group == "NHPI alone") %>% select(County, `% of the Pop`) %>%  summarize(mean = mean(`% of the Pop`, na.rm=TRUE)) %>% pull() %>% round(.,4)
+avg_pi_pop <- county_pop %>% filter(Group == "NHPI alone") %>% select(County, `Share of the County Pop`) %>%  summarize(mean = mean(`Share of the County Pop`, na.rm=TRUE)) %>% pull() %>% round(.,4)
 avg_pi_pop <- avg_pi_pop*100
 
 ### For main topic sentence
-aa_largest_countyname <- county_pop %>% filter(Group == "Asian alone") %>% top_n(1,`% of the Pop`) %>% pull(County)
-aa_largest_county_pct <- county_pop %>% filter(Group == "Asian alone") %>% top_n(1,`% of the Pop`) %>% pull(`% of the Pop`)
+aa_largest_countyname <- county_pop %>% filter(Group == "Asian alone") %>% top_n(1,`Share of the County Pop`) %>% pull(County)
+aa_largest_county_pct <- county_pop %>% filter(Group == "Asian alone") %>% top_n(1,`Share of the County Pop`) %>% pull(`Share of the County Pop`)
 aa_largest_county_pct <- round(aa_largest_county_pct*100,0)
 
 
@@ -408,17 +408,17 @@ county_cvap<- county_cvap %>% rename(`Total Population`= est_county_pop,
          `Total CVAP` = est_county_cvap,
          `AAPI Pop`= est_aapi_pop,
          `AAPI CVAP`= est_aapi_cvap,
-         `% AAPI CVAP` = pct_aapi_cvap,
-         `% AAPI Pop`= pct_aapi_pop,
-         `% County CVAP`= pct_county_cvap,
+         `AAPI Share of CVAP` = pct_aapi_cvap,
+         `AAPI Share of County Pop`= pct_aapi_pop,
+         `CVAP Share of the County Pop`= pct_county_cvap,
          County = geoname)
 
 
 ### Calculating Average for the sentence
-avg_county_cvap <- county_cvap %>% select(County, `% County CVAP`) %>%  summarize(mean = mean(`% County CVAP`, na.rm=TRUE)) %>% pull() %>% round(.,4)
+avg_county_cvap <- county_cvap %>% select(County, `CVAP Share of the County Pop`) %>%  summarize(mean = mean(`CVAP Share of the County Pop`, na.rm=TRUE)) %>% pull() %>% round(.,4)
 avg_county_cvap <- avg_county_cvap*100
 
-avg_aapi_cvap <- county_cvap %>% select(County, `% AAPI CVAP`) %>%  summarize(mean = mean(`% AAPI CVAP`, na.rm=TRUE)) %>% pull() %>% round(.,4)
+avg_aapi_cvap <- county_cvap %>% select(County, `AAPI Share of CVAP`) %>%  summarize(mean = mean(`AAPI Share of CVAP`, na.rm=TRUE)) %>% pull() %>% round(.,4)
 avg_aapi_cvap <- avg_aapi_cvap*100
 
 ```
@@ -470,7 +470,7 @@ Nationally, about **`r avg_aa_pop`**% of Americans is Asian, and **`r avg_pi_pop
   
 county_pop %>%
     filter(group_id %in% "Asian Detail") %>%
-    select(-group_id, - `% of the Pop`,-`Population`) %>%
+    select(-group_id, - `Share of the County Pop`,-`Population`) %>%
     spread(Group,Total,fill = NA) %>% separate(County, into = c("County","State"), sep = ",") %>%
     datatable(extensions = 
                 list("Buttons" = NULL, 'FixedColumns'= T, "Scroller"=T),
@@ -493,7 +493,7 @@ county_pop %>%
   
 county_pop %>%
     filter(group_id %in% "NHPI Detail") %>%
-    select(-group_id, - `% of the Pop`,-`Population`) %>%
+    select(-group_id, - `Share of the County Pop`,-`Population`) %>%
     spread(Group,Total,fill = NA) %>% separate(County, into = c("County","State"), sep = ",") %>%
     datatable(extensions = 
                 list("Buttons" = NULL, 'FixedColumns'= T, "Scroller"=T),
@@ -515,7 +515,7 @@ county_pop %>%
   
 county_pop %>%
     filter(group_id %in% "Asian Detail Combo") %>%
-    select(-group_id, - `% of the Pop`,-`Population`) %>%
+    select(-group_id, - `Share of the County Pop`,-`Population`) %>%
     spread(Group,Total,fill = NA) %>% separate(County, into = c("County","State"), sep = ",") %>%
     datatable(extensions = 
                 list("Buttons" = NULL, 'FixedColumns'= T, "Scroller"=T),
@@ -538,7 +538,7 @@ county_pop %>%
   
 county_pop %>%
     filter(group_id %in% "NHPI Detail Combo") %>%
-    select(-group_id, - `% of the Pop`,-`Population`) %>%
+    select(-group_id, - `Share of the County Pop`,-`Population`) %>%
     spread(Group,Total,fill = NA) %>% separate(County, into = c("County","State"), sep = ",") %>%
     datatable(extensions = 
                 list("Buttons" = NULL, 'FixedColumns'= T, "Scroller"=T),
@@ -581,7 +581,7 @@ datatable(county_cvap_estimate, extensions = list("Buttons" = NULL, 'FixedColumn
 
 ```{r CVAP-combo-pct, echo=FALSE, message=FALSE, warning=FALSE}
 
-county_cvap_pct <- county_cvap %>% select(County, `% AAPI CVAP`, `% AAPI Pop`) %>% separate(County, into = c("County","State"), sep = ",")
+county_cvap_pct <- county_cvap %>% select(County, `AAPI Share of CVAP`, `AAPI Share of County Pop`) %>% separate(County, into = c("County","State"), sep = ",")
 
 datatable(county_cvap_pct, extensions = list("Buttons" = NULL, 'FixedColumns'= T, "Scroller"=T),
               rownames= FALSE, 
