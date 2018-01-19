@@ -157,7 +157,7 @@ msa_origin_percent <- c()
                 list("Buttons" = NULL, 'FixedColumns'= T, "Scroller"=T),
               rownames= FALSE, 
               options = list(
-                dom = 'Brt',
+                dom = 'Bfrt',
                 buttons = c('copy', 'csv', 'excel'),
                 scrollX = TRUE,
                 fixedColumns = list(leftColumns = 1),
