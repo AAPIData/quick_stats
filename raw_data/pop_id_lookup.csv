@@ -7,7 +7,6 @@ pop_id,group_name,group_id
 14,Bangladeshi alone ,Asian Detail
 15,Cambodian alone ,Asian Detail
 16,Chinese alone ,Asian Detail
-17,Chinese ,Asian Detail
 18,Taiwanese alone ,Asian Detail
 19,Filipino alone ,Asian Detail
 20,Hmong alone ,Asian Detail
@@ -25,7 +24,6 @@ pop_id,group_name,group_id
 33,Bangladeshi alone or combo ,Asian Detail Combo
 34,Cambodian alone or combo ,Asian Detail Combo
 35,Chinese alone or combo ,Asian Detail Combo
-36,Chinese ,Asian Detail Combo
 37,Taiwanese alone or combo ,Asian Detail Combo
 38,Filipino alone or combo ,Asian Detail Combo
 39,Hmong alone or combo ,Asian Detail Combo

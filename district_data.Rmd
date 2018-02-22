@@ -359,7 +359,7 @@ district_cvap_percent <- district_cvap %>% select(District, State, `AAPI CVAP`, 
 
 
 
-# Citizen Age Voting Population {.tabset .tabset-fade .tabset-pills}
+# Citizen Voting Age Population {.tabset .tabset-fade .tabset-pills}
 
 
 <a href="#top"><div style="text-align:center">Back to Top</a></div>
@@ -395,7 +395,7 @@ Citizen Voting Age Population data is complied using [special tabulation](https:
 
 
 
-# Educational Attainment {.tabset .tabset-fade .tabset-pills}
+# Education {.tabset .tabset-fade .tabset-pills}
 
 
 <a href="#top"><div style="text-align:center">Back to Top</a></div>
