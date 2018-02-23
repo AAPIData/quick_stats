@@ -198,7 +198,7 @@ district_nhpi_origin_pct<- district_nhpi_origin_pct %>% rename(
 
 ```{r setup-education, include=FALSE}
 
-### Renaming Education
+### Renaming Education attainment
 district_edu <- district_edu %>% rename(
 "Total Asian alone 25 ys+older" = est_aa_alone,
 "AA less than HS" = est_aa_hsless,
